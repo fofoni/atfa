@@ -1,4 +1,4 @@
 Ambiente de Teste para Filtros Adaptativos
 ==========================================
 
-Projeto Final
+Projeto Final de Graduação
