@@ -10,7 +10,7 @@
  *
  * \file main.cpp
  *
- * Arquivo mêm ponto cê pê pê
+ * Arquivo mêim ponto cê pê pê
  *
  * \author Pedro Angelo Medeiros Fonini
  */
