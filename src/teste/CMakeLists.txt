@@ -8,7 +8,8 @@ execute_process( COMMAND git describe
 add_definitions( "-DBlaBle_VERSION=\"${BlaBle_VERSION}\"" )
 
 find_package( OpenCV REQUIRED )
+find_package( PortAudio REQUIRED )
 
 add_executable( displayblabli teste-opencv.cpp )
 
-target_link_libraries( displayblabli ${OpenCV_LIBS} )
+target_link_libraries( displayblabli ${OpenCV_LIBS} ${PortAudio_LIBS} )
