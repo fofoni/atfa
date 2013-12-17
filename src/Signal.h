@@ -100,6 +100,13 @@ public:
 
 };
 
+/// PortAudio callback function
+static int callback(
+    const void *in_buf, void *out_buf, unsigned long frames_per_buf,
+    const PaStreamCallbackTimeInfo* time_info,
+    PaStreamCallbackFlags status_flags, void *user_data
+);
+
 /**
   * Initializes the signal with no meta-data and no samples. The user needs to
   * specify the sample rate and create samples before using the signal.
@@ -299,7 +306,6 @@ void Signal::filter(Signal& imp_resp, Signal &conv) {
     }
 }
 
-/// PortAudio callback function
 /**
   * The PortAudio library implements the stream playback using _callback_
   * functions. These functions get called at interrupt time whenever PortAudio
