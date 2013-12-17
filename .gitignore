@@ -1,7 +1,8 @@
 *.[oa]
 *~
 *.bak
-[Cc][Mm]ake*
+*/[Cc][Mm]ake*
 # do not ignore CMakeLists.txt
-!CMakeLists.txt
+!*CMakeLists.txt
 Makefile
+*build

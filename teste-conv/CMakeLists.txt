@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8 )
-project( BlaBle )
+project( TesteConv )
 
 execute_process( COMMAND git describe
                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -9,7 +9,12 @@ add_definitions( "-DBlaBle_VERSION=\"${BlaBle_VERSION}\"" )
 
 find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
+# TODO: write a working FindLibSndFile.cmake
 
-add_executable( displayblabli teste-opencv.cpp )
+include_directories(${LIBSNDFILE_INCLUDE_DIR})
 
-target_link_libraries( displayblabli ${OpenCV_LIBS} ${PortAudio_LIBS} )
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O2")
+
+add_executable( teste teste-opencv.cpp )
+
+target_link_libraries( teste ${OpenCV_LIBS} ${PortAudio_LIBS} -lsndfile )

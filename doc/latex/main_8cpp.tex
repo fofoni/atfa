@@ -1,86 +1,138 @@
-\hypertarget{main_8cpp}{\section{main.\-cpp File Reference}
-\label{main_8cpp}\index{main.\-cpp(2013-\/08-\/05 06\-:08\-:15 -\/0300, author\-: Pedro Angelo $<$fonini@poli.\-ufrj.\-br$>$, commit\-: 4248253)@{main.\-cpp(2013-\/08-\/05 06\-:08\-:15 -\/0300, author\-: Pedro Angelo $<$fonini"@poli.\-ufrj.\-br$>$, commit\-: 4248253)}}
+\hypertarget{main_8cpp}{\section{main.\-cpp \-File \-Reference}
+\label{main_8cpp}\index{main.\-cpp(aaa.\-versao.\-teste.\-1-\/7-\/g6a5c853)@{main.\-cpp(aaa.\-versao.\-teste.\-1-\/7-\/g6a5c853)}}
 }
-{\ttfamily \#include $<$iostream$>$}\\*
-Include dependency graph for main.\-cpp\-:\nopagebreak
+{\ttfamily \#include $<$opencv2/core/core.\-hpp$>$}\*
+{\ttfamily \#include $<$opencv2/highgui/highgui.\-hpp$>$}\*
+{\ttfamily \#include $<$iostream$>$}\*
+{\ttfamily \#include $<$portaudio.\-h$>$}\*
+{\ttfamily \#include \char`\"{}\-Signal.\-h\char`\"{}}\*
+\-Include dependency graph for main.\-cpp\-:
+\nopagebreak
 \begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[width=136pt]{main_8cpp__incl}
+\includegraphics[width=350pt]{main_8cpp__incl}
 \end{center}
 \end{figure}
-\subsection*{Classes}
+\subsection*{\-Functions}
 \begin{DoxyCompactItemize}
 \item 
-class \hyperlink{classfoncfonc_1_1A}{foncfonc\-::\-A}
-\end{DoxyCompactItemize}
-\subsection*{Functions}
-\begin{DoxyCompactItemize}
-\item 
-template typename$<$ T $>$ int \hyperlink{main_8cpp_aaaa9bbfe95c4caf7160980a028409f4c}{sgn} (T val, int zero=1)
-\item 
-int {\bfseries funcfunc\-::func1} (float x, int y)
-\item 
-int {\bfseries funcfunc\-::func2} (int x=4)
-\item 
+void \hyperlink{main_8cpp_a501afa2e5f0615b9c24cb345fbd5724e}{portaudio\-\_\-init} ()
+\begin{DoxyCompactList}\small\item\em \-Initialize \-Port\-Audio. \end{DoxyCompactList}\item 
+void \hyperlink{main_8cpp_a0b8899294bc76f0800ea25c2d5349162}{portaudio\-\_\-end} ()
+\begin{DoxyCompactList}\small\item\em \-Close \-Port\-Audio. \end{DoxyCompactList}\item 
 int \hyperlink{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{main} (int argc, char $\ast$argv\mbox{[}$\,$\mbox{]})
-\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em `main()` function. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
-\subsection{Detailed Description}
-Arquivo mêm ponto cê pê pê
+\subsection{\-Detailed \-Description}
+\-Holds the `main()` function and other routines.
 
-\begin{DoxyAuthor}{Author}
-Pedro Angelo Medeiros Fonini 
+\begin{DoxyAuthor}{\-Author}
+\-Pedro \-Angelo \-Medeiros \-Fonini 
 \end{DoxyAuthor}
 
 
-Definition in file \hyperlink{main_8cpp_source}{main.\-cpp}.
+\-Definition in file \hyperlink{main_8cpp_source}{main.\-cpp}.
 
 
 
-\subsection{Function Documentation}
+\subsection{\-Function \-Documentation}
 \hypertarget{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}{\index{main.\-cpp@{main.\-cpp}!main@{main}}
 \index{main@{main}!main.cpp@{main.\-cpp}}
-\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf main} (
 \begin{DoxyParamCaption}
 \item[{int}]{argc, }
 \item[{char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
 \end{DoxyParamCaption}
 )}}\label{main_8cpp_a0ddf1224851353fc92bfbff6f499fa97}
-função main ué 
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em argc} & qtde de paradas \\
+
+
+`main()` function. 
+
+\-No command-\/line parameters yet.
+
+\-This function\-: 1. \-Prints version info 2. \-Creates two `\mbox{[}\hyperlink{classSignal}{\-Signal}\mbox{]}(\hyperlink{classSignal}{\-Signal})`s, `sound\-\_\-me` and `sound\-\_\-other` from the two input files. 3. \-Delays the second. 4. \-Creates an impulse response. 5. \-Creates a new \hyperlink{classSignal}{\-Signal} `signal\-\_\-result` which is the first filtered, added to the second, delayed. 6. \-Initializes a \-Port\-Audio session, plays the resulting sound, and closes \-Port\-Audio.
+
+\begin{DoxyRefDesc}{\-Todo}
+\item[\hyperlink{todo__todo000002}{\-Todo}]get input files from command-\/line.\end{DoxyRefDesc}
+
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em argc} & argument count (unused) \\
 \hline
-\mbox{\tt in}  & {\em argv} & paradas \\
+\mbox{\tt in}  & {\em argv} & argument values (unused) \\
 \hline
 \end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-to the operational system 
+\begin{DoxyReturn}{\-Returns}
+0 if no errors 
 \end{DoxyReturn}
 
 
-Definition at line 76 of file main.\-cpp.
+\-Definition at line 111 of file main.\-cpp.
 
-\hypertarget{main_8cpp_aaaa9bbfe95c4caf7160980a028409f4c}{\index{main.\-cpp@{main.\-cpp}!sgn@{sgn}}
-\index{sgn@{sgn}!main.cpp@{main.\-cpp}}
-\subsubsection[{sgn}]{\setlength{\rightskip}{0pt plus 5cm}template typename$<$T$>$ int sgn (
+
+
+\-References \-Signal\-::add(), \-Signal\-::delay(), \-Signal\-::filter(), \-Signal\-::gain(), \-Signal\-::\-M\-S, \-Signal\-::play(), portaudio\-\_\-end(), portaudio\-\_\-init(), and \-Signal\-::set\-\_\-size().
+
+\hypertarget{main_8cpp_a0b8899294bc76f0800ea25c2d5349162}{\index{main.\-cpp@{main.\-cpp}!portaudio\-\_\-end@{portaudio\-\_\-end}}
+\index{portaudio\-\_\-end@{portaudio\-\_\-end}!main.cpp@{main.\-cpp}}
+\subsubsection[{portaudio\-\_\-end}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf portaudio\-\_\-end} (
 \begin{DoxyParamCaption}
-\item[{T}]{val, }
-\item[{int}]{zero = {\ttfamily 1}}
+{}
 \end{DoxyParamCaption}
-)}}\label{main_8cpp_aaaa9bbfe95c4caf7160980a028409f4c}
-Função irada que dá o sinal da variável. 
-\begin{DoxyParams}[1]{Parameters}
-\mbox{\tt in}  & {\em val} & val se fuder \\
-\hline
-\mbox{\tt in}  & {\em zero} & zero? \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-to the caller 
-\end{DoxyReturn}
+)}}\label{main_8cpp_a0b8899294bc76f0800ea25c2d5349162}
 
 
-Definition at line 34 of file main.\-cpp.
+\-Close \-Port\-Audio. 
+
+\-Ends a \-Port\-Audio session.
+
+
+\begin{DoxyExceptions}{\-Exceptions}
+{\em `std\-::runtime\-\_\-error`} & if \-Port\-Audio closing fails.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxySeeAlso}{\-See also}
+`portaudio\-\_\-init()` 
+\end{DoxySeeAlso}
+
+
+\-Definition at line 81 of file main.\-cpp.
+
+
+
+\-Referenced by main().
+
+\hypertarget{main_8cpp_a501afa2e5f0615b9c24cb345fbd5724e}{\index{main.\-cpp@{main.\-cpp}!portaudio\-\_\-init@{portaudio\-\_\-init}}
+\index{portaudio\-\_\-init@{portaudio\-\_\-init}!main.cpp@{main.\-cpp}}
+\subsubsection[{portaudio\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf portaudio\-\_\-init} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_a501afa2e5f0615b9c24cb345fbd5724e}
+
+
+\-Initialize \-Port\-Audio. 
+
+\-Initializes a \-Port\-Audio session. \-Also prints out a list of available devices that \-Port\-Audio sees.
+
+
+\begin{DoxyExceptions}{\-Exceptions}
+{\em `std\-::runtime\-\_\-error`} & if \-Port\-Audio initialization fails.\\
+\hline
+\end{DoxyExceptions}
+\begin{DoxySeeAlso}{\-See also}
+`portaudio\-\_\-end()`
+\end{DoxySeeAlso}
+\begin{DoxyRefDesc}{\-Todo}
+\item[\hyperlink{todo__todo000001}{\-Todo}]make the device listing optional \end{DoxyRefDesc}
+
+
+\-Definition at line 41 of file main.\-cpp.
+
+
+
+\-Referenced by main().
 
