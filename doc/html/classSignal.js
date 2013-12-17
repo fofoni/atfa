@@ -1,6 +1,9 @@
 var classSignal =
 [
-    [ "delay_type", "classSignal.html#a45a2f1394f9d0be6fbaaf5160fa4817c", null ],
+    [ "delay_type", "classSignal.html#a45a2f1394f9d0be6fbaaf5160fa4817c", [
+      [ "MS", "classSignal.html#a45a2f1394f9d0be6fbaaf5160fa4817caef04e6566ce27c94225e907c909af620", null ],
+      [ "SAMPLE", "classSignal.html#a45a2f1394f9d0be6fbaaf5160fa4817ca29508a29e1f1dfb176239b6eb843c53d", null ]
+    ] ],
     [ "Signal", "classSignal.html#a7e69e538253d90c3f551f4701a1f94a5", null ],
     [ "Signal", "classSignal.html#a790a11398e80a3dc45150929d125c106", null ],
     [ "~Signal", "classSignal.html#ae7a1d116cda63e790bf9aab549d57d3a", null ],

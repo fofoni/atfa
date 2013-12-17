@@ -1,4 +1,5 @@
 var Signal_8h =
 [
-    [ "callback", "Signal_8h.html#ad59bc8cf9217c61a20bcbc0211f8fd4a", null ]
+    [ "Signal", "classSignal.html", "classSignal" ],
+    [ "NULL", "Signal_8h.html#a070d2ce7b6bb7e5c05602aa8c308d0c4", null ]
 ];
