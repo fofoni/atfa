@@ -6,3 +6,5 @@
 !*CMakeLists.txt
 Makefile
 *build
+doc/latex/*
+!doc/latex/refman.pdf
