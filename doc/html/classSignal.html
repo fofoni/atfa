@@ -227,7 +227,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Constructs an empty signal. </p>
 <p>Initializes the signal with no meta-data and no samples. The user needs to specify the sample rate and create samples before using the signal. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00107">107</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00114">114</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -265,9 +265,9 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>Should test <code>buf</code> for <code>malloc</code> error.</dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>Should throw a more catchable exception at file open failure. </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00201">201</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00208">208</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>.</p>
 
 </div>
 </div>
@@ -287,7 +287,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Frees memory used. </p>
 <p>If the signal is not empty, free the pointer to the array of samples. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00115">115</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00122">122</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, and <a class="el" href="Signal_8h_source.html#l00028">NULL</a>.</p>
 
@@ -317,9 +317,9 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00453">453</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00459">459</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00169">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, <a class="el" href="Signal_8h_source.html#l00430">set_samplerate()</a>, and <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00176">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, <a class="el" href="Signal_8h_source.html#l00436">set_samplerate()</a>, and <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>.</p>
 
 <p>Referenced by <a class="el" href="main_8cpp_source.html#l00111">main()</a>.</p>
 
@@ -355,11 +355,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>This method should be a C++ copy-constructor. Also, make sure <code>other</code> is <code>_const_ <a class="el" href="classSignal.html" title="A time- or frequency-domain signal.">Signal</a>&amp;</code>. </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00169">169</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00176">176</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00028">NULL</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, and <a class="el" href="Signal_8h_source.html#l00078">samples</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00453">add()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00459">add()</a>.</p>
 
 </div>
 </div>
@@ -403,9 +403,9 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00245">245</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00252">252</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00049">MS</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00049">MS</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>.</p>
 
 <p>Referenced by <a class="el" href="main_8cpp_source.html#l00111">main()</a>.</p>
 
@@ -455,9 +455,9 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000011">Todo:</a></b></dt><dd>Implement a DFT method, and rewrite this using overlap-and-save or overlap-and-add.</dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>Find a way of returning <code>conv</code> without it getting destroyed at stack unwinding. </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00282">282</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00289">289</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, <a class="el" href="Signal_8h_source.html#l00078">samples</a>, and <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>.</p>
 
 <p>Referenced by <a class="el" href="main_8cpp_source.html#l00111">main()</a>.</p>
 
@@ -486,7 +486,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00469">469</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00475">475</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00078">samples</a>.</p>
 
@@ -526,7 +526,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>a reference to the sample. </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00130">130</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00137">137</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>.</p>
 
@@ -562,7 +562,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </dl>
 <dl class="section see"><dt>See Also</dt><dd>callback </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00373">373</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00379">379</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, and <a class="el" href="Signal_8h_source.html#l00078">samples</a>.</p>
 
@@ -600,11 +600,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </dl>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal.html#ad07ccb1653bcd36f89f095c7bf7ae877" title="Signal sample rate in hertz">Signal::sample_rate</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00430">430</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00436">436</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00028">NULL</a>, <a class="el" href="Signal_8h_source.html#l00084">sample_rate</a>, and <a class="el" href="Signal_8h_source.html#l00078">samples</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00453">add()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00459">add()</a>.</p>
 
 </div>
 </div>
@@ -637,11 +637,11 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00147">147</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00154">154</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>References <a class="el" href="Signal_8h_source.html#l00068">data</a>, <a class="el" href="Signal_8h_source.html#l00028">NULL</a>, and <a class="el" href="Signal_8h_source.html#l00078">samples</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00453">add()</a>, <a class="el" href="Signal_8h_source.html#l00245">delay()</a>, <a class="el" href="Signal_8h_source.html#l00282">filter()</a>, <a class="el" href="main_8cpp_source.html#l00111">main()</a>, and <a class="el" href="Signal_8h_source.html#l00201">Signal()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00459">add()</a>, <a class="el" href="Signal_8h_source.html#l00252">delay()</a>, <a class="el" href="Signal_8h_source.html#l00289">filter()</a>, <a class="el" href="main_8cpp_source.html#l00111">main()</a>, and <a class="el" href="Signal_8h_source.html#l00208">Signal()</a>.</p>
 
 </div>
 </div>
@@ -663,7 +663,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00068">68</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00169">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00245">delay()</a>, <a class="el" href="Signal_8h_source.html#l00282">filter()</a>, <a class="el" href="Signal_8h_source.html#l00130">operator[]()</a>, <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>, <a class="el" href="Signal_8h_source.html#l00201">Signal()</a>, and <a class="el" href="Signal_8h_source.html#l00115">~Signal()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00176">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00252">delay()</a>, <a class="el" href="Signal_8h_source.html#l00289">filter()</a>, <a class="el" href="Signal_8h_source.html#l00137">operator[]()</a>, <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>, <a class="el" href="Signal_8h_source.html#l00208">Signal()</a>, and <a class="el" href="Signal_8h_source.html#l00122">~Signal()</a>.</p>
 
 </div>
 </div>
@@ -682,7 +682,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00084">84</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00453">add()</a>, <a class="el" href="Signal_8h_source.html#l00169">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00245">delay()</a>, <a class="el" href="Signal_8h_source.html#l00282">filter()</a>, <a class="el" href="Signal_8h_source.html#l00373">play()</a>, <a class="el" href="Signal_8h_source.html#l00430">set_samplerate()</a>, and <a class="el" href="Signal_8h_source.html#l00201">Signal()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00459">add()</a>, <a class="el" href="Signal_8h_source.html#l00176">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00252">delay()</a>, <a class="el" href="Signal_8h_source.html#l00289">filter()</a>, <a class="el" href="Signal_8h_source.html#l00379">play()</a>, <a class="el" href="Signal_8h_source.html#l00436">set_samplerate()</a>, and <a class="el" href="Signal_8h_source.html#l00208">Signal()</a>.</p>
 
 </div>
 </div>
@@ -702,12 +702,12 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00078">78</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00453">add()</a>, <a class="el" href="Signal_8h_source.html#l00169">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00245">delay()</a>, <a class="el" href="Signal_8h_source.html#l00282">filter()</a>, <a class="el" href="Signal_8h_source.html#l00469">gain()</a>, <a class="el" href="Signal_8h_source.html#l00373">play()</a>, <a class="el" href="Signal_8h_source.html#l00430">set_samplerate()</a>, <a class="el" href="Signal_8h_source.html#l00147">set_size()</a>, and <a class="el" href="Signal_8h_source.html#l00201">Signal()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00459">add()</a>, <a class="el" href="Signal_8h_source.html#l00176">copyfrom()</a>, <a class="el" href="Signal_8h_source.html#l00252">delay()</a>, <a class="el" href="Signal_8h_source.html#l00289">filter()</a>, <a class="el" href="Signal_8h_source.html#l00475">gain()</a>, <a class="el" href="Signal_8h_source.html#l00379">play()</a>, <a class="el" href="Signal_8h_source.html#l00436">set_samplerate()</a>, <a class="el" href="Signal_8h_source.html#l00154">set_size()</a>, and <a class="el" href="Signal_8h_source.html#l00208">Signal()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-9-ga912efc)</a></li>
+<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-11-g8122fc5)</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -715,7 +715,7 @@ unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classSignal.html">Signal</a></li>
-    <li class="footer">Generated on Tue Dec 17 2013 16:06:32 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Tue Dec 17 2013 16:20:49 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.3.1 </li>
   </ul>
