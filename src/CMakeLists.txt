@@ -10,9 +10,10 @@ add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
 # TODO: write a working FindLibSndFile.cmake
+# find how to make an "officially" shaddow building system
 
 set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O2" )
 
-add_executable( atfa main.cpp )
+add_executable( atfa main.cpp Signal.cpp )
 
 target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS} -lsndfile )
