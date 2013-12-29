@@ -42,6 +42,8 @@ static const void *NULL = ((void *)0)
   *
   * \todo Implement "stream" signals, to provide real-time processing.
   *
+  * \todo documentar tudo o que ainda não está documentado
+  *
   */
 class Signal
 {
@@ -86,7 +88,9 @@ public:
       */
     ~Signal() {}
 
-    sample_t *array() { return &data[0]; } // needed for performance inside the callback function
+    // todo: isso devia retornar pointer pra `_const_ sample_t`
+    // needed for performance inside the callback function
+    sample_t *array() { return &data[0]; }
 
     index_t samples() const { return data.size(); }
 
