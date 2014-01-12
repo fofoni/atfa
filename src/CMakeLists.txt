@@ -12,7 +12,11 @@ find_package( PortAudio REQUIRED )
 # TODO: write a working FindLibSndFile.cmake
 # find how to make an "officially" shaddow building system
 
-set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O2" )
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O0 -g3 -fno-inline" )
+else()
+    set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O2" )
+endif()
 
 add_executable( atfa main.cpp Signal.cpp )
 

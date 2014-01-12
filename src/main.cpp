@@ -16,13 +16,16 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
-#include <opencv2/core/core.hpp>
-
 #include <iostream>
 
 #include <portaudio.h>
 
 #include "Signal.h"
+
+std::ostringstream FileError::msg;
+double Signal::DFTDriver::costbl[Signal::DFTDriver::tblsize];
+double Signal::DFTDriver::sintbl[Signal::DFTDriver::tblsize];
+Signal::DFTDriver Signal::dft;
 
 using namespace std;
 
@@ -109,6 +112,10 @@ void playsig(Signal s) {
  *
  * \todo get input files from command-line.
  *
+ * \todo we should warn here whether this build is debug or release.
+ *       search for CMAKE_CXX_FLAGS_RELEASE and CMAKE_CXX_FLAGS_DEBUG
+ *       http://stackoverflow.com/questions/7724569/debug-vs-release-in-cmake
+ *
  * \param[in] argc      argument count (unused)
  * \param[in] argv      argument values (unused)
  * \returns 0 if no errors
@@ -128,17 +135,19 @@ int main(int argc, char *argv[]) {
     //(imp_resp)[0] = (imp_resp)[1] = (imp_resp)[6] = (imp_resp)[7] = .1;
     //(imp_resp)[2] = (imp_resp)[3] = (imp_resp)[4] = (imp_resp)[5] = .15;
     //imp_resp[0] = imp_resp[16383] = .5;
-    imp_resp[0] = .25;      imp_resp[1] = .25;
-    imp_resp[8190] = .25; imp_resp[8191] = -.25;
+    // lowpass (~3.2kHz)
+    imp_resp[0] = .2; imp_resp[1] = .3; imp_resp[2] = .3; imp_resp[3] = .2;
+    // highpass(~7.8kHz)
+    imp_resp[8188] = .2; imp_resp[8189] = -.3;
+    imp_resp[8190] = .3; imp_resp[8191] = -.2;
 
-    Signal sound_result = sound_me;
-    sound_me.filter(imp_resp, sound_result);
-    //sound_result.add(sound_other);
-    sound_result.gain(.5);
+    sound_me.filter(imp_resp);
+    sound_me.add(sound_other);
+    sound_me.gain(.5);
     /* ... */ // adaptative filter ainda nao implementado
-    sound_result.delay(Signal::MS, 1000);
+    sound_me.delay(Signal::MS, 1000);
 
-    playsig(sound_result);
+//    playsig(sound_me);
 
     cout << "Finishing..." << endl;
 

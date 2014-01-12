@@ -26,39 +26,22 @@ static int callback(
 );
 
 /**
-  * Changes the signal length. Allocates more space if we are growing the
-  * signal, and deletes the last samples if we are shrinking it.
-  *
-  * \param[in] n        The desired signal length.
-  */
-void Signal::set_size(index_t n) {
-    index_t old_size = samples();
-    data.resize(n);
-    for (index_t i = old_size; i < n; i++)
-        data[i] = 0;
-}
-
-/**
   * Constructs a signal getting the signal data from an audio file. This is done
   * using the [libsndfile][libsndfile] library. The filetypes supported are
   * listed [here][libsndfile_features]. WAV is supported, but MP3 is not.
   *
-  * If the given file is stereo, of multi-channel, just the first channel
-  * will be read. (On stereo audio files, this is the left channel.)
+  * If the given file is stereo, or otherwise multi-channel, just the first
+  * channel will be read. (On stereo audio files, this is the left channel.)
   *
   * The sample rate is extracted from the file's meta-data info.
   *
   * \param[in]  filename    Audio file name.
   *
-  * \throws `std::runtime_error` if file openening fails.
-  *
-  * \throws `std::runtime_error` if file reading fails.
-  *
-  * \todo Should throw a more catchable exception at file open failure.
+  * \throws `FileError` if file openening/reading fails.
   *
   * \todo get the www hyperlinks above working
   */
-Signal::Signal(const std::string filename)
+Signal::Signal(const std::string &filename)
     : counter(0), srate(0)
 {
 
@@ -66,8 +49,7 @@ Signal::Signal(const std::string filename)
     SNDFILE *file;
     SF_INFO info;
     if (!( file = sf_open(filename.c_str(), SFM_READ, &info) ))
-        throw std::runtime_error(std::string("Cannot open file `") + filename +
-                                 "' for reading.");
+        throw FileError(filename);
 
     // check number of channels
     unsigned chans = info.channels;
@@ -81,12 +63,11 @@ Signal::Signal(const std::string filename)
     srate = info.samplerate;
 
     // read file
-    double wav_samples = samples() * chans;
-    std::vector<sample_t> buf(wav_samples);
+    index_t wav_samples = samples() * chans;
+    container_t buf(wav_samples);
     index_t items_read = sf_read_float(file, &buf[0], wav_samples);
     if (items_read != wav_samples)
-        throw std::runtime_error(std::string("Error reading file `") +
-                                 filename + "'.");
+        throw FileError(filename);
     for (index_t i = 0; i < samples(); ++i)
         data[i] = buf[i*chans];
 
@@ -109,8 +90,8 @@ void Signal::delay(delay_t t, unsigned long d) {
     // now, `d' is number of samples
     if (d == 0) return;
     set_size(samples() + d);
-    for (index_t i = samples()-1; i >= d; i--)
-        data[i] = data[i-d];
+    // shift the samples
+    std::copy_backward(data.begin(), data.end()-d, data.end());
     for (index_t i = 0; i < d; i++)
         data[i] = 0;
 }
@@ -125,32 +106,20 @@ void Signal::delay(delay_t t, unsigned long d) {
   * \todo Implement a DFT method, and rewrite this using overlap-and-save or
   *       overlap-and-add.
   *
-  * \todo Zeroing the samples is not needed; the constructor should initialize
-  *       them as zero.
-  *
-  * \todo try to make this act upon the signal itself. If there's no way, make
-  *       it act in the form result.construct_from_convolution(x,h);.
   */
-void Signal::filter(const Signal &imp_resp, Signal &conv) const {
-    Signal coerent_impresp = imp_resp;
-    coerent_impresp.set_samplerate(srate);
-    conv.srate = srate;
-    conv.set_size(samples() + coerent_impresp.samples() - 1);
-    for (index_t i = 0; i < coerent_impresp.samples(); i++) {
-        conv[i] = 0;
+void Signal::filter(Signal imp_resp) {
+    imp_resp.set_samplerate(srate);
+    container_t conv(samples() + imp_resp.samples() - 1);
+    for (index_t i = 0; i < imp_resp.samples(); i++)
         for (index_t j = 0; j <= i; j++)
-            conv[i] += data[i-j] * coerent_impresp[j];
-    }
-    for (index_t i = coerent_impresp.samples(); i < samples(); i++) {
-        conv[i] = 0;
-        for (index_t j = 0; j < coerent_impresp.samples(); j++)
-            conv[i] += data[i-j] * coerent_impresp[j];
-    }
-    for (index_t i = 0; i < conv.samples()-samples(); i++) {
-        conv[samples()+i] = 0;
-        for (index_t j = i+1; j < coerent_impresp.samples(); j++)
-            conv[samples()+i] += data[samples()+i-j] * coerent_impresp[j];
-    }
+            conv[i] += data[i-j] * imp_resp[j];
+    for (index_t i = imp_resp.samples(); i < samples(); i++)
+        for (index_t j = 0; j < imp_resp.samples(); j++)
+            conv[i] += data[i-j] * imp_resp[j];
+    for (index_t i = 0; i < conv.size()-samples(); i++)
+        for (index_t j = i+1; j < imp_resp.samples(); j++)
+            conv[samples()+i] += data[samples()+i-j] * imp_resp[j];
+    data = conv; // destroy old data, and copy new from `conv`
 }
 
 /**
@@ -164,7 +133,7 @@ void Signal::filter(const Signal &imp_resp, Signal &conv) const {
   * to PortAudio.
   *
   * \param[in]  in_buf      Pointer to a buffer of samples retrieved from an
-  *                         input audio device.= This parameter is unused because
+  *                         input audio device. This parameter is unused because
   *                         we're not reading from any device.
   * \param[out] out_buf     Pointer to a buffer where the callback function will
   *                         store samples to be given to an output audio device.
@@ -190,7 +159,7 @@ static int callback(
     PaStreamCallbackFlags status_flags, void *user_data
 ) {
 
-    Signal::sample_t *data = ((Signal *)user_data)->array();
+    const Signal::sample_t *data = ((Signal *)user_data)->array();
     Signal::index_t total_samples = ((Signal *)user_data)->samples();
     Signal::index_t& counter = ((Signal *)user_data)->counter;
 
@@ -201,8 +170,7 @@ static int callback(
 
     frames_per_buf += counter;
     for (; counter < frames_per_buf; counter++) {
-        if (counter == total_samples)
-            return paComplete;
+        if (counter == total_samples) return paComplete;
         *out++ = data[counter]; // provide a sample for playback
     }
 
@@ -245,7 +213,7 @@ void Signal::play(bool sleep) {
         std::cerr << double(srate) << std::endl;
         throw std::runtime_error(
                     std::string("Error opening stream for audio output:") +
-                    "  " + Pa_GetErrorText(err)
+                    " " + Pa_GetErrorText(err)
         );}
 
     // start stream
@@ -253,7 +221,7 @@ void Signal::play(bool sleep) {
     if (err != paNoError)
         throw std::runtime_error(
                     std::string("Error starting stream for audio output:") +
-                    "  " + Pa_GetErrorText(err)
+                    " " + Pa_GetErrorText(err)
         );
 
     // sleep
@@ -268,7 +236,7 @@ void Signal::play(bool sleep) {
     if (err != paNoError)
         throw std::runtime_error(
                     std::string("Error closing stream for audio output:") +
-                    "  " + Pa_GetErrorText(err)
+                    " " + Pa_GetErrorText(err)
         );
 
 }
@@ -288,7 +256,7 @@ void Signal::set_samplerate(int sr) {
         return;
     }
     index_t N = floor((sr * sample_t(samples())) / srate);
-    std::vector<sample_t> new_data(N);
+    container_t new_data(N);
     for (index_t i = 0; i < N; i++) {
         double x = i*double(samples()-1)/(N-1);
         new_data[i] = (floor(x+1)-x) * data[(index_t)floor(x)] +
@@ -298,7 +266,6 @@ void Signal::set_samplerate(int sr) {
     srate = sr;
 }
 
-void playsig(Signal s);
 /**
   * Adds the `other` signal to the caller signal. First, we re-sample `other`
   * into a new temporary signal. Then we increase the caller's size if needed,
@@ -327,6 +294,68 @@ void Signal::add(const Signal &other) {
   * \todo make a `max` routine for getting the norm-infinity.
   */
 void Signal::gain(double g) {
-    for (index_t i = 0; i < samples(); i++)
-        data[i] *= g;
+    for (container_t::iterator it = data.begin();
+         it != data.end(); ++it)
+        *it *= g;
+}
+
+void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
+{
+
+    if (re.size() != im.size()) {
+        std::ostringstream msg;
+        msg << "Error: Signal::DFTDriver `re' and `im' vectors must be of the "
+            << "same size." << std::endl << "  This trial: " << re.size()
+            << " and " << im.size() << ".";
+        throw std::runtime_error(msg.str());
+    }
+
+    index_t L = re.size();
+    container_t temp_re(L, 0);
+    container_t temp_im(L, 0);
+
+    if (L > tblsize) {
+        std::ostringstream msg;
+        msg << "Error: DFT of size " << L << ": too big." << std::endl
+            << "  Maximum is " << tblsize << ".";
+        throw std::runtime_error(msg.str());
+    }
+
+    // checks whether n=L is power of two, and also calculates N=log2(n)
+    unsigned long N = 0;
+    {   unsigned long n = L;
+        if (L == 0) // nothing to do
+            return;
+        for (N = 0; n != 1; n /= 2, ++N)
+            if (n%2 != 0) { // then L is not power of two
+                std::ostringstream msg;
+                msg << "Error: tried to take DFT of vector of size " << L
+                    << " (not power of two).";
+                throw std::runtime_error(msg.str());
+            }
+        // here, 2^N == L
+    }
+
+    for (unsigned i = 0; i != N-1; ++i) {
+        unsigned j = br(i, N);
+        if (i < j) {
+            double temp = re[i];
+            re[i] = re[j];
+            re[j] = temp;
+            temp = im[i];
+            im[i] = im[j];
+            im[j] = temp;
+        }
+    }
+
+    // tested and working up to here. Here, we will take a DFT of N bits.
+
+}
+
+void Signal::DFTDriver::operator ()(const container_t& in1, container_t& out1,
+                                    const container_t& in2, container_t& out2)
+{
+
+
+
 }
