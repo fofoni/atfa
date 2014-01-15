@@ -299,13 +299,13 @@ void Signal::gain(double g) {
         *it *= g;
 }
 
-void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
-{
+void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
+                                    dir_t direction) {
 
     if (re.size() != im.size()) {
         std::ostringstream msg;
         msg << "Error: Signal::DFTDriver `re' and `im' vectors must be of the "
-            << "same size." << std::endl << "  This trial: " << re.size()
+            << "same size." << std::endl << "  Got: " << re.size()
             << " and " << im.size() << ".";
         throw std::runtime_error(msg.str());
     }
@@ -319,7 +319,7 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
         throw std::runtime_error(msg.str());
     }
 
-    // checks whether n=L is power of two, and also calculates N=log2(n)
+    // checks whether n=L is power of two, and also calculates bits=log2(n)
     {   unsigned long n = L;
         if (L == 0) // nothing to do
             return;
@@ -330,9 +330,10 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
                     << " (not power of two).";
                 throw std::runtime_error(msg.str());
             }
-        // here, 2^N == L
+        // here, 2^bits == L
     }
 
+    // reverse bits and normalize
     for (unsigned i = 1; i != L-1; ++i) {
         unsigned j = br(i, bits);
         if (i >= j) continue;
@@ -358,7 +359,7 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
 
                 unsigned frac = L - L/2/size*l; // integer division in 2nd term
                 double cossine = Wre(frac);
-                double sine = Wim(frac);
+                double sine = direction==DIRECT ? Wim(frac) : -Wim(frac);
                 temp_re[i1] = re[i1];
                 temp_im[i1] = im[i1];
                 temp_re[i2] = re[i2] * cossine - im[i2] * sine;
@@ -373,49 +374,9 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
         }
     }
 
-/*    for (unsigned k = 0; k != L/4; ++k) {
-        for (unsigned l = 0; l != 2; ++l) {
-
-            unsigned i1 = 4*k + l;
-            unsigned i2 = i1 + 2;
-
-            unsigned phi = L - 2*l;
-            double cossine = Wre(phi);
-            double sine = Wim(phi);
-            temp_re[i1] = re[i1];
-            temp_im[i1] = im[i1];
-            temp_re[i2] = re[i2] * cossine - im[i2] * sine;
-            temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
-
-            re[i1] = temp_re[i1] + temp_re[i2];
-            im[i1] = temp_im[i1] + temp_im[i2];
-            re[i2] = temp_re[i1] - temp_re[i2];
-            im[i2] = temp_im[i1] - temp_im[i2];
-
-        }
-    }
-
-    for (unsigned k = 0; k != L/8; ++k) {
-        for (unsigned l = 0; l != 4; ++l) {
-
-            unsigned i1 = 8*k + l;
-            unsigned i2 = i1 + 4;
-
-            unsigned phi = L - l;
-            double cossine = Wre(phi);
-            double sine = Wim(phi);
-            temp_re[i1] = re[i1];
-            temp_im[i1] = im[i1];
-            temp_re[i2] = re[i2] * cossine - im[i2] * sine;
-            temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
-
-            re[i1] = temp_re[i1] + temp_re[i2];
-            im[i1] = temp_im[i1] + temp_im[i2];
-            re[i2] = temp_re[i1] - temp_re[i2];
-            im[i2] = temp_im[i1] - temp_im[i2];
-
-        }
-    }*/
+    if (direction==INVERSE)
+        for (unsigned i = 0; i != L; ++i)
+            re[i] /= L, im[i] /= L;
 
 }
 

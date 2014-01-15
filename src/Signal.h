@@ -263,7 +263,10 @@ public:
 
         }
 
-        void operator ()(container_t& re, container_t& im);
+        enum dir_t { DIRECT, INVERSE };
+
+        void operator ()(container_t& re, container_t& im,
+                         dir_t direction = DIRECT);
 
         void operator ()(const container_t& in1, container_t& out1,
                          const container_t& in2, container_t& out2);

@@ -154,8 +154,8 @@ int main(int argc, char *argv[]) {
 
     cout << "Finishing..." << endl;
 
-    Signal::container_t re(8, 1);
-    Signal::container_t im(8, 0);
+    Signal::container_t re(32, 1);
+    Signal::container_t im(32, 0);
     /* // test case:
     re[0] =  0.386642643323190;
     re[1] =  1.063856991587017;
@@ -174,8 +174,13 @@ int main(int argc, char *argv[]) {
     im[6] = -0.3193952996871738;
     im[7] = -0.8869369816328675;*/
     re[1] = 2;
+    im[24] = -.001;
     Signal::dft(re, im);
-    for (int i = 0; i != 8; ++i)
+    for (unsigned i = 0; i != re.size(); ++i)
+        cout << re[i] << " + j" << im[i] << endl;
+    cout << endl;
+    Signal::dft(re, im, Signal::DFTDriver::INVERSE);
+    for (unsigned i = 0; i != re.size(); ++i)
         cout << re[i] << " + j" << im[i] << endl;
 
     return 0;
