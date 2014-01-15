@@ -311,8 +311,6 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
     }
 
     index_t L = re.size();
-    container_t temp_re(L, 0);
-    container_t temp_im(L, 0);
 
     if (L > tblsize) {
         std::ostringstream msg;
@@ -322,11 +320,10 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
     }
 
     // checks whether n=L is power of two, and also calculates N=log2(n)
-    unsigned long N = 0;
     {   unsigned long n = L;
         if (L == 0) // nothing to do
             return;
-        for (N = 0; n != 1; n /= 2, ++N)
+        for (bits = 0; n != 1; n /= 2, ++bits)
             if (n%2 != 0) { // then L is not power of two
                 std::ostringstream msg;
                 msg << "Error: tried to take DFT of vector of size " << L
@@ -336,19 +333,89 @@ void Signal::DFTDriver::operator ()(container_t &re, container_t& im)
         // here, 2^N == L
     }
 
-    for (unsigned i = 0; i != N-1; ++i) {
-        unsigned j = br(i, N);
-        if (i < j) {
-            double temp = re[i];
-            re[i] = re[j];
-            re[j] = temp;
-            temp = im[i];
-            im[i] = im[j];
-            im[j] = temp;
+    for (unsigned i = 1; i != L-1; ++i) {
+        unsigned j = br(i, bits);
+        if (i >= j) continue;
+        double temp = re[i];
+        re[i] = re[j];
+        re[j] = temp;
+        temp = im[i];
+        im[i] = im[j];
+        im[j] = temp;
+    }
+
+    for (unsigned size = 1; size != L; size *= 2) {
+        for (unsigned k = 0; k != L/2/size; ++k) {
+            for (unsigned l = 0; l != size; ++l) {
+
+                // apply single butterfly at indexes i1 and i2,
+                // with coefficient exp(j*tau*frac).
+                // `frac' is an angle expressed in one-`L'ths of tau,
+                // which is 2*pi.
+
+                unsigned i1 = 2*size*k + l;
+                unsigned i2 = i1 + size;
+
+                unsigned frac = L - L/2/size*l; // integer division in 2nd term
+                double cossine = Wre(frac);
+                double sine = Wim(frac);
+                temp_re[i1] = re[i1];
+                temp_im[i1] = im[i1];
+                temp_re[i2] = re[i2] * cossine - im[i2] * sine;
+                temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
+
+                re[i1] = temp_re[i1] + temp_re[i2];
+                im[i1] = temp_im[i1] + temp_im[i2];
+                re[i2] = temp_re[i1] - temp_re[i2];
+                im[i2] = temp_im[i1] - temp_im[i2];
+
+            }
         }
     }
 
-    // tested and working up to here. Here, we will take a DFT of N bits.
+/*    for (unsigned k = 0; k != L/4; ++k) {
+        for (unsigned l = 0; l != 2; ++l) {
+
+            unsigned i1 = 4*k + l;
+            unsigned i2 = i1 + 2;
+
+            unsigned phi = L - 2*l;
+            double cossine = Wre(phi);
+            double sine = Wim(phi);
+            temp_re[i1] = re[i1];
+            temp_im[i1] = im[i1];
+            temp_re[i2] = re[i2] * cossine - im[i2] * sine;
+            temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
+
+            re[i1] = temp_re[i1] + temp_re[i2];
+            im[i1] = temp_im[i1] + temp_im[i2];
+            re[i2] = temp_re[i1] - temp_re[i2];
+            im[i2] = temp_im[i1] - temp_im[i2];
+
+        }
+    }
+
+    for (unsigned k = 0; k != L/8; ++k) {
+        for (unsigned l = 0; l != 4; ++l) {
+
+            unsigned i1 = 8*k + l;
+            unsigned i2 = i1 + 4;
+
+            unsigned phi = L - l;
+            double cossine = Wre(phi);
+            double sine = Wim(phi);
+            temp_re[i1] = re[i1];
+            temp_im[i1] = im[i1];
+            temp_re[i2] = re[i2] * cossine - im[i2] * sine;
+            temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
+
+            re[i1] = temp_re[i1] + temp_re[i2];
+            im[i1] = temp_im[i1] + temp_im[i2];
+            re[i2] = temp_re[i1] - temp_re[i2];
+            im[i2] = temp_im[i1] - temp_im[i2];
+
+        }
+    }*/
 
 }
 

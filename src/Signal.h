@@ -172,9 +172,20 @@ public:
 
     struct DFTDriver {
 
+        static const unsigned tblbits = 14;
         static const size_t tblsize = 16384; // MUST be power of two
-        static double sintbl[tblsize];
-        static double costbl[tblsize];
+        static double sintbl[tblsize];  // table of sines...
+        static double costbl[tblsize];  // ...and cossines.
+        static double temp_re[tblsize]; // used all the time:
+        static double temp_im[tblsize]; // always assume uninitialized
+
+        unsigned bits; // also assume unititialized
+
+        // roots of unit, W^(-k)
+        double Wre(unsigned k)
+            { return costbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
+        double Wim(unsigned k)
+            { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
 
         DFTDriver() {
             for (unsigned i = 0; i != tblsize; ++i) {
