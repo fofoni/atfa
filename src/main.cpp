@@ -26,8 +26,7 @@ std::ostringstream FileError::msg;
 
 double Signal::DFTDriver::costbl[Signal::DFTDriver::tblsize];
 double Signal::DFTDriver::sintbl[Signal::DFTDriver::tblsize];
-double Signal::DFTDriver::temp_re[Signal::DFTDriver::tblsize];
-double Signal::DFTDriver::temp_im[Signal::DFTDriver::tblsize];
+
 Signal::DFTDriver Signal::dft;
 
 using namespace std;
@@ -135,16 +134,14 @@ int main(int argc, char *argv[]) {
 
     Signal imp_resp;
     imp_resp.set_size(8192);
-    //(imp_resp)[0] = (imp_resp)[1] = (imp_resp)[6] = (imp_resp)[7] = .1;
-    //(imp_resp)[2] = (imp_resp)[3] = (imp_resp)[4] = (imp_resp)[5] = .15;
-    //imp_resp[0] = imp_resp[16383] = .5;
     // lowpass (~3.2kHz)
-    imp_resp[0] = .2; imp_resp[1] = .3; imp_resp[2] = .3; imp_resp[3] = .2;
+    imp_resp[0] = .2;    imp_resp[1] = .3;
+    imp_resp[2] = .3;    imp_resp[3] = .2;
     // highpass(~7.8kHz)
     imp_resp[8188] = .2; imp_resp[8189] = -.3;
     imp_resp[8190] = .3; imp_resp[8191] = -.2;
 
-//    sound_me.filter(imp_resp);
+    sound_me.filter(imp_resp);
     sound_me.add(sound_other);
     sound_me.gain(.5);
     /* ... */ // adaptative filter ainda nao implementado
@@ -153,35 +150,6 @@ int main(int argc, char *argv[]) {
 //    playsig(sound_me);
 
     cout << "Finishing..." << endl;
-
-    Signal::container_t re(32, 1);
-    Signal::container_t im(32, 0);
-    /* // test case:
-    re[0] =  0.386642643323190;
-    re[1] =  1.063856991587017;
-    re[2] = -0.511566142547817;
-    re[3] =  1.435219791353060;
-    re[4] =  1.329230594198427;
-    re[5] =  0.464761643813005;
-    re[6] = -0.297817288426939;
-    re[7] =  0.185029914137056;
-    im[0] = -3.1485760842645796;
-    im[1] = -0.7357721605413995;
-    im[2] =  0.0724111077279661;
-    im[3] =  1.0495693082726549;
-    im[4] =  1.0189200775301872;
-    im[5] =  0.1243409207477646;
-    im[6] = -0.3193952996871738;
-    im[7] = -0.8869369816328675;*/
-    re[1] = 2;
-    im[24] = -.001;
-    Signal::dft(re, im);
-    for (unsigned i = 0; i != re.size(); ++i)
-        cout << re[i] << " + j" << im[i] << endl;
-    cout << endl;
-    Signal::dft(re, im, Signal::DFTDriver::INVERSE);
-    for (unsigned i = 0; i != re.size(); ++i)
-        cout << re[i] << " + j" << im[i] << endl;
 
     return 0;
 

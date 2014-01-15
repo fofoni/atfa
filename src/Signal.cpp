@@ -109,7 +109,16 @@ void Signal::delay(delay_t t, unsigned long d) {
   */
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
-    container_t conv(samples() + imp_resp.samples() - 1);
+    index_t final_size = samples() + imp_resp.samples() - 1; // unnecessary (?)
+    container_t conv(final_size, 0);
+    if (final_size > Signal::DFTDriver::tblsize) {
+        std::cout << "final bigger: " << final_size << " > "
+                  << Signal::DFTDriver::tblsize << "." << std::endl;
+        // divide em pedaços de tamanho tal que N+K-1==tblsize
+    }
+    else // tenta encontrar o menor tamanho de fft que funcione com uma fft só
+        std::cout << "final fits: " << final_size << " <= "
+             << Signal::DFTDriver::tblsize << "." << std::endl;
     for (index_t i = 0; i < imp_resp.samples(); i++)
         for (index_t j = 0; j <= i; j++)
             conv[i] += data[i-j] * imp_resp[j];
@@ -333,7 +342,7 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
         // here, 2^bits == L
     }
 
-    // reverse bits and normalize
+    // reverse bits
     for (unsigned i = 1; i != L-1; ++i) {
         unsigned j = br(i, bits);
         if (i >= j) continue;
@@ -350,7 +359,7 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
             for (unsigned l = 0; l != size; ++l) {
 
                 // apply single butterfly at indexes i1 and i2,
-                // with coefficient exp(j*tau*frac).
+                // with coefficient exp(j*tau*frac) at i2
                 // `frac' is an angle expressed in one-`L'ths of tau,
                 // which is 2*pi.
 
@@ -360,15 +369,16 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
                 unsigned frac = L - L/2/size*l; // integer division in 2nd term
                 double cossine = Wre(frac);
                 double sine = direction==DIRECT ? Wim(frac) : -Wim(frac);
-                temp_re[i1] = re[i1];
-                temp_im[i1] = im[i1];
-                temp_re[i2] = re[i2] * cossine - im[i2] * sine;
-                temp_im[i2] = re[i2] * sine    + im[i2] * cossine;
 
-                re[i1] = temp_re[i1] + temp_re[i2];
-                im[i1] = temp_im[i1] + temp_im[i2];
-                re[i2] = temp_re[i1] - temp_re[i2];
-                im[i2] = temp_im[i1] - temp_im[i2];
+                double tmp_re1 = re[i1];
+                double tmp_im1 = im[i1];
+                double tmp_re2 = re[i2] * cossine - im[i2] * sine;
+                double tmp_im2 = re[i2] * sine    + im[i2] * cossine;
+
+                re[i1] = tmp_re1 + tmp_re2;
+                im[i1] = tmp_im1 + tmp_im2;
+                re[i2] = tmp_re1 - tmp_re2;
+                im[i2] = tmp_im1 - tmp_im2;
 
             }
         }
@@ -377,13 +387,5 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
     if (direction==INVERSE)
         for (unsigned i = 0; i != L; ++i)
             re[i] /= L, im[i] /= L;
-
-}
-
-void Signal::DFTDriver::operator ()(const container_t& in1, container_t& out1,
-                                    const container_t& in2, container_t& out2)
-{
-
-
 
 }

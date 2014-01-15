@@ -50,7 +50,7 @@ public:
        as throw() */
     ~FileError() throw() {}
 
-    virtual const char *what() const throw() {
+    virtual const char *what() throw() {
         msg.str("");
         msg << runtime_error::what() << ": Couldn't read file `" << filename
             << "'.";
@@ -176,8 +176,6 @@ public:
         static const size_t tblsize = 16384; // MUST be power of two
         static double sintbl[tblsize];  // table of sines...
         static double costbl[tblsize];  // ...and cossines.
-        static double temp_re[tblsize]; // used all the time:
-        static double temp_im[tblsize]; // always assume uninitialized
 
         unsigned bits; // also assume unititialized
 
@@ -267,9 +265,6 @@ public:
 
         void operator ()(container_t& re, container_t& im,
                          dir_t direction = DIRECT);
-
-        void operator ()(const container_t& in1, container_t& out1,
-                         const container_t& in2, container_t& out2);
 
     };
 
