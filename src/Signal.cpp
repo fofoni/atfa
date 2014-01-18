@@ -117,11 +117,8 @@ void Signal::filter(Signal imp_resp) {
     index_t final_size = samples() + imp_resp.samples() - 1;
     container_t conv(final_size);
     if (final_size > Signal::DFTDriver::tblsize) {
-        std::cout << "final bigger: " << final_size << " > "
-                  << Signal::DFTDriver::tblsize << "." << std::endl;
         long N = DFTDriver::tblsize - small->size() + 1;
         if (N <= 0) {
-            std::cout << "fallback to time-domain filtering" << std::endl;
             for (index_t i = 0; i < imp_resp.samples(); i++)
                 for (index_t j = 0; j <= i; j++)
                     conv[i] += data[i-j] * imp_resp[j];
@@ -142,7 +139,7 @@ void Signal::filter(Signal imp_resp) {
         container_t y1(DFTDriver::tblsize);
         container_t y2(DFTDriver::tblsize);
         std::copy(small->begin(), small->end(), h_re.begin());
-        dft(hre, h_im);
+        dft(h_re, h_im);
         index_t i;
         for (i = 0; i != big->size()/(2*N); ++i) {
             index_t i1 = i*2*N;
@@ -158,9 +155,45 @@ void Signal::filter(Signal imp_resp) {
             }
             dft(y1, y2, DFTDriver::INVERSE);
             for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-
+                conv[i1 + j] += y1[j];
+                conv[i2 + j] += y2[j];
             }
         }
+        {
+            index_t i1 = i*2*N;
+            index_t i2 = i1 + N;
+            index_t L = big->size() - i1;
+            if (L > N) {
+                std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
+                std::fill(x1.begin() + N, x1.end(), 0);
+                std::copy(big->begin() + i2, big->end(), x2.begin());
+                std::fill(x2.begin() + (L-N), x2.end(), 0);
+                dft(x1, x2);
+                for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
+                    y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
+                    y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
+                }
+                dft(y1, y2, DFTDriver::INVERSE);
+                for (index_t j = 0; j != DFTDriver::tblsize; ++j)
+                    conv[i1 + j] += y1[j];
+                for (index_t j = 0; j != L-N+small->size()-1; ++j)
+                    conv[i2 + j] += y2[j];
+            }
+            else {
+                std::copy(big->begin() + i1, big->end(), x1.begin());
+                std::fill(x1.begin() + L, x1.end(), 0);
+                std::fill(x2.begin(), x2.end(), 0);
+                dft(x1, x2);
+                for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
+                    y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
+                    y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
+                }
+                dft(y1, y2, DFTDriver::INVERSE);
+                for (index_t j = 0; j != L+small->size()-1; ++j)
+                    conv[i1 + j] += y1[j];
+            }
+        }
+        data = conv; // destroy old data, and copy new from `conv'
     }
     else // tenta encontrar o menor tamanho de fft que funcione com uma fft só
         std::cout << "final fits: " << final_size << " <= "

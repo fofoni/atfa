@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
     /* ... */ // adaptative filter ainda nao implementado
     sound_me.delay(Signal::MS, 1000);
 
-//    playsig(sound_me);
+    playsig(sound_me);
 
     cout << "Finishing..." << endl;
 
