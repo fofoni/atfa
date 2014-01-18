@@ -129,8 +129,8 @@ int main(int argc, char *argv[]) {
     cout << endl;
 
     Signal sound_me("../wav_samples/bigbrain.wav");
-    Signal sound_other("../wav_samples/didntwork.wav");
-    sound_other.delay(Signal::MS, 1000);
+    Signal sound_other("../wav_samples/tones.wav");
+//    sound_other.delay(Signal::MS, 1000);
 
     Signal imp_resp;
     imp_resp.set_size(8192);
@@ -141,13 +141,14 @@ int main(int argc, char *argv[]) {
     imp_resp[8188] = .2; imp_resp[8189] = -.3;
     imp_resp[8190] = .3; imp_resp[8191] = -.2;
 
-    sound_me.filter(imp_resp);
-    sound_me.add(sound_other);
+//    sound_me.filter(imp_resp);
+    sound_other.filter(imp_resp);
+//    sound_me.add(sound_other);
     sound_me.gain(.5);
     /* ... */ // adaptative filter ainda nao implementado
     sound_me.delay(Signal::MS, 1000);
 
-    playsig(sound_me);
+    playsig(sound_other);
 
     cout << "Finishing..." << endl;
 

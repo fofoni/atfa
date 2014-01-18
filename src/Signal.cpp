@@ -109,16 +109,18 @@ void Signal::delay(delay_t t, unsigned long d) {
   */
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
-    container_t *big, *small;
-    if (samples() > imp_resp.samples())
-        big = &data, small = &imp_resp.data;
-    else
-        big = &imp_resp.data, small = &data;
     index_t final_size = samples() + imp_resp.samples() - 1;
     container_t conv(final_size);
     if (final_size > Signal::DFTDriver::tblsize) {
+        // divide the signal in chunks of size N such that N+K-1==tblsize
+        container_t *big, *small;
+        if (samples() > imp_resp.samples())
+            big = &data, small = &imp_resp.data;
+        else
+            big = &imp_resp.data, small = &data;
         long N = DFTDriver::tblsize - small->size() + 1;
         if (N <= 0) {
+            // fall back to time-domain filtering
             for (index_t i = 0; i < imp_resp.samples(); i++)
                 for (index_t j = 0; j <= i; j++)
                     conv[i] += data[i-j] * imp_resp[j];
@@ -131,7 +133,6 @@ void Signal::filter(Signal imp_resp) {
             data = conv; // destroy old data, and copy new from `conv'
             return;
         }
-        // divide em pedaços de tamanho tal que N+K-1==tblsize
         container_t h_re(DFTDriver::tblsize);
         container_t h_im(DFTDriver::tblsize);
         container_t x1(DFTDriver::tblsize);
@@ -162,7 +163,7 @@ void Signal::filter(Signal imp_resp) {
         {
             index_t i1 = i*2*N;
             index_t i2 = i1 + N;
-            index_t L = big->size() - i1;
+            long L = big->size() - i1;
             if (L > N) {
                 std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
                 std::fill(x1.begin() + N, x1.end(), 0);
@@ -195,9 +196,29 @@ void Signal::filter(Signal imp_resp) {
         }
         data = conv; // destroy old data, and copy new from `conv'
     }
-    else // tenta encontrar o menor tamanho de fft que funcione com uma fft só
-        std::cout << "final fits: " << final_size << " <= "
-             << Signal::DFTDriver::tblsize << "." << std::endl;
+    else {
+        // try to fit the whole signal in only two fft
+        index_t L;
+        for (L = DFTDriver::tblsize; L/2 >= final_size; L /= 2) ;
+        // here, the dft size fits in L
+        container_t h_re(L);
+        container_t h_im(L);
+        container_t x1(L);
+        container_t x2(L);
+        container_t y1(L);
+        container_t y2(L);
+        std::copy(imp_resp.data.begin(), imp_resp.data.end(), h_re.begin());
+        dft(h_re, h_im);
+        std::copy(data.begin(), data.end(), x1.begin());
+        dft(x1, x2);
+        for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
+            y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
+            y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
+        }
+        dft(y1, y2, DFTDriver::INVERSE);
+        set_size(final_size);
+        std::copy(y1.begin(), y1.begin() + final_size, conv);
+    }
 }
 
 /**
