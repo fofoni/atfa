@@ -110,7 +110,6 @@ void Signal::delay(delay_t t, unsigned long d) {
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
     index_t final_size = samples() + imp_resp.samples() - 1;
-    container_t conv(final_size);
     if (final_size > Signal::DFTDriver::tblsize) {
         // divide the signal in chunks of size N such that N+K-1==tblsize
         container_t *big, *small;
@@ -119,6 +118,7 @@ void Signal::filter(Signal imp_resp) {
         else
             big = &imp_resp.data, small = &data;
         long N = DFTDriver::tblsize - small->size() + 1;
+        container_t conv(final_size);
         if (N <= 0) {
             // fall back to time-domain filtering
             for (index_t i = 0; i < imp_resp.samples(); i++)
@@ -217,7 +217,7 @@ void Signal::filter(Signal imp_resp) {
         }
         dft(y1, y2, DFTDriver::INVERSE);
         set_size(final_size);
-        std::copy(y1.begin(), y1.begin() + final_size, conv);
+        std::copy(y1.begin(), y1.begin() + final_size, data.begin());
     }
 }
 
