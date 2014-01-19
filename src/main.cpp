@@ -14,6 +14,10 @@
  * Holds the `main()` function and other routines.
  *
  * \author Pedro Angelo Medeiros Fonini
+ *
+ * \todo after the `max` and `operator+=` TODOs, run through everything and put everything
+ *       inside the 80-char constraint
+ *
  */
 
 #include <iostream>

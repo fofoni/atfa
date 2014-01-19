@@ -387,7 +387,7 @@ void Signal::add(const Signal &other) {
   *
   * \param[in]  g       The signal gain to be applied.
   *
-  * \todo make a `max` routine for getting the norm-infinity.
+  * \todo make a `max` routine for getting the norm-infinity. then make a "normalize" method
   */
 void Signal::gain(double g) {
     for (container_t::iterator it = data.begin();
