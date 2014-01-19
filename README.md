@@ -5,9 +5,9 @@ Projeto Final de Graduação
 
 Para compilar:
 
-    cd build
+    cd build    # .../pf/build
     ./config.sh
-    cd release
+    cd release  # .../pf/build/release
     make
 
 O executável será colocado no diretório `build/release`.

@@ -31,7 +31,7 @@
     char static_dirname[] = __FILE__;
     char static_projdirname[] = __FILE__;
     // whatch out, because dirname() may modify its argument,
-    // and ATFA_DIR might be evaluated more than one time
+    // and ATFA_DIR might get evaluated more than once
 #   define ATFA_DIR ( \
         std::strcpy(static_dirname, dirname(static_filename)), \
         std::strcpy(static_filename, __FILE__), \
@@ -131,10 +131,6 @@ void playsig(Signal s) {
  *    PortAudio.
  *
  * \todo get input files from command-line.
- *
- * \todo we should warn here whether this build is debug or release.
- *       search for CMAKE_CXX_FLAGS_RELEASE and CMAKE_CXX_FLAGS_DEBUG
- *       http://stackoverflow.com/questions/7724569/debug-vs-release-in-cmake
  *
  * \param[in] argc      argument count (unused)
  * \param[in] argv      argument values (unused)

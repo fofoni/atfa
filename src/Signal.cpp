@@ -103,9 +103,6 @@ void Signal::delay(delay_t t, unsigned long d) {
   * \param[in]  imp_resp    The filter impulse response to be convolved with.
   * \param[out] conv        The resulting signal.
   *
-  * \todo Implement a DFT method, and rewrite this using overlap-and-save or
-  *       overlap-and-add.
-  *
   */
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
@@ -376,7 +373,7 @@ void Signal::set_samplerate(int sr) {
   *            `operator +(a,b) { return a+=b }`
   */
 void Signal::add(const Signal &other) {
-    Signal toadd = other;
+    Signal toadd = other; // if youre using copy-initialization anyway, do it in the argument-passing
     toadd.set_samplerate(srate);
     if (toadd.samples() > samples())
         set_size(toadd.samples());
