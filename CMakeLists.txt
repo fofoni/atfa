@@ -6,6 +6,7 @@ execute_process( COMMAND git describe
                  OUTPUT_VARIABLE ATFA_VERSION
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
+add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 
 find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
@@ -14,7 +15,6 @@ find_package( PortAudio REQUIRED )
 # now, try to integrate with QtCreator
 
 set( USUAL_FLAGS "-Wall -Wextra -pedantic" )
-set( USUAL_FLAGS "${USUAL_FLAGS} -DATFA_DIR=\\\"${PROJECT_SOURCE_DIR}\\\"" )
 set( DBG_FLAGS "${USUAL_FLAGS} -O0 -g3 -fno-inline -DATFA_DEBUG  " )
 set( RLS_FLAGS "${USUAL_FLAGS} -O2                 -DATFA_RELEASE" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
