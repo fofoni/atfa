@@ -68,7 +68,7 @@ public:
   *
   * \todo Implement "stream" signals, to provide real-time processing.
   *
-  * \todo documentar tudo o que ainda não está documentado
+  * \todo documentar tudo o que ainda não está documentado e botar a documentacao no gh-pages
   *
   */
 class Signal
