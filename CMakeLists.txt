@@ -6,9 +6,7 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )
 
 find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
-# TODO: write a working FindLibSndFile.cmake -> DONE!
-# now, we have to test it
-# TODO: put te QUIET back in that Find file!! And also the commented ..._DEFINITIONS
+find_package( LibSndFile REQUIRED )
 
 execute_process( COMMAND git describe
                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -25,6 +23,7 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 
 add_executable( atfa src/main.cpp src/Signal.cpp )
 
-target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS} -lsndfile )
+target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS}
+                            ${LIBSNDFILE_LIBRARIES} )
 
 # TODO: write a CPack file for creating .rpms, and etc?

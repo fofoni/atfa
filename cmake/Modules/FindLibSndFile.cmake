@@ -6,8 +6,7 @@
 #  LIBSNDFILE_DEFINITIONS - Compiler switches required for using LibSndFile
 
 find_package( PkgConfig )
-pkg_check_modules( PC_LIBSNDFILE libsndfile )
-#set(LIBXML2_DEFINITIONS ${PC_LIBXML_CFLAGS_OTHER})
+pkg_check_modules( PC_LIBSNDFILE QUIET libsndfile )
 
 find_path( LIBSNDFILE_INCLUDE_DIR sndfile.hh
            HINTS ${PC_LIBSNDFILE_INCLUDEDIR} ${PC_LIBSNDFILE_INCLUDE_DIRS} )
@@ -19,9 +18,7 @@ set( LIBSNDFILE_LIBRARIES ${LIBSNDFILE_LIBRARY} )
 set( LIBSNDFILE_INCLUDE_DIRS ${LIBSNDFILE_INCLUDE_DIR} )
 
 include(FindPackageHandleStandardArgs)
-# handle the QUIETLY and REQUIRED arguments and set LIBSNDFILE_FOUND to TRUE
-# if all listed variables are TRUE
 find_package_handle_standard_args(LibSndFile  DEFAULT_MSG
                                   LIBSNDFILE_LIBRARY LIBSNDFILE_INCLUDE_DIR)
 
-mark_as_advanced(LIBXML2_INCLUDE_DIR LIBXML2_LIBRARY)
+mark_as_advanced(LIBSNDFILE_INCLUDE_DIR LIBSNDFILE_LIBRARY)
