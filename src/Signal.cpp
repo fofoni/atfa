@@ -383,13 +383,18 @@ Signal& Signal::operator +=(Signal other) {
   * sure that the signal is in the [-1, 1] range.
   *
   * \param[in]  g       The signal gain to be applied.
-  *
-  * \todo make a `max` routine for getting the norm-infinity. then make a "normalize" method
   */
 void Signal::gain(double g) {
     for (container_t::iterator it = data.begin();
          it != data.end(); ++it)
         *it *= g;
+}
+
+Signal::sample_t Signal::l_inf_norm() {
+    sample_t max = 0;
+    for (container_t::const_iterator it = data.begin(); it != data.end(); ++it)
+        if (*it > max) max = *it;
+    return max;
 }
 
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,

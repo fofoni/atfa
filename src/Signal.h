@@ -68,7 +68,8 @@ public:
   *
   * \todo Implement "stream" signals, to provide real-time processing.
   *
-  * \todo documentar tudo o que ainda não está documentado e botar a documentacao no gh-pages
+  * \todo documentar tudo o que ainda não está documentado e botar a
+  *       documentacao no gh-pages
   *
   */
 class Signal
@@ -163,6 +164,8 @@ public:
 
     void delay(delay_t t, unsigned long d); ///< Delays the signal in time.
     void gain(double g); ///< Applies gain `g` to the signal.
+    sample_t l_inf_norm();
+    void normalize() { gain(1.0/l_inf_norm()); }
 
     /// Adds the `other` signal to the caller.
     Signal& operator +=(Signal other);

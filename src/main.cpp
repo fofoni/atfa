@@ -14,10 +14,6 @@
  * Holds the `main()` function and other routines.
  *
  * \author Pedro Angelo Medeiros Fonini
- *
- * \todo after the `max` and `operator+=` TODOs, run through everything and put everything
- *       inside the 80-char constraint
- *
  */
 
 #include <iostream>
@@ -134,8 +130,6 @@ void playsig(Signal s) {
  * 6. Initializes a PortAudio session, plays the resulting sound, and closes
  *    PortAudio.
  *
- * \todo get input files from command-line.
- *
  * \param[in] argc      argument count (unused)
  * \param[in] argv      argument values (unused)
  * \returns 0 if no errors
@@ -164,7 +158,7 @@ int main(int argc, char *argv[]) {
 
     sound_me.filter(imp_resp);
     sound_me += sound_other;
-    sound_me.gain(.5);
+    sound_me.normalize();
     /* ... */ // adaptative filter ainda nao implementado
     sound_me.delay(Signal::MS, 1000);
 
