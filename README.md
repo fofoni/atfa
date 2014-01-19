@@ -10,4 +10,7 @@ Para compilar:
     cd release
     make
 
-O executável será colocado no diretório `build/release/`.
+O executável será colocado no diretório `build/release`.
+
+Para gerar um executável do _Debug Build_, basta substituir o `cd release` por
+`cd debug`. O novo diretório do executável será `build/debug`.
