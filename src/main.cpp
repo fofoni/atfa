@@ -22,6 +22,24 @@
 
 #include "Signal.h"
 
+#ifndef ATFA_DIR
+    extern "C" {
+#   include <libgen.h>
+    }
+#   include <cstring>
+    char static_filename[] = __FILE__;
+    char static_dirname[] = __FILE__;
+    char static_projdirname[] = __FILE__;
+    // whatch out, because dirname() may modify its argument,
+    // and ATFA_DIR might be evaluated more than one time
+#   define ATFA_DIR ( \
+        std::strcpy(static_dirname, dirname(static_filename)), \
+        std::strcpy(static_filename, __FILE__), \
+        std::strcpy(static_projdirname, dirname(static_dirname)), \
+        static_projdirname \
+    )
+#endif
+
 std::ostringstream FileError::msg;
 
 double Signal::DFTDriver::costbl[Signal::DFTDriver::tblsize];
@@ -131,8 +149,8 @@ int main(int argc, char *argv[]) {
     cout << "Using " << Pa_GetVersionText() << "." << endl;
     cout << endl;
 
-    Signal sound_me(ATFA_DIR "/wav_samples/bigbrain.wav");
-    Signal sound_other(ATFA_DIR "/wav_samples/didntwork.wav");
+    Signal sound_me(string(ATFA_DIR) + "/wav_samples/bigbrain.wav");
+    Signal sound_other(string(ATFA_DIR) + "/wav_samples/didntwork.wav");
     sound_other.delay(Signal::MS, 1000);
 
     Signal imp_resp;

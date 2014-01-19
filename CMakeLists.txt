@@ -11,8 +11,6 @@ add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
 # TODO: write a working FindLibSndFile.cmake
-# find how to make an "officially" shaddow building system -> DONE
-# now, try to integrate with QtCreator
 
 set( USUAL_FLAGS "-Wall -Wextra -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -O0 -g3 -fno-inline -DATFA_DEBUG  " )

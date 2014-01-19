@@ -50,8 +50,8 @@ public:
        as throw() */
     ~FileError() throw() {}
 
-    virtual const char *what() throw() {
-        msg.str("");
+    virtual const char *what() const throw() {
+        msg.str(""); // static member `msg' can be modified by const methods
         msg << runtime_error::what() << ": Couldn't read file `" << filename
             << "'.";
         return msg.str().c_str();
