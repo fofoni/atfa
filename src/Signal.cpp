@@ -197,10 +197,10 @@ void Signal::filter(Signal imp_resp) {
         data = conv; // destroy old data, and copy new from `conv'
     }
     else {
-        // try to fit the whole signal in only two fft
+        // fit the whole signal in only one fft
         index_t L;
         for (L = DFTDriver::tblsize; L/2 >= final_size; L /= 2) ;
-        // here, the dft size fits in L
+        // here, final_size fits in L
         container_t h_re(L);
         container_t h_im(L);
         container_t x1(L);

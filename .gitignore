@@ -5,6 +5,7 @@
 # do not ignore CMakeLists.txt
 !*CMakeLists.txt*
 Makefile
-*build
+build/debug
+build/release
 doc/latex/*
 !doc/latex/refman.pdf

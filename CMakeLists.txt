@@ -12,12 +12,13 @@ find_package( PortAudio REQUIRED )
 # TODO: write a working FindLibSndFile.cmake
 # find how to make an "officially" shaddow building system
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O0 -g3 -fno-inline" )
-else()
-    set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -O2" )
-endif()
+set( USUAL_FLAGS "-Wall -Wextra -pedantic" )
+set( USUAL_FLAGS "${USUAL_FLAGS} -DATFA_DIR=\\\"${PROJECT_SOURCE_DIR}\\\"" )
+set( DBG_FLAGS "${USUAL_FLAGS} -O0 -g3 -fno-inline -DATFA_DEBUG  " )
+set( RLS_FLAGS "${USUAL_FLAGS} -O2                 -DATFA_RELEASE" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 
-add_executable( atfa main.cpp Signal.cpp )
+add_executable( atfa src/main.cpp src/Signal.cpp )
 
 target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS} -lsndfile )

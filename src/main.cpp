@@ -125,11 +125,14 @@ void playsig(Signal s) {
 int main(int argc, char *argv[]) {
 
     cout << "ATFA version " << ATFA_VERSION << "." << endl;
+#ifdef ATFA_DEBUG
+    cout << ">>> THIS IS A DEBUG BUILD" << endl;
+#endif
     cout << "Using " << Pa_GetVersionText() << "." << endl;
     cout << endl;
 
-    Signal sound_me("../wav_samples/bigbrain.wav");
-    Signal sound_other("../wav_samples/didntwork.wav");
+    Signal sound_me(ATFA_DIR "/wav_samples/bigbrain.wav");
+    Signal sound_other(ATFA_DIR "/wav_samples/didntwork.wav");
     sound_other.delay(Signal::MS, 1000);
 
     Signal imp_resp;
