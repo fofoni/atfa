@@ -162,8 +162,10 @@ public:
     void set_samplerate(int sr); ///< Changes the signal sample rate.
 
     void delay(delay_t t, unsigned long d); ///< Delays the signal in time.
-    void add(const Signal &other); ///< Adds the `other` signal to the caller.
     void gain(double g); ///< Applies gain `g` to the signal.
+
+    /// Adds the `other` signal to the caller.
+    Signal& operator +=(Signal other);
 
     /// Convolves the sinal with an impulse_response.
     void filter(Signal imp_resp);
@@ -192,7 +194,6 @@ public:
             }
         }
 
-        // `bits' should be template? only if we decide on fft size before or at compile-time
         // T must be an unsigned type!
         template <typename T>
         static T br(T x, int bits) {
@@ -275,5 +276,8 @@ private:
     int srate; ///< %Signal sample rate in hertz
 
 };
+
+inline Signal operator +(Signal lhs, const Signal& rhs)
+    { return lhs += rhs; }
 
 #endif // SIGNAL_H

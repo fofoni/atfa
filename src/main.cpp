@@ -36,12 +36,12 @@
     char static_projdirname[] = __FILE__;
     // whatch out, because dirname() may modify its argument,
     // and ATFA_DIR might get evaluated more than once
-#   define ATFA_DIR ( \
+#   define ATFA_DIR (static_cast<const char *>( \
         std::strcpy(static_dirname, dirname(static_filename)), \
         std::strcpy(static_filename, __FILE__), \
         std::strcpy(static_projdirname, dirname(static_dirname)), \
         static_projdirname \
-    )
+    ))
 #endif
 
 std::ostringstream FileError::msg;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
     imp_resp[8190] = .3; imp_resp[8191] = -.2;
 
     sound_me.filter(imp_resp);
-    sound_me.add(sound_other);
+    sound_me += sound_other;
     sound_me.gain(.5);
     /* ... */ // adaptative filter ainda nao implementado
     sound_me.delay(Signal::MS, 1000);

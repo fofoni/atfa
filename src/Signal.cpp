@@ -368,17 +368,14 @@ void Signal::set_samplerate(int sr) {
   * and finally add the signals sample-by-sample.
   *
   * \param[in]  other      The signal to be added to the caller.
-  *
-  * \todo this should be `operator +=`. Make also an
-  *            `operator +(a,b) { return a+=b }`
   */
-void Signal::add(const Signal &other) {
-    Signal toadd = other; // if youre using copy-initialization anyway, do it in the argument-passing
-    toadd.set_samplerate(srate);
-    if (toadd.samples() > samples())
-        set_size(toadd.samples());
-    for (index_t i = 0; i < toadd.samples(); i++)
-        data[i] += toadd[i];
+Signal& Signal::operator +=(Signal other) {
+    other.set_samplerate(srate);
+    if (other.samples() > samples())
+        set_size(other.samples());
+    for (index_t i = 0; i < other.samples(); i++)
+        data[i] += other[i];
+    return *this;
 }
 
 /**
