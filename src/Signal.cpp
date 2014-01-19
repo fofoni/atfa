@@ -399,7 +399,7 @@ void Signal::gain(double g) {
 }
 
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
-                                    dir_t direction) {
+                                    const dir_t direction) {
 
     if (re.size() != im.size()) {
         std::ostringstream msg;
