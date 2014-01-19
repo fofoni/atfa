@@ -393,7 +393,7 @@ void Signal::gain(double g) {
 Signal::sample_t Signal::l_inf_norm() {
     sample_t max = 0;
     for (container_t::const_iterator it = data.begin(); it != data.end(); ++it)
-        if (abs(*it) > max) max = abs(*it);
+        if (std::abs(*it) > max) max = std::abs(*it);
     return max;
 }
 

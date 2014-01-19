@@ -192,8 +192,8 @@ public:
 
         DFTDriver() {
             for (unsigned i = 0; i != tblsize; ++i) {
-                sintbl[i] = sin(i * TAU / tblsize);
-                costbl[i] = cos(i * TAU / tblsize);
+                sintbl[i] = std::sin(i * TAU / tblsize);
+                costbl[i] = std::cos(i * TAU / tblsize);
             }
         }
 
