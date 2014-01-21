@@ -38,6 +38,7 @@
 static const void * const NULL = ((void *)0)
 #endif
 
+
 /// \brief A runtime exception while trying to process a file.
 ///
 /// Thrown when we cannot read a file, for some reason.
@@ -104,10 +105,6 @@ public:
   * rates.
   *
   * \todo Implement "stream" signals, to provide real-time processing.
-  *
-  * \todo documentar tudo o que ainda não está documentado e botar a
-  *       documentacao no gh-pages
-  *
   */
 class Signal
 {
