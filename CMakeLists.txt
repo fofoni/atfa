@@ -27,3 +27,6 @@ target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS}
                             ${LIBSNDFILE_LIBRARIES} )
 
 # TODO: write a CPack file for creating .rpms, and etc?
+
+# TODO: find a way to separate documentation and code, so that we can find
+#       things easier in code. Consider Doxygen structural commands.

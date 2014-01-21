@@ -42,15 +42,21 @@ static const void * const NULL = ((void *)0)
   */
 #define TAU ( double(6.283185307179586477) )
 
-/// A runtime exception while trying to process a file.
-/**
-  * Thrown when we cannot read a file, for some reason.
-  *
-  * Usage:
-  *
-  *     if (error ocurred) throw FileError("badfile.wav");
-  *
-  */
+/// \brief A runtime exception while trying to process a file.
+///
+/// Thrown when we cannot read a file, for some reason.
+///
+/// Usage:
+///
+///     if (error ocurred) throw FileError("badfile.wav");
+///
+/// Or:
+///
+///     std::string filename;
+///     std::cin >> filename;
+///     /* ... */
+///     if (error ocurred) throw FileError(filename);
+///
 class FileError : public std::runtime_error {
 
     /// The message that will be displayed if we don't catch the exception.
@@ -214,7 +220,7 @@ public:
 
     void set_samplerate(int sr); ///< Changes the signal sample rate.
     void delay(delay_t t, unsigned long d); ///< Delays the signal in time.
-    void gain(double g); ///< Applies gain `g` to the signal.
+    void gain(double g); ///< Applies gain \a g to the signal.
     sample_t l_inf_norm(); ///< Gets the \f$\ell^\infty\f$-norm of the signal.
 
     /// Normalize the signal according to its \f$\ell^\infty\f$-norm.
@@ -224,10 +230,10 @@ public:
       */
     void normalize() { gain(1.0/l_inf_norm()); }
 
-    /// Adds the `other` signal to the caller.
+    /// Adds the \a other signal to the caller.
     Signal& operator +=(Signal other);
 
-    /// Convolves the sinal with an impulse_response.
+    /// Convolves the sinal with an impulse response.
     void filter(Signal imp_resp);
 
     /// Makes PortAudio playback the audio signal.
@@ -235,8 +241,8 @@ public:
 
     /// \brief A class for providing discrete Fourier transform capabilities.
     ///
-    /// This class implements the FFT algorithm used in the Signal::filter()
-    /// method.
+    /// This class implements the radix-2 FFT algorithm used in the
+    /// Signal::filter() method.
     ///
     /// Usage:
     ///
@@ -252,19 +258,6 @@ public:
     ///
     class DFTDriver {
 
-        /// Number of bits for the index of the table of sines and cosines
-        /**
-          * We won't be able to perform an \f$N\f$-bit dft if
-          * \f$N > \texttt{tblsize}\f$, so this should be big. Also, this
-          * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
-          * there's nothing in the source code that enforces it.
-          *
-          * IF THE "SEE ALSO" IS NOT A LINK, REWRITE EVERYTHING IN THIS SECTION
-          *
-          * \see tblsize
-          */
-        static const unsigned tblbits = 14;
-
         /// Number of bits for an actuall fft computation.
         /**
           * Always assume this is uninitialized, and all methods that use it
@@ -274,7 +267,7 @@ public:
 
         /// Bit-reverse.
         /**
-          * Returns the bit-reversed version of the parameter `x`. Assumes `x`
+          * Returns the bit-reversed version of the parameter `x`. Assumes \a x
           * is `bits`-bit wide, and ignore any bits with more significance than
           * that.
           *
@@ -361,13 +354,14 @@ public:
         /**
           * This function is aware of the number of bits of the current FFT,
           * and makes it easy to get the cosine of
-          * \f$\tau\cdot k/2^\texttt{bits}\f$, using the pre-computed table of
-          * cosines.
+          * \f$\tau\cdot \texttt{k}/2^\texttt{bits}\f$, using the pre-computed
+          * table of cosines.
           *
           * \param[in]  k   An integer in the range
           *                 \f$\left[0,2^\texttt{bits}\right[\f$.
-          * \returns \f$\cos\left(\tau\cdot k/2^\texttt{bits}\right)\f$, where
-          *          \f$\tau\f$ is shorthand for \f$2\pi\f$
+          * \returns \f$\cos\left(
+          *              \tau\cdot \texttt{k}/2^\texttt{bits}
+          *          \right)\f$, where \f$\tau\f$ is shorthand for \f$2\pi\f$.
           * \see costbl
           * \see Wim
           */
@@ -376,22 +370,30 @@ public:
 
         /// Easy access to the table of sines.
         /**
-          * This function is aware of the number of bits of the current FFT,
-          * and makes it easy to get the cosine of
-          * \f$\tau\cdot k/2^\texttt{bits}\f$, using the pre-computed table of
-          * cosines.
-          *
-          * \param[in]  k   An integer in the range
-          *                 \f$\left[0,2^\texttt{bits}\right[\f$.
-          * \returns \f$\cos\left(\tau\cdot k/2^\texttt{bits}\right)\f$, where
-          *          \f$\tau\f$ is shorthand for \f$2\pi\f$
-          * \see costbl
-          * \see Wim
+          * \param[in]  k   Same as in \ref Wre [`Wre()`].
+          * \returns \f$\sin\left(
+          *              \tau\cdot \texttt{k}/2^\texttt{bits}
+          *          \right)\f$
+          * \see sintbl
+          * \see Wre
           */
         double Wim(unsigned k)
             { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
 
     public:
+        /// Number of bits for the index of the table of sines and cosines
+        /**
+          * We won't be able to perform an \f$N\f$-bit dft if
+          * \f$N > \texttt{tblsize}\f$, so this should be big. Also, this
+          * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
+          * there's nothing in the source code that enforces it.
+          *
+          * IF THE "SEE ALSO" IS NOT A LINK, REWRITE EVERYTHING IN THIS SECTION
+          *
+          * \see tblsize
+          */
+        static const unsigned tblbits = 14;
+
         /// Number of entries in the tables of sines and cosines
         /**
           * This __must__ be equal to \f$2^\texttt{tblbits}\f$, but there's
@@ -401,8 +403,37 @@ public:
           */
         static const size_t tblsize = 16384;
 
-        enum dir_t { DIRECT, INVERSE };
+        /// This is a type for specifying whether we should perform a direct or
+        /// inverse FFT.
+        enum dir_t {
+            DIRECT,  ///< Perform direct FFT.
+            INVERSE  ///< Perform inverse FFT.
+        };
 
+        /// Constructor for an object that computes DFTs.
+        /**
+          * Computes and initializes the table of sines and cosines. After this
+          * initialization, the entries of the table shouldn't be modified.
+          *
+          * \todo make the table be inside a std::vector, instead of a built-in
+          *       array, so that we can use the solution provided [here][1].
+          *       An alternative is documented [here][2].
+          *
+          *       [1]: stackoverflow.com/questions/16113551/c-const-static-member-array-initialization
+          *       [2]: stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized
+          *
+          * \todo this static member should be initialized only once, even
+          *       though multiple instances of the DFTDriver might be created
+          *       (that is, static members shouldn't be initialized in the
+          *       constructor).
+          *
+          *       (perhaps we could have a private bool telling wether it's been
+          *       already initialized) IF THIS PARAGRAPH IS NOT INSIDE THE ABOVE
+          *       TODO, REWRITE
+          *
+          * \see sintbl
+          * \see costbl
+          */
         DFTDriver() {
             for (unsigned i = 0; i != tblsize; ++i) {
                 sintbl[i] = std::sin(i * TAU / tblsize);
@@ -410,6 +441,7 @@ public:
             }
         }
 
+        /// Used to perform the actual computation of the DFT
         void operator ()(container_t& re, container_t& im,
                          dir_t direction = DIRECT);
 
@@ -432,14 +464,18 @@ public:
 
     };
 
-    static DFTDriver dft;
+    static DFTDriver dft; ///< single instance of the DFTDriver class.
 
 private:
-    container_t data;
+    container_t data; ///< Holds the signal samples.
     int srate; ///< %Signal sample rate in hertz
 
 };
 
+/// Adds two signals
+/**
+  * \see Signal::operator+
+  */
 inline Signal operator +(Signal lhs, const Signal& rhs)
     { return lhs += rhs; }
 
