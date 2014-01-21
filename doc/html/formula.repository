@@ -14,3 +14,4 @@
 \form#13:$\tau\cdot k/\texttt{tblsize}$
 \form#14:$k$
 \form#15:$\left[0,\texttt{tblsize}\right[$
+\form#16:$N > \texttt{tblbits}$

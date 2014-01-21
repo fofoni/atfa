@@ -128,7 +128,7 @@ void playsig(Signal s) {
  *
  * This function:
  * 1. Prints version info
- * 2. Creates two \ref Signal [Signal]s, `sound_me` and `sound_other` from two
+ * 2. Creates two \ref Signal "Signal"s, `sound_me` and `sound_other` from two
  *    input files.
  * 3. Delays the second.
  * 4. Creates an impulse response.

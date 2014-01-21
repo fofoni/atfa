@@ -29,6 +29,5 @@ var classSignal =
     [ "counter", "classSignal.html#a69b19dece31326f97da7f2d0b1fcf299", null ],
     [ "data", "classSignal.html#aa1d859fcde3bd06c45eacb6c7b764b27", null ],
     [ "dft", "classSignal.html#a9ff7d1f4445c741ea024215a9f8e1e99", null ],
-    [ "srate", "classSignal.html#aebfc9e0a2afbe69dacac858532448c26", null ],
-    [ "TAU", "classSignal.html#a6b282a6591ae26dbb4e7659e013157bc", null ]
+    [ "srate", "classSignal.html#aebfc9e0a2afbe69dacac858532448c26", null ]
 ];
