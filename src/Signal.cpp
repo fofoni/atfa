@@ -448,7 +448,7 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
             for (unsigned l = 0; l != size; ++l) {
 
                 // apply single butterfly at indexes i1 and i2,
-                // with coefficient exp(j*tau*frac) at i2
+                // with coefficient exp(j*tau*frac) at i2.
                 // `frac' is an angle expressed in one-`L'ths of tau,
                 // which is 2*pi.
 

@@ -35,21 +35,56 @@
 static const void * const NULL = ((void *)0)
 #endif
 
-#define TAU ( double(6.283185307179586477) /* tau is 2*pi */ )
+/// Macro for the number 2*pi.
+/**
+  * Useful in the generation of the table of sines and cosines for the DFTDriver
+  * class, for example.
+  */
+#define TAU ( double(6.283185307179586477) )
 
+/// A runtime exception while trying to process a file.
+/**
+  * Thrown when we cannot read a file, for some reason.
+  *
+  * Usage:
+  *
+  *     if (error ocurred) throw FileError("badfile.wav");
+  *
+  */
 class FileError : public std::runtime_error {
 
+    /// The message that will be displayed if we don't catch the exception.
+    /**
+      * Must be static, so that we can modify it inside the
+      * \ref FileError::what [`what()`] `const` function, and read it after the
+      * temporary object has been destroyed.
+      */
     static std::ostringstream msg;
+
+    /// The name of the file that caused the error.
     const std::string filename;
 
 public:
+    /// Constructs the exception object from the filename.
+    /**
+      * \param[in] fn   A \ref string [`string`] that holds the filename.
+      */
     FileError(const std::string& fn)
         : runtime_error("File I/O error"), filename(fn) {}
 
-    /* prevent looser throw specifier error because ~runtime_error() is declared
-       as throw() */
+    /// Destructor that does nothing.
+    /**
+      * Needed to prevent the `looser throw specifier` error because,
+      * \ref std::runtime_error::~runtime_error [`~runtime_errorr()`] is
+      * declared as throw()
+      */
     ~FileError() throw() {}
 
+    /// Gives a description for the error.
+    /**
+      * Updates the \ref FileError::msg [`msg`]  static member with the error
+      * message, and returns it as a C string.
+      */
     virtual const char *what() const throw() {
         msg.str(""); // static member `msg' can be modified by const methods
         msg << runtime_error::what() << ": Couldn't read file `" << filename
@@ -82,6 +117,7 @@ public:
     /// The type for holding each signal sample index.
     typedef unsigned long index_t;
 
+    /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
     /// This is a type for specifying whether a time interval is given in
@@ -113,15 +149,31 @@ public:
 
     /// Frees memory used
     /**
-      * If the signal is not empty, free the pointer to the array of samples.
+      * Free the pointer to the array of samples.
       */
     ~Signal() {}
 
-    // needed for performance inside the callback function
-    const sample_t *array() { return &data[0]; }
+    /// Returns a pointer to the first sample.
+    /**
+      * Sometimes needed for performance reasons. Shouldn't be used to modify
+      * the samples.
+      *
+      * \returns a pointer to the first element of a contiguous region of memory
+      * that holds the samples.
+      */
+    const sample_t *array() const { return &data[0]; }
 
+    /// Number of samples.
+    /**
+      * \returns the number of elements inside the vector of samples.
+      */
     index_t samples() const { return data.size(); }
 
+    /// Sample rate in samples per second.
+    /**
+      * \returns the number of samples per second that should be used when
+      * playing back the signal.
+      */
     int samplerate() const { return srate; }
 
     index_t counter; ///< general-purpose variable for external use.
@@ -161,10 +213,15 @@ public:
     void set_size(index_t n) { data.resize(n); }
 
     void set_samplerate(int sr); ///< Changes the signal sample rate.
-
     void delay(delay_t t, unsigned long d); ///< Delays the signal in time.
     void gain(double g); ///< Applies gain `g` to the signal.
-    sample_t l_inf_norm();
+    sample_t l_inf_norm(); ///< Gets the \f$\ell^\infty\f$-norm of the signal.
+
+    /// Normalize the signal according to its \f$\ell^\infty\f$-norm.
+    /**
+      * Divide the signal by a constant so that the maximum absolute value of
+      *  its samples is \f$1\f$.
+      */
     void normalize() { gain(1.0/l_inf_norm()); }
 
     /// Adds the `other` signal to the caller.
@@ -173,31 +230,66 @@ public:
     /// Convolves the sinal with an impulse_response.
     void filter(Signal imp_resp);
 
-    void play(bool sleep=true); ///< Makes PortAudio playback the audio signal.
+    /// Makes PortAudio playback the audio signal.
+    void play(bool sleep=true);
 
-    struct DFTDriver {
+    /// \brief A class for providing discrete Fourier transform capabilities.
+    ///
+    /// This class implements the FFT algorithm used in the Signal::filter()
+    /// method.
+    ///
+    /// Usage:
+    ///
+    ///     Signal::DFTDriver dft;
+    ///     Signal real, imag;
+    ///     /* initialize the real and imaginary parts of a complex time-domain
+    ///        signal */
+    ///     dft(real, imag); // performs in-place FFT
+    ///     /* now, work with the real and imaginary parts of the
+    ///        frequency-domain version of the signal */
+    ///     dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
+    ///     /* now, we can work again with the time-domain complex signal */
+    ///
+    class DFTDriver {
 
+        /// Number of bits for the index of the table of sines and cosines
+        /**
+          * We won't be able to perform an \f$N\f$-bit dft if
+          * \f$N > \texttt{tblsize}\f$, so this should be big. Also, this
+          * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
+          * there's nothing in the source code that enforces it.
+          *
+          * IF THE "SEE ALSO" IS NOT A LINK, REWRITE EVERYTHING IN THIS SECTION
+          *
+          * \see tblsize
+          */
         static const unsigned tblbits = 14;
-        static const size_t tblsize = 16384; // MUST be power of two
-        static double sintbl[tblsize];  // table of sines...
-        static double costbl[tblsize];  // ...and cossines.
 
-        unsigned bits; // also assume unititialized
+        /// Number of bits for an actuall fft computation.
+        /**
+          * Always assume this is uninitialized, and all methods that use it
+          * should initialize it themselves.
+          */
+        unsigned bits;
 
-        // roots of unit, W^(-k)
-        double Wre(unsigned k)
-            { return costbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
-        double Wim(unsigned k)
-            { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
-
-        DFTDriver() {
-            for (unsigned i = 0; i != tblsize; ++i) {
-                sintbl[i] = std::sin(i * TAU / tblsize);
-                costbl[i] = std::cos(i * TAU / tblsize);
-            }
-        }
-
-        // T must be an unsigned type!
+        /// Bit-reverse.
+        /**
+          * Returns the bit-reversed version of the parameter `x`. Assumes `x`
+          * is `bits`-bit wide, and ignore any bits with more significance than
+          * that.
+          *
+          * IF THIS TPARAM STUFF DONT WORK, USE ARG.
+          *
+          * This function assumes that the number of bits in one `char` is 8,
+          * and that bitshifting is zero-padded, and not circular.
+          *
+          * \tparam     T       The type of the parameter `x`. It __must__ be
+          *                     an unsigned integer size.
+          * \param[in]  x       The `bits`-bit unsigned integer to be
+          *                     bit-reversed.
+          * \param[in]  bits    The number of bits of the integer `x`.
+          * \returns the unsigned integer `x`, bit-reversed.
+          */
         template <typename T>
         static T br(T x, int bits) {
 
@@ -265,10 +357,78 @@ public:
 
         }
 
+        /// Easy access to the table of cosines.
+        /**
+          * This function is aware of the number of bits of the current FFT,
+          * and makes it easy to get the cosine of
+          * \f$\tau\cdot k/2^\texttt{bits}\f$, using the pre-computed table of
+          * cosines.
+          *
+          * \param[in]  k   An integer in the range
+          *                 \f$\left[0,2^\texttt{bits}\right[\f$.
+          * \returns \f$\cos\left(\tau\cdot k/2^\texttt{bits}\right)\f$, where
+          *          \f$\tau\f$ is shorthand for \f$2\pi\f$
+          * \see costbl
+          * \see Wim
+          */
+        double Wre(unsigned k)
+            { return costbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
+
+        /// Easy access to the table of sines.
+        /**
+          * This function is aware of the number of bits of the current FFT,
+          * and makes it easy to get the cosine of
+          * \f$\tau\cdot k/2^\texttt{bits}\f$, using the pre-computed table of
+          * cosines.
+          *
+          * \param[in]  k   An integer in the range
+          *                 \f$\left[0,2^\texttt{bits}\right[\f$.
+          * \returns \f$\cos\left(\tau\cdot k/2^\texttt{bits}\right)\f$, where
+          *          \f$\tau\f$ is shorthand for \f$2\pi\f$
+          * \see costbl
+          * \see Wim
+          */
+        double Wim(unsigned k)
+            { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
+
+    public:
+        /// Number of entries in the tables of sines and cosines
+        /**
+          * This __must__ be equal to \f$2^\texttt{tblbits}\f$, but there's
+          * nothing in the source code that enforces it.
+          *
+          * \see tblbits
+          */
+        static const size_t tblsize = 16384;
+
         enum dir_t { DIRECT, INVERSE };
+
+        DFTDriver() {
+            for (unsigned i = 0; i != tblsize; ++i) {
+                sintbl[i] = std::sin(i * TAU / tblsize);
+                costbl[i] = std::cos(i * TAU / tblsize);
+            }
+        }
 
         void operator ()(container_t& re, container_t& im,
                          dir_t direction = DIRECT);
+
+    private:
+        /// Table of sines.
+        /**
+          * Holds the sines of \f$\tau\cdot k/\texttt{tblsize}\f$, for \f$k\f$
+          * in the range \f$\left[0,\texttt{tblsize}\right[\f$. Here, \f$\tau\f$
+          * is shorthand for \f$2\pi\f$.
+          *
+          * \see costbl
+          */
+        static double sintbl[tblsize];
+
+        /// Table of cosines.
+        /**
+          * \see sintbl
+          */
+        static double costbl[tblsize];
 
     };
 

@@ -23,21 +23,26 @@
 #include "Signal.h"
 
 #ifndef ATFA_DIR
-    extern "C" {
-#   include <libgen.h>
-    }
 #   include <cstring>
+    extern "C" {
+#       include <libgen.h>
+    }
     char static_filename[] = __FILE__;
     char static_dirname[] = __FILE__;
     char static_projdirname[] = __FILE__;
     // whatch out, because dirname() may modify its argument,
     // and ATFA_DIR might get evaluated more than once
+
+    /// Macro for getting the path to the project directory from cmake
+    /** Should be passed from `CMakeLists.txt`, but if it's not, we try to
+        deduce it from the `__FILE__` macro */
 #   define ATFA_DIR (static_cast<const char *>( \
         std::strcpy(static_dirname, dirname(static_filename)), \
         std::strcpy(static_filename, __FILE__), \
         std::strcpy(static_projdirname, dirname(static_dirname)), \
         static_projdirname \
     ))
+
 #endif
 
 std::ostringstream FileError::msg;
@@ -52,9 +57,11 @@ using namespace std;
 /// Initialize PortAudio.
 /**
   * Initializes a PortAudio session. Also prints out a list of available
-  * devices that PortAudio sees.
+  * devices that PortAudio sees., if requested.
   *
-  * \throws `std::runtime_error` if PortAudio initialization fails.
+  * \param[in] list_devices Whether or not to print the device list.
+  *
+  * \throws std::runtime_error  if PortAudio initialization fails.
   *
   * \see `portaudio_end()`
   */
@@ -96,7 +103,7 @@ void portaudio_init(bool list_devices=false) {
 /**
   * Ends a PortAudio session.
   *
-  * \throws `std::runtime_error` if PortAudio closing fails.
+  * \throws std::runtime_error  if PortAudio closing fails.
   *
   * \see `portaudio_init()`
   */
@@ -109,6 +116,10 @@ void portaudio_end() {
     }
 }
 
+/// Playback signal
+/**
+  * Wrapper function for `Signal::play` that handles PortAudio.
+  */
 void playsig(Signal s) {
     portaudio_init(); // init portaudio
     s.play(); // play audio
@@ -117,16 +128,16 @@ void playsig(Signal s) {
 
 /// `main()` function.
 /**
- * No command-line parameters yet.
+ * No command-line parameters.
  *
  * This function:
  * 1. Prints version info
- * 2. Creates two `[Signal](\ref Signal)`s, `sound_me` and `sound_other` from
- *    the two input files.
+ * 2. Creates two \ref Signal [Signal]s, `sound_me` and `sound_other` from two
+ *    input files.
  * 3. Delays the second.
  * 4. Creates an impulse response.
- * 5. Creates a new Signal `signal_result` which is the first filtered, added to
- *    the second, delayed.
+ * 5. Filters `sound_me` according to the impulse response and adds it to the
+ *    second, delayed.
  * 6. Initializes a PortAudio session, plays the resulting sound, and closes
  *    PortAudio.
  *
