@@ -15,7 +15,7 @@ execute_process( COMMAND git describe
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 
-set( USUAL_FLAGS "-Wall -Wextra -pedantic" )
+set( USUAL_FLAGS "-ansi -Wall -Wextra -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG   -O0 -g3 -fno-inline" )
 set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O2" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )

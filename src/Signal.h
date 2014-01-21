@@ -38,6 +38,12 @@
 static const void * const NULL = ((void *)0)
 #endif
 
+/// Shorthand for the number \f$2\pi\f$.
+/**
+  * Useful in the generation of the table of sines and cosines for the
+  * Signal::DFTDriver class, for example.
+  */
+static const double TAU = 6.283185307179586477;
 
 /// \brief A runtime exception while trying to process a file.
 ///
@@ -110,13 +116,6 @@ class Signal
 {
 
 public:
-    /// Shorthand for the number \f$2\pi\f$.
-    /**
-      * Useful in the generation of the table of sines and cosines for the DFTDriver
-      * class, for example.
-      */
-    static const double TAU = 6.283185307179586477;
-
     /// The type for holding each signal sample.
     typedef float sample_t;
 
@@ -126,8 +125,8 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
-    /// This is a type for specifying whether a time interval is given in
-    /// milliseconds or in samples.
+    /// \brief This is a type for specifying whether a time interval is given in
+    ///        milliseconds or in samples.
     enum delay_t {
         MS,     ///< Time interval given in milliseconds.
         SAMPLE  ///< Time interval given in samples.
@@ -218,7 +217,7 @@ public:
       */
     void set_size(index_t n) { data.resize(n); }
 
-    void set_samplerate(int sr); ///< Changes the signal sample rate.
+    void set_samplerate(int sr); ///< Re-samples the signal.
     void delay(delay_t t, unsigned long d); ///< Delays the signal in time.
     void gain(double g); ///< Applies gain \a g to the signal.
     sample_t l_inf_norm(); ///< Gets the \f$\ell^\infty\f$-norm of the signal.
@@ -461,7 +460,7 @@ public:
 
 private:
     container_t data; ///< Holds the signal samples.
-    int srate; ///< %Signal sample rate in hertz
+    int srate; ///< %Signal sample rate in Hertz.
 
 };
 

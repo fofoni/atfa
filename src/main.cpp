@@ -16,10 +16,6 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
-#include <iostream>
-
-#include <portaudio.h>
-
 #include "Signal.h"
 
 #ifndef ATFA_DIR
