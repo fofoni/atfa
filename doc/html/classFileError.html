@@ -161,15 +161,16 @@ Static Private Attributes</h2></td></tr>
 <tr class="separator:a23abdcaa77825b6f90134c88b3ab75d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Thrown when we cannot read a file, for some reason.</p>
+<div class="textblock"><p>A runtime exception while trying to process a file. </p>
+<p>Thrown when we cannot read a file, for some reason.</p>
 <p>Usage: </p>
 <pre class="fragment">if (error ocurred) throw FileError("badfile.wav");
 </pre><p>Or: </p>
 <pre class="fragment">std::string filename;
 std::cin &gt;&gt; filename;
-etc;
+// ...
 if (error ocurred) throw FileError(filename);</pre> 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00060">60</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00063">63</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a3da20059628a0e2c5b80c462a844472a"></a>
 <div class="memitem">
@@ -192,14 +193,16 @@ if (error ocurred) throw FileError(filename);</pre>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Constructs the exception object from the filename. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">fn</td><td>A string [<code>string</code>] that holds the filename. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">fn</td><td>A <code>std::string</code> that holds the filename. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00078">78</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00081">81</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -229,9 +232,11 @@ if (error ocurred) throw FileError(filename);</pre>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Needed to prevent the <code>looser throw specifier</code> error because, std::runtime_error::~runtime_error [<code>~runtime_errorr()</code>] is declared as throw() </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00087">87</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Destructor that does nothing. </p>
+<p>Needed to prevent the <code>looser throw specifier</code> error because, <code>std::runtime_error::~runtime_error()</code> is declared as <code>throw()</code> </p>
+
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00089">89</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -262,11 +267,13 @@ if (error ocurred) throw FileError(filename);</pre>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Updates the <a class="el" href="classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3">FileError::msg</a> [<code>msg</code>] static member with the error message, and returns it as a C string. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00094">94</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Gives a description for the error. </p>
+<p>Updates the <a class="el" href="classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3">msg</a> static member with the error message, and returns it as a C string. </p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00071">filename</a>, and <a class="el" href="Signal_8h_source.html#l00068">msg</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00096">96</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+
+<p>References <a class="el" href="Signal_8h_source.html#l00074">filename</a>, and <a class="el" href="Signal_8h_source.html#l00071">msg</a>.</p>
 
 </div>
 </div>
@@ -289,9 +296,11 @@ if (error ocurred) throw FileError(filename);</pre>
 </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00071">71</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>The name of the file that caused the error. </p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00094">what()</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00074">74</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00096">what()</a>.</p>
 
 </div>
 </div>
@@ -312,17 +321,19 @@ if (error ocurred) throw FileError(filename);</pre>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Must be static, so that we can modify it inside the <a class="el" href="classFileError.html#a189fd00f87ae8d279618fc900912e9b1">FileError::what</a> [<code><a class="el" href="classFileError.html#a189fd00f87ae8d279618fc900912e9b1" title="Gives a description for the error. ">what()</a></code>] <code>const</code> function, and read it after the temporary object has been destroyed. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00068">68</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>The message that will be displayed if we don't catch the exception. </p>
+<p>Must be static, so that we can modify it inside the <code><a class="el" href="classFileError.html#a189fd00f87ae8d279618fc900912e9b1" title="Gives a description for the error. ">what()</a></code> <code>const</code> function, and read it after the temporary object has been destroyed. </p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00094">what()</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00071">71</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00096">what()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-43-gcd2d607)</a></li>
-<li><a class="el" href="main_8cpp_source.html">main.cpp (aaa.versao.teste.1-43-gcd2d607)</a></li>
+<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-46-g96cebde)</a></li>
+<li><a class="el" href="main_8cpp_source.html">main.cpp (aaa.versao.teste.1-46-g96cebde)</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -330,7 +341,7 @@ if (error ocurred) throw FileError(filename);</pre>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classFileError.html">FileError</a></li>
-    <li class="footer">Generated on Tue Jan 21 2014 05:51:34 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Tue Jan 21 2014 14:12:15 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -69,6 +69,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
       <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="inherits.html"><span>Class&#160;Hierarchy</span></a></li>
       <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
@@ -165,7 +166,7 @@ Static Private Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a680a8a668d38dfbfda8215b9c21558db"><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#a680a8a668d38dfbfda8215b9c21558db">bits</a></td></tr>
-<tr class="memdesc:a680a8a668d38dfbfda8215b9c21558db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bits for an actuall fft computation.  <a href="#a680a8a668d38dfbfda8215b9c21558db">More...</a><br/></td></tr>
+<tr class="memdesc:a680a8a668d38dfbfda8215b9c21558db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of bits for the current FFT computation.  <a href="#a680a8a668d38dfbfda8215b9c21558db">More...</a><br/></td></tr>
 <tr class="separator:a680a8a668d38dfbfda8215b9c21558db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
@@ -182,7 +183,7 @@ Static Private Attributes</h2></td></tr>
 <p>This class implements the radix-2 FFT algorithm used in the <a class="el" href="classSignal.html#abcc90ed01362194fe609ec10e95fa6ee" title="Convolves the sinal with an impulse response. ">Signal::filter()</a> method.</p>
 <p>Usage: </p>
 <pre class="fragment">Signal::DFTDriver dft;
-Signal real, imag;
+Signal::container_t real, imag;
 // initialize the real and imaginary parts of a complex time-domain
 // signal
 dft(real, imag); // performs in-place FFT
@@ -190,7 +191,7 @@ dft(real, imag); // performs in-place FFT
 // frequency-domain version of the signal
 dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
 // now, we can work again with the time-domain complex signal</pre> 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00262">262</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00259">259</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a6fc76457d642e051a659320865e6291a"></a>
 <div class="memitem">
@@ -211,7 +212,7 @@ dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00407">407</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00404">404</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -239,15 +240,15 @@ dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
 
 <p>Constructor for an object that computes DFTs. </p>
 <p>Computes and initializes the table of sines and cosines. After this initialization, the entries of the table shouldn't be modified.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>make the table be inside a std::vector, instead of a built-in array, so that we can use the solution provided <a href="stackoverflow.com/questions/16113551/c-const-static-member-array-initialization">here</a>. An alternative is documented <a href="stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized">here</a>. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>this static member should be initialized only once, even though multiple instances of the <a class="el" href="classSignal_1_1DFTDriver.html" title="A class for providing discrete Fourier transform capabilities. ">DFTDriver</a> might be created (that is, static members shouldn't be initialized in the constructor). (perhaps we could have a private bool telling wether it's been already initialized)</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>make the table be inside a std::vector, instead of a built-in array, so that we can use the solution provided <a href="stackoverflow.com/questions/16113551/c-const-static-member-array-initialization">here</a>. An alternative is documented <a href="stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized">here</a>. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>this static member should be initialized only once, even though multiple instances of the <a class="el" href="classSignal_1_1DFTDriver.html" title="A class for providing discrete Fourier transform capabilities. ">DFTDriver</a> might be created (that is, static members shouldn't be initialized in the constructor). (perhaps we could have a private bool telling wether it's been already initialized)</dd></dl>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a" title="Table of sines. ">sintbl</a> </dd>
 <dd>
 <a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9" title="Table of cosines. ">costbl</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00433">433</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00430">430</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00459">costbl</a>, <a class="el" href="Signal_8h_source.html#l00453">sintbl</a>, <a class="el" href="Signal_8h_source.html#l00121">Signal::TAU</a>, and <a class="el" href="Signal_8h_source.html#l00403">tblsize</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00456">costbl</a>, <a class="el" href="Signal_8h_source.html#l00450">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00400">tblsize</a>.</p>
 
 </div>
 </div>
@@ -304,9 +305,9 @@ template&lt;typename T &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the unsigned integer <em>x</em>, bit-reversed. </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00288">288</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00285">285</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00429">operator()()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
 </div>
 </div>
@@ -358,9 +359,9 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8cpp_source.html#l00429">429</a> of file <a class="el" href="Signal_8cpp_source.html">Signal.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8cpp_source.html#l00428">428</a> of file <a class="el" href="Signal_8cpp_source.html">Signal.cpp</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00269">bits</a>, <a class="el" href="Signal_8h_source.html#l00288">br()</a>, <a class="el" href="Signal_8h_source.html#l00408">DIRECT</a>, <a class="el" href="Signal_8h_source.html#l00409">INVERSE</a>, <a class="el" href="Signal_8h_source.html#l00403">tblsize</a>, <a class="el" href="Signal_8h_source.html#l00381">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00369">Wre()</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00285">br()</a>, <a class="el" href="Signal_8h_source.html#l00405">DIRECT</a>, <a class="el" href="Signal_8h_source.html#l00406">INVERSE</a>, <a class="el" href="Signal_8h_source.html#l00400">tblsize</a>, <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
 
 </div>
 </div>
@@ -398,11 +399,11 @@ template&lt;typename T &gt; </div>
 <dd>
 <a class="el" href="classSignal_1_1DFTDriver.html#aad171a4b260ad53c335b8c6c90455251" title="Easy access to the table of cosines. ">Wre</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00381">381</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00378">378</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00269">bits</a>, <a class="el" href="Signal_8h_source.html#l00453">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00394">tblbits</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00450">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00429">operator()()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
 </div>
 </div>
@@ -441,11 +442,11 @@ template&lt;typename T &gt; </div>
 <dd>
 <a class="el" href="classSignal_1_1DFTDriver.html#add46e8ab883b4761621a62f29858d641" title="Easy access to the table of sines. ">Wim</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00369">369</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00366">366</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00269">bits</a>, <a class="el" href="Signal_8h_source.html#l00459">costbl</a>, and <a class="el" href="Signal_8h_source.html#l00394">tblbits</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00456">costbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00429">operator()()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
 </div>
 </div>
@@ -468,12 +469,12 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Number of bits for an actuall fft computation. </p>
+<p>Number of bits for the current FFT computation. </p>
 <p>Always assume this is uninitialized, and all methods that use it should initialize it themselves. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00269">269</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00266">266</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00429">operator()()</a>, <a class="el" href="Signal_8h_source.html#l00381">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00369">Wre()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>, <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
 
 </div>
 </div>
@@ -498,9 +499,9 @@ template&lt;typename T &gt; </div>
 <p>Table of cosines. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a" title="Table of sines. ">sintbl</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00459">459</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00456">456</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00433">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00369">Wre()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
 
 </div>
 </div>
@@ -526,9 +527,9 @@ template&lt;typename T &gt; </div>
 <p>Holds the sines of <img class="formulaInl" alt="$\tau\cdot k/\texttt{tblsize}$" src="form_13.png"/>, for <img class="formulaInl" alt="$k$" src="form_14.png"/> in the range <img class="formulaInl" alt="$\left[0,\texttt{tblsize}\right[$" src="form_15.png"/>. Here, <img class="formulaInl" alt="$\tau$" src="form_6.png"/> is shorthand for <img class="formulaInl" alt="$2\pi$" src="form_7.png"/>.</p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9" title="Table of cosines. ">costbl</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00453">453</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00450">450</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00433">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00381">Wim()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>.</p>
 
 </div>
 </div>
@@ -551,12 +552,12 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Number of bits for the index of the table of sines and cosines. </p>
-<p>We won't be able to perform an <img class="formulaInl" alt="$N$" src="form_9.png"/>-bit dft if <img class="formulaInl" alt="$N > \texttt{tblsize}$" src="form_10.png"/>, so this should be big. Also, this <b>must</b> be equal to <img class="formulaInl" alt="$\log_2\left(\texttt{tblsize}\right)$" src="form_11.png"/>, but there's nothing in the source code that enforces it.</p>
+<p>We won't be able to perform an <img class="formulaInl" alt="$N$" src="form_9.png"/>-bit dft if <img class="formulaInl" alt="$N > \texttt{tblbits}$" src="form_16.png"/>, so this should be big. Also, this <b>must</b> be equal to <img class="formulaInl" alt="$\log_2\left(\texttt{tblsize}\right)$" src="form_11.png"/>, but there's nothing in the source code that enforces it.</p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#aeb1619fa60faca6af801271fdb04d27d" title="Number of entries in the tables of sines and cosines. ">tblsize</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00394">394</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00391">391</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00381">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00369">Wre()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>, and <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
 
 </div>
 </div>
@@ -582,16 +583,16 @@ template&lt;typename T &gt; </div>
 <p>This <b>must</b> be equal to <img class="formulaInl" alt="$2^\texttt{tblbits}$" src="form_12.png"/>, but there's nothing in the source code that enforces it.</p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a45781ce254987a3fa12570b14dc58c4d" title="Number of bits for the index of the table of sines and cosines. ">tblbits</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00403">403</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00400">400</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00433">DFTDriver()</a>, <a class="el" href="Signal_8cpp_source.html#l00115">Signal::filter()</a>, and <a class="el" href="Signal_8cpp_source.html#l00429">operator()()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, <a class="el" href="Signal_8cpp_source.html#l00115">Signal::filter()</a>, and <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-43-gcd2d607)</a></li>
-<li><a class="el" href="main_8cpp_source.html">main.cpp (aaa.versao.teste.1-43-gcd2d607)</a></li>
-<li><a class="el" href="Signal_8cpp_source.html">Signal.cpp (aaa.versao.teste.1-43-gcd2d607)</a></li>
+<li><a class="el" href="Signal_8h_source.html">Signal.h (aaa.versao.teste.1-46-g96cebde)</a></li>
+<li><a class="el" href="main_8cpp_source.html">main.cpp (aaa.versao.teste.1-46-g96cebde)</a></li>
+<li><a class="el" href="Signal_8cpp_source.html">Signal.cpp (aaa.versao.teste.1-46-g96cebde)</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -599,7 +600,7 @@ template&lt;typename T &gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classSignal.html">Signal</a></li><li class="navelem"><a class="el" href="classSignal_1_1DFTDriver.html">DFTDriver</a></li>
-    <li class="footer">Generated on Tue Jan 21 2014 06:35:47 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Tue Jan 21 2014 14:12:15 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

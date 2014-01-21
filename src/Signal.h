@@ -65,7 +65,7 @@ class FileError : public std::runtime_error {
     /// The message that will be displayed if we don't catch the exception.
     /**
       * Must be static, so that we can modify it inside the
-      * \ref FileError::what [`what()`] `const` function, and read it after the
+      * `what()` `const` function, and read it after the
       * temporary object has been destroyed.
       */
     static std::ostringstream msg;
@@ -76,7 +76,7 @@ class FileError : public std::runtime_error {
 public:
     /// Constructs the exception object from the filename.
     /**
-      * \param[in] fn   A \ref string [`string`] that holds the filename.
+      * \param[in] fn   A `std::string` that holds the filename.
       */
     FileError(const std::string& fn)
         : runtime_error("File I/O error"), filename(fn) {}
@@ -84,14 +84,13 @@ public:
     /// Destructor that does nothing.
     /**
       * Needed to prevent the `looser throw specifier` error because,
-      * \ref std::runtime_error::~runtime_error [`~runtime_errorr()`] is
-      * declared as throw()
+      * `std::runtime_error::~runtime_error()` is declared as `throw()`
       */
     ~FileError() throw() {}
 
     /// Gives a description for the error.
     /**
-      * Updates the \ref FileError::msg [`msg`]  static member with the error
+      * Updates the \ref msg static member with the error
       * message, and returns it as a C string.
       */
     virtual const char *what() const throw() {
@@ -188,7 +187,7 @@ public:
       * Gets a sample of the signal. For performance reasons, this method does
       * not check that the given index is valid.
       *
-      * \param[in] index    The index of the desired sample. Signal indexes are
+      * \param[in] index    The index of the desired sample. %Signal indexes are
       *                     zero-based.
       *
       * \returns a reference to the sample.
@@ -200,7 +199,7 @@ public:
       * Just like the "read-write" version, but returns a const reference to a
       * sample.
       *
-      * \param[in] index    The index of the desired sample. Signal indexes are
+      * \param[in] index    The index of the desired sample. %Signal indexes are
       *                     zero-based.
       *
       * \returns a const reference to the sample.
@@ -214,6 +213,8 @@ public:
       * initializes any new samples to zero.
       *
       * \param[in] n        The desired signal length.
+      *
+      * \see container_t::resize()
       */
     void set_size(index_t n) { data.resize(n); }
 
@@ -246,7 +247,7 @@ public:
     /// Usage:
     ///
     ///     Signal::DFTDriver dft;
-    ///     Signal real, imag;
+    ///     Signal::container_t real, imag;
     ///     // initialize the real and imaginary parts of a complex time-domain
     ///     // signal
     ///     dft(real, imag); // performs in-place FFT
@@ -257,7 +258,7 @@ public:
     ///
     class DFTDriver {
 
-        /// Number of bits for an actuall fft computation.
+        /// Number of bits for the current FFT computation.
         /**
           * Always assume this is uninitialized, and all methods that use it
           * should initialize it themselves.
@@ -381,7 +382,7 @@ public:
         /// Number of bits for the index of the table of sines and cosines
         /**
           * We won't be able to perform an \f$N\f$-bit dft if
-          * \f$N > \texttt{tblsize}\f$, so this should be big. Also, this
+          * \f$N > \texttt{tblbits}\f$, so this should be big. Also, this
           * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
           * there's nothing in the source code that enforces it.
           *
@@ -456,7 +457,7 @@ public:
 
     };
 
-    static DFTDriver dft; ///< single instance of the DFTDriver class.
+    static DFTDriver dft; ///< Single instance of the DFTDriver class.
 
 private:
     container_t data; ///< Holds the signal samples.

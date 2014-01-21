@@ -351,7 +351,7 @@ void Signal::play(bool sleep) {
   *
   * \param[in]  sr      The new sample rate in Hertz.
   *
-  * \see Signal::sample_rate
+  * \see srate
   */
 void Signal::set_samplerate(int sr) {
     if (srate == 0) {
@@ -370,9 +370,8 @@ void Signal::set_samplerate(int sr) {
 }
 
 /**
-  * Adds the \a other signal to the caller signal. First, we re-sample \a other
-  * into a new temporary signal. Then we increase the caller's size if needed,
-  * and finally add the signals sample-by-sample.
+  * First, we re-sample \a other into a new temporary signal. Then we increase
+  * the caller's size if needed, and finally add the signals sample-by-sample.
   *
   * \param[in]  other      The signal to be added to the caller.
   * \returns    a reference to this signal, already added to the `other`.
@@ -387,8 +386,8 @@ Signal& Signal::operator +=(Signal other) {
 }
 
 /**
-  * Apply a gain \a g to the signal. This can be useful, for example, to make
-  * sure that the signal is within the \f$\left[-1,1\right]\f$ range.
+  * This can be useful, for example, to make sure that the signal is within the
+  * \f$\left[-1,1\right]\f$ range.
   *
   * \param[in]  g       The signal gain to be applied.
   */

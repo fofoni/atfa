@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['signal',['Signal',['../classSignal.html',1,'']]]
+  ['fileerror',['FileError',['../classFileError.html',1,'']]]
 ];
