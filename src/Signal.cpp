@@ -40,9 +40,7 @@ static int callback(
   *
   * \param[in]  filename    Audio file name.
   *
-  * \throws `FileError` if file openening/reading fails.
-  *
-  * \todo get the www hyperlinks above working
+  * \throws FileError if file openening/reading fails.
   */
 Signal::Signal(const std::string &filename)
     : counter(0), srate(0)
@@ -249,15 +247,13 @@ void Signal::filter(Signal imp_resp) {
   *                             we're working with mono-channel signals.
   * \param[in]  time_info       PortAudio time information. (unused)
   * \param[in]  status_flags    PortAudio status flags. (unused)
-  * \param[in/out]  user_data   Pointer to an arbitrary data-holder passed to
+  * \param[in,out]  user_data   Pointer to an arbitrary data-holder passed to
   *                             the stream open function. We use this to get
   *                             the signal samples, and to keep track of where
   *                             in the signal we are (using the
   *                             `Signal::counter` auxiliary member).
   *
   * \see Signal::play
-  *
-  * \todo this is not showing up in doxygen
   */
 static int callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
@@ -421,13 +417,13 @@ Signal::sample_t Signal::l_inf_norm() {
   * substituted by their new versions.
   *
   * Of course, the \a re and \a im vectors must be of the same size. This size
-  * must be a power of two not greater than \ref tblsize [`tblsize`].
+  * must be a power of two not greater than \ref tblsize.
   *
   * \throws std::runtime_error if any of the above conditions aren't met.
   *
-  * \param[in/out]  re  Real part of the compelx signal on which the FFT will
+  * \param[in,out]  re  Real part of the compelx signal on which the FFT will
   *                     act.
-  * \param[in/out]  im  Imaginary part.
+  * \param[in,out]  im  Imaginary part.
   * \param[in]      direction   Wether this is a direct or inverse DFT.
   */
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,

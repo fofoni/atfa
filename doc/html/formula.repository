@@ -1,0 +1,16 @@
+\form#0:$\left[-1,1\right]$
+\form#1:$\ell^\infty$
+\form#2:$1$
+\form#3:$\tau\cdot \texttt{k}/2^\texttt{bits}$
+\form#4:$\left[0,2^\texttt{bits}\right[$
+\form#5:$\cos\left( \tau\cdot \texttt{k}/2^\texttt{bits} \right)$
+\form#6:$\tau$
+\form#7:$2\pi$
+\form#8:$\sin\left( \tau\cdot \texttt{k}/2^\texttt{bits} \right)$
+\form#9:$N$
+\form#10:$N > \texttt{tblsize}$
+\form#11:$\log_2\left(\texttt{tblsize}\right)$
+\form#12:$2^\texttt{tblbits}$
+\form#13:$\tau\cdot k/\texttt{tblsize}$
+\form#14:$k$
+\form#15:$\left[0,\texttt{tblsize}\right[$

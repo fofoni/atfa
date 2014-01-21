@@ -31,16 +31,12 @@
 #include <sndfile.hh>
 
 #ifndef NULL
-/// null pointer
+/// Null pointer.
+/**
+  * Replaces the standard null pointer in case it's not defined.
+  */
 static const void * const NULL = ((void *)0)
 #endif
-
-/// Macro for the number 2*pi.
-/**
-  * Useful in the generation of the table of sines and cosines for the DFTDriver
-  * class, for example.
-  */
-#define TAU ( double(6.283185307179586477) )
 
 /// \brief A runtime exception while trying to process a file.
 ///
@@ -54,7 +50,7 @@ static const void * const NULL = ((void *)0)
 ///
 ///     std::string filename;
 ///     std::cin >> filename;
-///     /* ... */
+///     // ...
 ///     if (error ocurred) throw FileError(filename);
 ///
 class FileError : public std::runtime_error {
@@ -117,6 +113,13 @@ class Signal
 {
 
 public:
+    /// Shorthand for the number \f$2\pi\f$.
+    /**
+      * Useful in the generation of the table of sines and cosines for the DFTDriver
+      * class, for example.
+      */
+    static const double TAU = 6.283185307179586477;
+
     /// The type for holding each signal sample.
     typedef float sample_t;
 
@@ -248,13 +251,13 @@ public:
     ///
     ///     Signal::DFTDriver dft;
     ///     Signal real, imag;
-    ///     /* initialize the real and imaginary parts of a complex time-domain
-    ///        signal */
+    ///     // initialize the real and imaginary parts of a complex time-domain
+    ///     // signal
     ///     dft(real, imag); // performs in-place FFT
-    ///     /* now, work with the real and imaginary parts of the
-    ///        frequency-domain version of the signal */
+    ///     // now, work with the real and imaginary parts of the
+    ///     // frequency-domain version of the signal
     ///     dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
-    ///     /* now, we can work again with the time-domain complex signal */
+    ///     // now, we can work again with the time-domain complex signal
     ///
     class DFTDriver {
 
@@ -267,21 +270,19 @@ public:
 
         /// Bit-reverse.
         /**
-          * Returns the bit-reversed version of the parameter `x`. Assumes \a x
-          * is `bits`-bit wide, and ignore any bits with more significance than
+          * Returns the bit-reversed version of the parameter \a x. Assumes \a x
+          * is _bits_-bit wide, and ignore any bits with more significance than
           * that.
-          *
-          * IF THIS TPARAM STUFF DONT WORK, USE ARG.
           *
           * This function assumes that the number of bits in one `char` is 8,
           * and that bitshifting is zero-padded, and not circular.
           *
-          * \tparam     T       The type of the parameter `x`. It __must__ be
-          *                     an unsigned integer size.
-          * \param[in]  x       The `bits`-bit unsigned integer to be
+          * \tparam     T       The type of the parameter \a x. It __must__ be
+          *                     an unsigned integer type.
+          * \param[in]  x       The _bits_-bit unsigned integer to be
           *                     bit-reversed.
-          * \param[in]  bits    The number of bits of the integer `x`.
-          * \returns the unsigned integer `x`, bit-reversed.
+          * \param[in]  bits    The number of bits of the integer \a x.
+          * \returns the unsigned integer \a x, bit-reversed.
           */
         template <typename T>
         static T br(T x, int bits) {
@@ -370,7 +371,7 @@ public:
 
         /// Easy access to the table of sines.
         /**
-          * \param[in]  k   Same as in \ref Wre [`Wre()`].
+          * \param[in]  k   Same as in \ref Wre.
           * \returns \f$\sin\left(
           *              \tau\cdot \texttt{k}/2^\texttt{bits}
           *          \right)\f$
@@ -387,8 +388,6 @@ public:
           * \f$N > \texttt{tblsize}\f$, so this should be big. Also, this
           * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
           * there's nothing in the source code that enforces it.
-          *
-          * IF THE "SEE ALSO" IS NOT A LINK, REWRITE EVERYTHING IN THIS SECTION
           *
           * \see tblsize
           */
@@ -418,7 +417,6 @@ public:
           * \todo make the table be inside a std::vector, instead of a built-in
           *       array, so that we can use the solution provided [here][1].
           *       An alternative is documented [here][2].
-          *
           *       [1]: stackoverflow.com/questions/16113551/c-const-static-member-array-initialization
           *       [2]: stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized
           *
@@ -426,10 +424,8 @@ public:
           *       though multiple instances of the DFTDriver might be created
           *       (that is, static members shouldn't be initialized in the
           *       constructor).
-          *
           *       (perhaps we could have a private bool telling wether it's been
-          *       already initialized) IF THIS PARAGRAPH IS NOT INSIDE THE ABOVE
-          *       TODO, REWRITE
+          *       already initialized)
           *
           * \see sintbl
           * \see costbl
