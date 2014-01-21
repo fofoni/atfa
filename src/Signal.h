@@ -474,7 +474,7 @@ private:
 
 /// Adds two signals
 /**
-  * \see Signal::operator+
+  * \see Signal::operator+=
   */
 inline Signal operator +(Signal lhs, const Signal& rhs)
     { return lhs += rhs; }

@@ -35,6 +35,9 @@ static int callback(
   *
   * The sample rate is extracted from the file's meta-data info.
   *
+  * [libsndfile]: http://www.mega-nerd.com/libsndfile/
+  * [libsndfile_features]: http://www.mega-nerd.com/libsndfile/#Features
+  *
   * \param[in]  filename    Audio file name.
   *
   * \throws `FileError` if file openening/reading fails.
@@ -76,7 +79,11 @@ Signal::Signal(const std::string &filename)
 /**
   * Adds zeroed samples at the beginning of the signal.
   *
-  * \param[in]  t       A `delay_type` element.
+  * If we try do delay a signal by milliseconds, but the signal has no
+  * associated sample rate, a warning is emitted, and nothing is done. No
+  * exception is thrown.
+  *
+  * \param[in]  t       A delay type element.
   * \param[in]  d       The time interval to be delayed, given in the units
   *                     specified by `t`.
   */
@@ -97,12 +104,15 @@ void Signal::delay(delay_t t, unsigned long d) {
 }
 
 /**
-  * Generates a new signal, which is the convolution of the caller signal
-  * and a given filter impulse response (FIR).
+  * Convolves the signal with the given finite impulse response (FIR).
+  *
+  * The algorthm used is the "overlap-and-add", and we use the FFT implemented
+  * in the DFTDriver class to compute each step. We try to do it using the least
+  * possible number of DFTs.
   *
   * \param[in]  imp_resp    The filter impulse response to be convolved with.
-  * \param[out] conv        The resulting signal.
   *
+  * \see DFTDriver::operator()
   */
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
@@ -276,7 +286,7 @@ static int callback(
 
 /**
   * Creates a PortAudio stream for audio playback of the signal content. If
-  * `sleep` is `true`, we wait for the playback to end before returning. (If
+  * \a sleep is `true`, we wait for the playback to end before returning. (If
   * it's false, the function returns, while playback goes on in the background.)
   *
   * \param[in]  sleep   If set to true, the method will only return when the
@@ -338,9 +348,10 @@ void Signal::play(bool sleep) {
 }
 
 /**
-  * Changes the sample rate of the signal. First, we reconstruct the time-domain
-  * signal by linear interpolation. Then, we re-sample the continuous-time
-  * reconstructed signal at the new sample rate.
+  * Changes the sample rate of the signal. The way it is done, this is
+  * equivalent to reconstructing the time-domain signal by linear interpolation,
+  * and then re-sampling the continuous-time reconstructed signal at the new
+  * sample rate.
   *
   * \param[in]  sr      The new sample rate in Hertz.
   *
@@ -363,11 +374,12 @@ void Signal::set_samplerate(int sr) {
 }
 
 /**
-  * Adds the `other` signal to the caller signal. First, we re-sample `other`
+  * Adds the \a other signal to the caller signal. First, we re-sample \a other
   * into a new temporary signal. Then we increase the caller's size if needed,
   * and finally add the signals sample-by-sample.
   *
   * \param[in]  other      The signal to be added to the caller.
+  * \returns    a reference to this signal, already added to the `other`.
   */
 Signal& Signal::operator +=(Signal other) {
     other.set_samplerate(srate);
@@ -379,8 +391,8 @@ Signal& Signal::operator +=(Signal other) {
 }
 
 /**
-  * Apply a gain `g` to the signal. This can be useful, for example, to make
-  * sure that the signal is in the [-1, 1] range.
+  * Apply a gain \a g to the signal. This can be useful, for example, to make
+  * sure that the signal is within the \f$\left[-1,1\right]\f$ range.
   *
   * \param[in]  g       The signal gain to be applied.
   */
@@ -390,6 +402,12 @@ void Signal::gain(double g) {
         *it *= g;
 }
 
+/**
+  * Take the signal's infinity-norm, which is the maximum absolute value of all
+  * the samples of the signal.
+  *
+  * \returns    the \f$\ell^\infty\f$-norm of the signal.
+  */
 Signal::sample_t Signal::l_inf_norm() {
     sample_t max = 0;
     for (container_t::const_iterator it = data.begin(); it != data.end(); ++it)
@@ -397,6 +415,21 @@ Signal::sample_t Signal::l_inf_norm() {
     return max;
 }
 
+/**
+  * Implements the radix-2 time-decimation FFT algorithm. The computation
+  * happens in-place, which means that the \a re and \a im parameters are
+  * substituted by their new versions.
+  *
+  * Of course, the \a re and \a im vectors must be of the same size. This size
+  * must be a power of two not greater than \ref tblsize [`tblsize`].
+  *
+  * \throws std::runtime_error if any of the above conditions aren't met.
+  *
+  * \param[in/out]  re  Real part of the compelx signal on which the FFT will
+  *                     act.
+  * \param[in/out]  im  Imaginary part.
+  * \param[in]      direction   Wether this is a direct or inverse DFT.
+  */
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
                                     const dir_t direction) {
 
