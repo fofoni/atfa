@@ -7,5 +7,5 @@
 Makefile
 build/debug
 build/release
-doc/latex
+doc/latex/*
 !doc/latex/refman.pdf
