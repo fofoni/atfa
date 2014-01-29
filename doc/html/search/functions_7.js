@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main',['main',['../main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.cpp']]]
+  ['l_5finf_5fnorm',['l_inf_norm',['../classSignal.html#af76808681eb1b9cbc493631f4503c3eb',1,'Signal']]]
 ];

@@ -107,6 +107,7 @@ $(document).ready(function(){initNavTree('classSignal_1_1DFTDriver.html','');});
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-static-methods">Static Private Member Functions</a> &#124;
@@ -122,6 +123,15 @@ $(document).ready(function(){initNavTree('classSignal_1_1DFTDriver.html','');});
  <a href="classSignal_1_1DFTDriver.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Signal_8h_source.html">Signal.h</a>&gt;</code></p>
+<div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
+  <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Collaboration diagram for Signal::DFTDriver:</div>
+<div id="dynsection-0-summary" class="dynsummary" style="display:block;">
+</div>
+<div id="dynsection-0-content" class="dyncontent" style="display:none;">
+<div class="center"><img src="classSignal_1_1DFTDriver__coll__graph.png" border="0" usemap="#Signal_1_1DFTDriver_coll__map" alt="Collaboration graph"/></div>
+<map name="Signal_1_1DFTDriver_coll__map" id="Signal_1_1DFTDriver_coll__map">
+</map>
+<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -138,6 +148,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afb64d81512f1089bd1cbad47efeba0f6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#afb64d81512f1089bd1cbad47efeba0f6">operator()</a> (<a class="el" href="classSignal.html#a67935911c10fc829d8e428939a6346a1">container_t</a> &amp;re, <a class="el" href="classSignal.html#a67935911c10fc829d8e428939a6346a1">container_t</a> &amp;im, <a class="el" href="classSignal_1_1DFTDriver.html#a6fc76457d642e051a659320865e6291a">dir_t</a> direction=<a class="el" href="classSignal_1_1DFTDriver.html#a6fc76457d642e051a659320865e6291aa889d9a381ea1397c17f0b630dc35b86f">DIRECT</a>)</td></tr>
 <tr class="memdesc:afb64d81512f1089bd1cbad47efeba0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to perform the actual computation of the DFT.  <a href="#afb64d81512f1089bd1cbad47efeba0f6">More...</a><br/></td></tr>
 <tr class="separator:afb64d81512f1089bd1cbad47efeba0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ab230e8bfb3fcbda937b769c029b8d203"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#ab230e8bfb3fcbda937b769c029b8d203">initialize_costbl</a> ()</td></tr>
+<tr class="memdesc:ab230e8bfb3fcbda937b769c029b8d203"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the table of cosines.  <a href="#ab230e8bfb3fcbda937b769c029b8d203">More...</a><br/></td></tr>
+<tr class="separator:ab230e8bfb3fcbda937b769c029b8d203"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfa8fc0205671b8d27d15bdf84f381a"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#a7cfa8fc0205671b8d27d15bdf84f381a">initialize_sintbl</a> ()</td></tr>
+<tr class="memdesc:a7cfa8fc0205671b8d27d15bdf84f381a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the table of sines.  <a href="#a7cfa8fc0205671b8d27d15bdf84f381a">More...</a><br/></td></tr>
+<tr class="separator:a7cfa8fc0205671b8d27d15bdf84f381a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -172,12 +191,12 @@ Private Attributes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
-<tr class="memitem:a6636b8a1b87ff218609774cf2e69514a"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a">sintbl</a> [<a class="el" href="classSignal_1_1DFTDriver.html#aeb1619fa60faca6af801271fdb04d27d">tblsize</a>]</td></tr>
-<tr class="memdesc:a6636b8a1b87ff218609774cf2e69514a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Table of sines.  <a href="#a6636b8a1b87ff218609774cf2e69514a">More...</a><br/></td></tr>
-<tr class="separator:a6636b8a1b87ff218609774cf2e69514a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb88f14245648e95ed5b4e70504eead9"><td class="memItemLeft" align="right" valign="top">static double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9">costbl</a> [<a class="el" href="classSignal_1_1DFTDriver.html#aeb1619fa60faca6af801271fdb04d27d">tblsize</a>]</td></tr>
-<tr class="memdesc:abb88f14245648e95ed5b4e70504eead9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Table of cosines.  <a href="#abb88f14245648e95ed5b4e70504eead9">More...</a><br/></td></tr>
-<tr class="separator:abb88f14245648e95ed5b4e70504eead9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b2ecf2f8f3a0f674051d37f36963a73"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73">sintbl</a></td></tr>
+<tr class="memdesc:a1b2ecf2f8f3a0f674051d37f36963a73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Table of sines.  <a href="#a1b2ecf2f8f3a0f674051d37f36963a73">More...</a><br/></td></tr>
+<tr class="separator:a1b2ecf2f8f3a0f674051d37f36963a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a0e5a9b84eef708ef8d536352fb7c55"><td class="memItemLeft" align="right" valign="top">static const std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55">costbl</a></td></tr>
+<tr class="memdesc:a8a0e5a9b84eef708ef8d536352fb7c55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Table of cosines.  <a href="#a8a0e5a9b84eef708ef8d536352fb7c55">More...</a><br/></td></tr>
+<tr class="separator:a8a0e5a9b84eef708ef8d536352fb7c55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class for providing discrete Fourier transform capabilities. </p>
@@ -240,16 +259,9 @@ dft(real, imag, Signal::DFTDriver::INVERSE); // inverse in-place fft
 </div><div class="memdoc">
 
 <p>Constructor for an object that computes DFTs. </p>
-<p>Computes and initializes the table of sines and cosines. After this initialization, the entries of the table shouldn't be modified.</p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>make the table be inside a std::vector, instead of a built-in array, so that we can use the solution provided <a href="stackoverflow.com/questions/16113551/c-const-static-member-array-initialization">here</a>. An alternative is documented <a href="stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized">here</a>. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>this static member should be initialized only once, even though multiple instances of the <a class="el" href="classSignal_1_1DFTDriver.html" title="A class for providing discrete Fourier transform capabilities. ">DFTDriver</a> might be created (that is, static members shouldn't be initialized in the constructor). (perhaps we could have a private bool telling wether it's been already initialized)</dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a" title="Table of sines. ">sintbl</a> </dd>
-<dd>
-<a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9" title="Table of cosines. ">costbl</a> </dd></dl>
+<p>Does nothing at all. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00430">430</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
-
-<p>References <a class="el" href="Signal_8h_source.html#l00456">costbl</a>, <a class="el" href="Signal_8h_source.html#l00450">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00400">tblsize</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00440">440</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -309,6 +321,71 @@ template&lt;typename T &gt; </div>
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00285">285</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 <p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab230e8bfb3fcbda937b769c029b8d203"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::vector&lt;double&gt; Signal::DFTDriver::initialize_costbl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the table of cosines. </p>
+<p>Computes a table of cosines that will be handed to the <code>costbl</code> member.</p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a7cfa8fc0205671b8d27d15bdf84f381a" title="Initializes the table of sines. ">initialize_sintbl</a> </dd>
+<dd>
+<a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55" title="Table of cosines. ">costbl</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00417">417</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+
+<p>References <a class="el" href="Signal_8h_source.html#l00400">tblsize</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7cfa8fc0205671b8d27d15bdf84f381a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::vector&lt;double&gt; Signal::DFTDriver::initialize_sintbl </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Initializes the table of sines. </p>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#ab230e8bfb3fcbda937b769c029b8d203" title="Initializes the table of cosines. ">initialize_costbl</a> </dd>
+<dd>
+<a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73" title="Table of sines. ">sintbl</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00429">429</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+
+<p>References <a class="el" href="Signal_8h_source.html#l00400">tblsize</a>.</p>
 
 </div>
 </div>
@@ -396,13 +473,13 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><img class="formulaInl" alt="$\sin\left( \tau\cdot \texttt{k}/2^\texttt{bits} \right)$" src="form_8.png"/> </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a" title="Table of sines. ">sintbl</a> </dd>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73" title="Table of sines. ">sintbl</a> </dd>
 <dd>
 <a class="el" href="classSignal_1_1DFTDriver.html#aad171a4b260ad53c335b8c6c90455251" title="Easy access to the table of cosines. ">Wre</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00378">378</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00450">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00455">sintbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
 
 <p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
@@ -439,13 +516,13 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><img class="formulaInl" alt="$\cos\left( \tau\cdot \texttt{k}/2^\texttt{bits} \right)$" src="form_5.png"/>, where <img class="formulaInl" alt="$\tau$" src="form_6.png"/> is shorthand for <img class="formulaInl" alt="$2\pi$" src="form_7.png"/>. </dd></dl>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9" title="Table of cosines. ">costbl</a> </dd>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55" title="Table of cosines. ">costbl</a> </dd>
 <dd>
 <a class="el" href="classSignal_1_1DFTDriver.html#add46e8ab883b4761621a62f29858d641" title="Easy access to the table of sines. ">Wim</a> </dd></dl>
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00366">366</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00456">costbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
+<p>References <a class="el" href="Signal_8h_source.html#l00266">bits</a>, <a class="el" href="Signal_8h_source.html#l00461">costbl</a>, and <a class="el" href="Signal_8h_source.html#l00391">tblbits</a>.</p>
 
 <p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
@@ -479,7 +556,7 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="abb88f14245648e95ed5b4e70504eead9"></a>
+<a class="anchor" id="a8a0e5a9b84eef708ef8d536352fb7c55"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -487,7 +564,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Signal::DFTDriver::costbl</td>
+          <td class="memname">const std::vector&lt; double &gt; Signal::DFTDriver::costbl</td>
         </tr>
       </table>
   </td>
@@ -496,17 +573,19 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="classSignal_1_1DFTDriver.html#ab230e8bfb3fcbda937b769c029b8d203">Signal::DFTDriver::initialize_costbl</a>()</div>
+</div><!-- fragment -->
 <p>Table of cosines. </p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a6636b8a1b87ff218609774cf2e69514a" title="Table of sines. ">sintbl</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73" title="Table of sines. ">sintbl</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00456">456</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00461">461</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00366">Wre()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a6636b8a1b87ff218609774cf2e69514a"></a>
+<a class="anchor" id="a1b2ecf2f8f3a0f674051d37f36963a73"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -514,7 +593,7 @@ template&lt;typename T &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double Signal::DFTDriver::sintbl</td>
+          <td class="memname">const std::vector&lt; double &gt; Signal::DFTDriver::sintbl</td>
         </tr>
       </table>
   </td>
@@ -523,14 +602,16 @@ template&lt;typename T &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code" href="classSignal_1_1DFTDriver.html#a7cfa8fc0205671b8d27d15bdf84f381a">Signal::DFTDriver::initialize_sintbl</a>()</div>
+</div><!-- fragment -->
 <p>Table of sines. </p>
 <p>Holds the sines of <img class="formulaInl" alt="$\tau\cdot k/\texttt{tblsize}$" src="form_13.png"/>, for <img class="formulaInl" alt="$k$" src="form_14.png"/> in the range <img class="formulaInl" alt="$\left[0,\texttt{tblsize}\right[$" src="form_15.png"/>. Here, <img class="formulaInl" alt="$\tau$" src="form_6.png"/> is shorthand for <img class="formulaInl" alt="$2\pi$" src="form_7.png"/>.</p>
-<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#abb88f14245648e95ed5b4e70504eead9" title="Table of cosines. ">costbl</a> </dd></dl>
+<dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55" title="Table of cosines. ">costbl</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00450">450</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00455">455</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, and <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8h_source.html#l00378">Wim()</a>.</p>
 
 </div>
 </div>
@@ -586,14 +667,14 @@ template&lt;typename T &gt; </div>
 
 <p>Definition at line <a class="el" href="Signal_8h_source.html#l00400">400</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00430">DFTDriver()</a>, <a class="el" href="Signal_8cpp_source.html#l00115">Signal::filter()</a>, and <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00115">Signal::filter()</a>, <a class="el" href="Signal_8h_source.html#l00417">initialize_costbl()</a>, <a class="el" href="Signal_8h_source.html#l00429">initialize_sintbl()</a>, and <a class="el" href="Signal_8cpp_source.html#l00428">operator()()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="Signal_8h_source.html">Signal.h (v0.1-2-g9e18d32)</a></li>
-<li><a class="el" href="main_8cpp_source.html">main.cpp (v0.1-2-g9e18d32)</a></li>
-<li><a class="el" href="Signal_8cpp_source.html">Signal.cpp (v0.1-2-g9e18d32)</a></li>
+<li><a class="el" href="Signal_8h_source.html">Signal.h (v0.1-7-g1327983)</a></li>
+<li><a class="el" href="main_8cpp_source.html">main.cpp (v0.1-7-g1327983)</a></li>
+<li><a class="el" href="Signal_8cpp_source.html">Signal.cpp (v0.1-7-g1327983)</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -601,7 +682,7 @@ template&lt;typename T &gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classSignal.html">Signal</a></li><li class="navelem"><a class="el" href="classSignal_1_1DFTDriver.html">DFTDriver</a></li>
-    <li class="footer">Generated on Tue Jan 21 2014 18:13:54 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Wed Jan 29 2014 15:37:29 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

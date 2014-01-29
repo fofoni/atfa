@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['_7efileerror',['~FileError',['../classFileError.html#a5f1167071fcbcba84e163cfd3bc06c89',1,'FileError']]],
-  ['_7esignal',['~Signal',['../classSignal.html#ae7a1d116cda63e790bf9aab549d57d3a',1,'Signal']]]
+  ['what',['what',['../classFileError.html#a189fd00f87ae8d279618fc900912e9b1',1,'FileError']]],
+  ['wim',['Wim',['../classSignal_1_1DFTDriver.html#add46e8ab883b4761621a62f29858d641',1,'Signal::DFTDriver']]],
+  ['wre',['Wre',['../classSignal_1_1DFTDriver.html#aad171a4b260ad53c335b8c6c90455251',1,'Signal::DFTDriver']]]
 ];
