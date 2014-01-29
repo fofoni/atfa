@@ -43,8 +43,9 @@
 
 std::ostringstream FileError::msg;
 
-double Signal::DFTDriver::costbl[Signal::DFTDriver::tblsize];
-double Signal::DFTDriver::sintbl[Signal::DFTDriver::tblsize];
+std::vector<double> Signal::DFTDriver::costbl = Signal::DFTDriver::initialize_costbl();
+std::vector<double> Signal::DFTDriver::sintbl = Signal::DFTDriver::initialize_costbl();
+bool Signal::DFTDriver::tbl_initialized = false;
 
 Signal::DFTDriver Signal::dft;
 
@@ -112,16 +113,6 @@ void portaudio_end() {
     }
 }
 
-/// Playback signal
-/**
-  * Wrapper function for `Signal::play` that handles PortAudio.
-  */
-void playsig(Signal s) {
-    portaudio_init(); // init portaudio
-    s.play(); // play audio
-    portaudio_end(); // close portaudio
-}
-
 /// `main()` function.
 /**
  * No command-line parameters.
@@ -150,23 +141,9 @@ int main(int argc, char *argv[]) {
     cout << "Using " << Pa_GetVersionText() << "." << endl;
     cout << endl;
 
-    Signal sound_me(string(ATFA_DIR) + "/wav_samples/bigbrain.wav");
-
-    Signal imp_resp;
-    imp_resp.set_size(8192);
-    // lowpass (~3.2kHz)
-    imp_resp[0] = .2;    imp_resp[1] = .3;
-    imp_resp[2] = .3;    imp_resp[3] = .2;
-    // highpass(~7.8kHz)
-    imp_resp[8188] = .2; imp_resp[8189] = -.3;
-    imp_resp[8190] = .3; imp_resp[8191] = -.2;
-
-    sound_me.filter(imp_resp);
-    sound_me.normalize();
-    /* ... */ // adaptative filter ainda nao implementado
-    sound_me.delay(Signal::MS, 1000);
-
-    playsig(sound_me);
+    // ... ??
+    // TODO: - coisar o TODO do vector lá do outro arquivo
+    //       - fazer os callbacks e a classe nova da fila circular
 
     cout << "Finishing..." << endl;
 

@@ -378,6 +378,9 @@ public:
         double Wim(unsigned k)
             { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
 
+        /// Tells whether the table of sines and cosines has been initialized.
+        static bool tbl_initialized;
+
     public:
         /// Number of bits for the index of the table of sines and cosines
         /**
@@ -406,6 +409,20 @@ public:
             INVERSE  ///< Perform inverse FFT.
         };
 
+        static std::vector<double> initialize_costbl() {
+            std::vector<double> ct(tblsize);
+            for (unsigned i = 0; i != tblsize; ++i)
+                ct[i] = std::cos(i * TAU / tblsize);
+            return ct;
+        }
+
+        static std::vector<double> initialize_sintbl() {
+            std::vector<double> st(tblsize);
+            for (unsigned i = 0; i != tblsize; ++i)
+                st[i] = std::sin(i * TAU / tblsize);
+            return st;
+        }
+
         /// Constructor for an object that computes DFTs.
         /**
           * Computes and initializes the table of sines and cosines. After this
@@ -427,12 +444,7 @@ public:
           * \see sintbl
           * \see costbl
           */
-        DFTDriver() {
-            for (unsigned i = 0; i != tblsize; ++i) {
-                sintbl[i] = std::sin(i * TAU / tblsize);
-                costbl[i] = std::cos(i * TAU / tblsize);
-            }
-        }
+        DFTDriver() {}
 
         /// Used to perform the actual computation of the DFT
         void operator ()(container_t& re, container_t& im,
@@ -447,13 +459,13 @@ public:
           *
           * \see costbl
           */
-        static double sintbl[tblsize];
+        static std::vector<double> sintbl;
 
         /// Table of cosines.
         /**
           * \see sintbl
           */
-        static double costbl[tblsize];
+        static std::vector<double> costbl;
 
     };
 
