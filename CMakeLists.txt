@@ -4,7 +4,7 @@ project( ATFA )
 set( LOCAL_MOD_DIR "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )
 
-find_package( OpenCV REQUIRED )
+#find_package( OpenCV REQUIRED )
 find_package( PortAudio REQUIRED )
 find_package( LibSndFile REQUIRED )
 

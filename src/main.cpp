@@ -151,8 +151,6 @@ int main(int argc, char *argv[]) {
     cout << endl;
 
     Signal sound_me(string(ATFA_DIR) + "/wav_samples/bigbrain.wav");
-    Signal sound_other(string(ATFA_DIR) + "/wav_samples/didntwork.wav");
-    sound_other.delay(Signal::MS, 1000);
 
     Signal imp_resp;
     imp_resp.set_size(8192);
@@ -164,7 +162,6 @@ int main(int argc, char *argv[]) {
     imp_resp[8190] = .3; imp_resp[8191] = -.2;
 
     sound_me.filter(imp_resp);
-    sound_me += sound_other;
     sound_me.normalize();
     /* ... */ // adaptative filter ainda nao implementado
     sound_me.delay(Signal::MS, 1000);
