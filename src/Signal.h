@@ -378,9 +378,6 @@ public:
         double Wim(unsigned k)
             { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
 
-        /// Tells whether the table of sines and cosines has been initialized.
-        static bool tbl_initialized;
-
     public:
         /// Number of bits for the index of the table of sines and cosines
         /**
@@ -409,6 +406,14 @@ public:
             INVERSE  ///< Perform inverse FFT.
         };
 
+        /// Initializes the table of cosines
+        /**
+          * Computes a table of cosines that will be handed to the `costbl`
+          * member.
+          *
+          * \see initialize_sintbl
+          * \see costbl
+          */
         static std::vector<double> initialize_costbl() {
             std::vector<double> ct(tblsize);
             for (unsigned i = 0; i != tblsize; ++i)
@@ -416,6 +421,11 @@ public:
             return ct;
         }
 
+        /// Initializes the table of sines
+        /**
+          * \see initialize_costbl
+          * \see sintbl
+          */
         static std::vector<double> initialize_sintbl() {
             std::vector<double> st(tblsize);
             for (unsigned i = 0; i != tblsize; ++i)
@@ -425,24 +435,7 @@ public:
 
         /// Constructor for an object that computes DFTs.
         /**
-          * Computes and initializes the table of sines and cosines. After this
-          * initialization, the entries of the table shouldn't be modified.
-          *
-          * \todo make the table be inside a std::vector, instead of a built-in
-          *       array, so that we can use the solution provided [here][1].
-          *       An alternative is documented [here][2].
-          *       [1]: stackoverflow.com/questions/16113551/c-const-static-member-array-initialization
-          *       [2]: stackoverflow.com/questions/21248187/a-const-big-array-needs-to-be-initialized
-          *
-          * \todo this static member should be initialized only once, even
-          *       though multiple instances of the DFTDriver might be created
-          *       (that is, static members shouldn't be initialized in the
-          *       constructor).
-          *       (perhaps we could have a private bool telling wether it's been
-          *       already initialized)
-          *
-          * \see sintbl
-          * \see costbl
+          * Does nothing at all.
           */
         DFTDriver() {}
 
@@ -459,13 +452,13 @@ public:
           *
           * \see costbl
           */
-        static std::vector<double> sintbl;
+        static const std::vector<double> sintbl;
 
         /// Table of cosines.
         /**
           * \see sintbl
           */
-        static std::vector<double> costbl;
+        static const std::vector<double> costbl;
 
     };
 
