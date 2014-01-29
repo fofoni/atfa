@@ -26,7 +26,10 @@ add_executable( atfa src/main.cpp src/Signal.cpp )
 target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS}
                             ${LIBSNDFILE_LIBRARIES} )
 
+# TODO: Fix the ill-positioning of latex formula images using CSS
+
 # TODO: write a CPack file for creating .rpms, and etc?
 
 # TODO: find a way to separate documentation and code, so that we can find
-#       things easier in code. Consider Doxygen structural commands.
+#       things easier in code. Consider Doxygen structural commands. Consider
+#       Doxygen tag files.
