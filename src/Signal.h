@@ -14,9 +14,6 @@
  * Holds the interface to the `Signal` class.
  *
  * \author Pedro Angelo Medeiros Fonini
- *
- * \todo FileError and TAU should be a separete utils.h file. We can also put
- *       static declarations and such in a utils.cpp file.
  */
 
 #ifndef SIGNAL_H
@@ -111,14 +108,20 @@ public:
     /// Returns a sample.
     /**
       * Gets a sample of the signal. For performance reasons, this method does
-      * not check that the given index is valid.
+      * not check that the given index is valid. (Except in debug releases, in
+      * which it _does_ check.)
       *
       * \param[in] index    The index of the desired sample. %Signal indexes are
       *                     zero-based.
       *
       * \returns a reference to the sample.
       */
-    sample_t& operator [](index_t index) { return data[index]; }
+    sample_t& operator [](index_t index) {
+#ifdef ATFA_DEBUG
+        if (index >= samples()) throw std::runtime_error("Range error!!");
+#endif
+        return data[index];
+    }
 
     /// Returns a "read-only" sample.
     /**
@@ -130,7 +133,12 @@ public:
       *
       * \returns a const reference to the sample.
       */
-    const sample_t& operator [](index_t index) const { return data[index]; }
+    const sample_t& operator [](index_t index) const {
+#ifdef ATFA_DEBUG
+        if (index >= samples()) throw std::runtime_error("Range error!!");
+#endif
+        return data[index];
+    }
 
     /// Changes the number of samples.
     /**
