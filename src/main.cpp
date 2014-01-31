@@ -120,12 +120,9 @@ void portaudio_end() {
  *
  * This function:
  * 1. Prints version info
- * 2. Creates two \ref Signal "Signal"s, `sound_me` and `sound_other` from two
- *    input files.
- * 3. Delays the second.
+ * 2. Creates one \ref Signal "Signal", `sound_me`, from an input file.
  * 4. Creates an impulse response.
- * 5. Filters `sound_me` according to the impulse response and adds it to the
- *    second, delayed.
+ * 5. Filters `sound_me` according to the impulse response.
  * 6. Initializes a PortAudio session, plays the resulting sound, and closes
  *    PortAudio.
  *
@@ -143,7 +140,6 @@ int main(int argc, char *argv[]) {
     cout << endl;
 
     // ... ??
-    // TODO: - coisar o TODO do vector lá do outro arquivo
     //       - fazer os callbacks e a classe nova da fila circular
 
     cout << "Finishing..." << endl;

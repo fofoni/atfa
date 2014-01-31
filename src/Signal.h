@@ -14,6 +14,9 @@
  * Holds the interface to the `Signal` class.
  *
  * \author Pedro Angelo Medeiros Fonini
+ *
+ * \todo FileError and TAU should be a separete utils.h file. We can also put
+ *       static declarations and such in a utils.cpp file.
  */
 
 #ifndef SIGNAL_H
@@ -29,14 +32,6 @@
 
 #include <portaudio.h>
 #include <sndfile.hh>
-
-#ifndef NULL
-/// Null pointer.
-/**
-  * Replaces the standard null pointer in case it's not defined.
-  */
-static const void * const NULL = ((void *)0)
-#endif
 
 /// Shorthand for the number \f$2\pi\f$.
 /**

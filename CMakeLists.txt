@@ -21,7 +21,7 @@ set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O2" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 
-add_executable( atfa src/main.cpp src/Signal.cpp )
+add_executable( atfa src/main.cpp src/Signal.cpp src/Stream.cpp src/utils.cpp )
 
 target_link_libraries( atfa ${OpenCV_LIBS} ${PortAudio_LIBS}
                             ${LIBSNDFILE_LIBRARIES} )
