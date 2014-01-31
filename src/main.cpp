@@ -16,39 +16,14 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
+#include <iostream>
+#include <stdexcept>
+
+extern "C" {
+#   include <portaudio.h>
+}
+
 #include "Signal.h"
-
-#ifndef ATFA_DIR
-#   include <cstring>
-    extern "C" {
-#       include <libgen.h>
-    }
-    char static_filename[] = __FILE__;
-    char static_dirname[] = __FILE__;
-    char static_projdirname[] = __FILE__;
-    // whatch out, because dirname() may modify its argument,
-    // and ATFA_DIR might get evaluated more than once
-
-    /// Macro for getting the path to the project directory from cmake
-    /** Should be passed from `CMakeLists.txt`, but if it's not, we try to
-        deduce it from the `__FILE__` macro */
-#   define ATFA_DIR (static_cast<const char *>( \
-        std::strcpy(static_dirname, dirname(static_filename)), \
-        std::strcpy(static_filename, __FILE__), \
-        std::strcpy(static_projdirname, dirname(static_dirname)), \
-        static_projdirname \
-    ))
-
-#endif
-
-std::ostringstream FileError::msg;
-
-const std::vector<double> Signal::DFTDriver::costbl =
-        Signal::DFTDriver::initialize_costbl();
-const std::vector<double> Signal::DFTDriver::sintbl =
-        Signal::DFTDriver::initialize_sintbl();
-
-Signal::DFTDriver Signal::dft;
 
 using namespace std;
 

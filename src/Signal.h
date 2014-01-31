@@ -24,78 +24,9 @@
 
 #include <cmath>
 
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <vector>
-#include <stdexcept>
 
-#include <portaudio.h>
-#include <sndfile.hh>
-
-/// Shorthand for the number \f$2\pi\f$.
-/**
-  * Useful in the generation of the table of sines and cosines for the
-  * Signal::DFTDriver class, for example.
-  */
-static const double TAU = 6.283185307179586477;
-
-/// \brief A runtime exception while trying to process a file.
-///
-/// Thrown when we cannot read a file, for some reason.
-///
-/// Usage:
-///
-///     if (error ocurred) throw FileError("badfile.wav");
-///
-/// Or:
-///
-///     std::string filename;
-///     std::cin >> filename;
-///     // ...
-///     if (error ocurred) throw FileError(filename);
-///
-class FileError : public std::runtime_error {
-
-    /// The message that will be displayed if we don't catch the exception.
-    /**
-      * Must be static, so that we can modify it inside the
-      * `what()` `const` function, and read it after the
-      * temporary object has been destroyed.
-      */
-    static std::ostringstream msg;
-
-    /// The name of the file that caused the error.
-    const std::string filename;
-
-public:
-    /// Constructs the exception object from the filename.
-    /**
-      * \param[in] fn   A `std::string` that holds the filename.
-      */
-    FileError(const std::string& fn)
-        : runtime_error("File I/O error"), filename(fn) {}
-
-    /// Destructor that does nothing.
-    /**
-      * Needed to prevent the `looser throw specifier` error because,
-      * `std::runtime_error::~runtime_error()` is declared as `throw()`
-      */
-    ~FileError() throw() {}
-
-    /// Gives a description for the error.
-    /**
-      * Updates the \ref msg static member with the error
-      * message, and returns it as a C string.
-      */
-    virtual const char *what() const throw() {
-        msg.str(""); // static member `msg' can be modified by const methods
-        msg << runtime_error::what() << ": Couldn't read file `" << filename
-            << "'.";
-        return msg.str().c_str();
-    }
-
-};
+#include "utils.h"
 
 /// A time- or frequency-domain signal
 /**

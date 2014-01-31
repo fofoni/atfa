@@ -16,6 +16,8 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
+#include <vector>
+
 #ifndef STREAM_H
 #define STREAM_H
 
@@ -32,6 +34,6 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
-}
+};
 
 #endif // STREAM_H

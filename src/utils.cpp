@@ -16,4 +16,6 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
-#include "utils.h" // is this necessary?
+#include "utils.h"
+
+std::ostringstream FileError::msg;

@@ -16,7 +16,22 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
+#include <iostream>
+#include <stdexcept>
+
+extern "C" {
+#   include <portaudio.h>
+#   include <sndfile.hh>
+}
+
 #include "Signal.h"
+
+const std::vector<double> Signal::DFTDriver::costbl =
+        Signal::DFTDriver::initialize_costbl();
+const std::vector<double> Signal::DFTDriver::sintbl =
+        Signal::DFTDriver::initialize_sintbl();
+
+Signal::DFTDriver Signal::dft;
 
 /// PortAudio callback function
 static int callback(
