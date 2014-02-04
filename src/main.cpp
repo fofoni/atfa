@@ -48,6 +48,32 @@ int main(int argc, char *argv[]) {
 
     Stream<8,1000> s;
 
+    s.write(0);
+    s.write(1);
+    s.write(1);
+    cout << s.read() << endl;
+    s.write(2);
+    s.write(3);
+    cout << s.read() << endl;
+    s.write(5);
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    s.write(8);
+    cout << s.read() << endl;
+    s.write(13);
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+    s.write(100);
+    s.write(100);
+    s.write(100);
+    s.write(100);
+    cout << s.read() << endl;
+    cout << s.read() << endl;
+
     cout << "Finishing..." << endl;
 
     return 0;

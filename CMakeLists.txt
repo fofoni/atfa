@@ -4,7 +4,7 @@ project( ATFA )
 set( LOCAL_MOD_DIR "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )
 
-#find_package( OpenCV REQUIRED )
+find_package( OpenCV )
 find_package( PortAudio REQUIRED )
 find_package( LibSndFile REQUIRED )
 
@@ -15,7 +15,7 @@ execute_process( COMMAND git describe
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 
-set( USUAL_FLAGS "-ansi -Wall -Wextra -pedantic-errors -Wpedantic" )
+set( USUAL_FLAGS "-ansi -Wall -Wextra -pedantic-errors" ) # -Wpedantic
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )
 set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O2" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
@@ -24,7 +24,7 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 add_executable( atfa src/main.cpp src/Signal.cpp src/Stream.cpp src/utils.cpp )
 
 target_link_libraries( atfa
-    #${OpenCV_LIBS}
+    ${OpenCV_LIBS}
     ${PortAudio_LIBS}
     ${LIBSNDFILE_LIBRARIES}
 )
