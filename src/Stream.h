@@ -22,7 +22,6 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-template <size_t buf_size, unsigned srate>
 class Stream
 {
 
@@ -42,8 +41,11 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_wrapper_t> container_t;
 
+    static const size_t buf_size = 44100;
+    static const unsigned samplerate = 11025;
+
     /* TODO: testar a classe do jeito que está, no portaudio. Tentar dar um
-       jeito de monitorara corrida entre o write e o read (grava a distancia
+       jeito de monitorar a corrida entre o write e o read (grava a distancia
        em funcao do tempo num array, e depois bota num arquivo de maneira que
        seja facil de plotar no matlab). Se estiver ruim de performance, tenta
        fazer funcoes pra ler e escrever blocos inteiros de uma vez. */
@@ -81,6 +83,22 @@ public:
         if (srate == 0) throw std::runtime_error("Stream: Bad srate");
 #endif
     }
+
+    sample_t& operator [](index_t index) {
+#ifdef ATFA_DEBUG
+        if (index >= samples()) throw std::runtime_error("Range error!!");
+#endif
+        return data[index].sample;
+    }
+
+    const sample_t& operator [](index_t index) const {
+#ifdef ATFA_DEBUG
+        if (index >= samples()) throw std::runtime_error("Range error!!");
+#endif
+        return data[index].sample;
+    }
+
+    void echo(unsigned sleep = 0);
 
 private:
 

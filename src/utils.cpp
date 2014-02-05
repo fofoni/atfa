@@ -29,7 +29,6 @@ std::ostringstream FileError::msg;
 
 using namespace std;
 
-/// Initialize PortAudio.
 /**
   * Initializes a PortAudio session. Also prints out a list of available
   * devices that PortAudio sees., if requested.
@@ -40,7 +39,7 @@ using namespace std;
   *
   * \see `portaudio_end()`
   */
-void portaudio_init(bool list_devices=false) {
+void portaudio_init(bool list_devices) {
 
     PaError err;
 
@@ -75,7 +74,6 @@ void portaudio_init(bool list_devices=false) {
 
 }
 
-/// Close PortAudio.
 /**
   * Ends a PortAudio session.
   *

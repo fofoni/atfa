@@ -53,6 +53,12 @@
   */
 static const double TAU = 6.283185307179586477;
 
+/// Initialize PortAudio.
+void portaudio_init(bool list_devices=false);
+
+/// Close PortAudio.
+void portaudio_end();
+
 /// \brief A runtime exception while trying to process a file.
 ///
 /// Thrown when we cannot read a file, for some reason.

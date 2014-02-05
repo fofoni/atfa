@@ -34,7 +34,7 @@ const std::vector<double> Signal::DFTDriver::sintbl =
 Signal::DFTDriver Signal::dft;
 
 /// PortAudio callback function
-static int callback(
+static int signal_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
     const PaStreamCallbackTimeInfo* time_info,
     PaStreamCallbackFlags status_flags, void *user_data
@@ -54,6 +54,8 @@ static int callback(
   * [libsndfile_features]: http://www.mega-nerd.com/libsndfile/#Features
   *
   * \param[in]  filename    Audio file name.
+  *
+  * \todo add "extern C" directive (speed?)
   *
   * \throws FileError if file openening/reading fails.
   */
@@ -270,7 +272,7 @@ void Signal::filter(Signal imp_resp) {
   *
   * \see Signal::play
   */
-static int callback(
+static int signal_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
     const PaStreamCallbackTimeInfo* time_info,
     PaStreamCallbackFlags status_flags, void *user_data
@@ -291,7 +293,7 @@ static int callback(
         *out++ = data[counter]; // provide a sample for playback
     }
 
-    return 0;
+    return paContinue;
 
 }
 
@@ -308,7 +310,7 @@ static int callback(
   * \throws std::runtime_error if any of the PortAudio steps fail (check the
   *         source code)
   *
-  * \see callback
+  * \see signal_callback
   */
 void Signal::play(bool sleep) {
 
@@ -323,15 +325,14 @@ void Signal::play(bool sleep) {
                 paFloat32,
                 srate,
                 paFramesPerBufferUnspecified,
-                callback,
+                signal_callback,
                 this
     );
-    if (err != paNoError){
-        std::cerr << double(srate) << std::endl;
+    if (err != paNoError)
         throw std::runtime_error(
                     std::string("Error opening stream for audio output:") +
                     " " + Pa_GetErrorText(err)
-        );}
+        );
 
     // start stream
     err = Pa_StartStream(stream);
