@@ -37,22 +37,12 @@ static int stream_callback(
 
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
         data->write(*in++);
-        *out++ = 5*data->read(); // TODO: tem um ganho magico aqui
+        Stream::container_t::const_iterator p = data->get_last_n(4);
+        *out++ = (p[0].sample+p[1].sample+p[2].sample+p[3].sample);
     }
 
     return paContinue;
 
-}
-
-void Stream::dump_state(Stream::sample_t spk_buf[20]) {
-    std::cout << "read_ptr = " << (read_ptr-data.begin()) << std::endl;
-    std::cout << "write_ptr = " << (write_ptr-data.begin()) << std::endl;
-    for (int k = 0; k < 20; ++k)
-        std::cout << data[k].sample << ", ";
-    std::cout << std::endl;
-    for (int k = 0; k < 20; ++k)
-        std::cout << spk_buf[k] << ", ";
-    std::cout << std::endl << std::endl;
 }
 
 void Stream::echo(unsigned delay, unsigned sleep) {

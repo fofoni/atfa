@@ -18,13 +18,12 @@
 
 #include <vector>
 #include <stdexcept>
-#include <iostream>
 
 #ifndef STREAM_H
 #define STREAM_H
 
-/// \todo Achar uma estrategia pro delay que seja compativel com mudar o delay
-///       no meio do caminho.
+/// \todo fazer o canal. meio que ta feito, mas nao funciona. Aproveitar, e
+///       escrever um framework pra simular o portaudio, e ver o resultado.
 
 class Stream
 {
@@ -52,19 +51,30 @@ public:
     sample_t read() {
         sample_t s = read_ptr->sample;
         ++read_ptr;
-        if (read_ptr == data.end()) read_ptr = data.begin();
+        if (static_cast<size_t>(read_ptr - data.begin()) == buf_size)
+            read_ptr = data.begin();
         return s;
+    }
+
+    container_t::const_iterator get_last_n(index_t n) {
+        ++read_ptr;
+        container_t::const_iterator p = read_ptr + buf_size - n;
+        if (static_cast<size_t>(read_ptr - data.begin()) == buf_size)
+            read_ptr = data.begin();
+        return p;
     }
 
     // TODO: could be an operator<<
     void write(sample_t s) {
         write_ptr->sample = s;
+        (write_ptr + buf_size)->sample = s;
         ++write_ptr;
-        if (write_ptr == data.end()) write_ptr = data.begin();
+        if (static_cast<size_t>(write_ptr - data.begin()) == buf_size)
+            write_ptr = data.begin();
     }
 
     Stream()
-        : delay_samples(0), data(buf_size),
+        : delay_samples(0), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin())
     {
 #ifdef ATFA_DEBUG
@@ -96,11 +106,8 @@ public:
         else
             // We won't ckeck, for performance, that delay_samples <= data.size
             // The application must enforce this.
-            read_ptr = data.end() -
-                       (delay_samples - (write_ptr - data.begin()));
+            read_ptr = write_ptr + (buf_size - delay_samples);
     }
-
-    void dump_state(Stream::sample_t spk_buf[20]);
 
 private:
 
