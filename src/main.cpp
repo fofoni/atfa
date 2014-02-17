@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     cout << "ATFA " << ATFA_VERSION << "." << endl;
 #ifdef ATFA_DEBUG
-    cout << ">>> THIS IS A DEBUG BUILD" << endl;
+    cout << ">>> This is a Debug build" << endl;
 #endif
     cout << "Using " << Pa_GetVersionText() << "." << endl;
     cout << endl;
@@ -50,11 +50,8 @@ int main(int argc, char *argv[]) {
     Stream s;
 
     portaudio_init(true);
-    s.echo(9);
+    s.echo(2000);
     portaudio_end();
-
-    for (int k = 0; k != 200; ++k)
-        cout << s.read() << endl;
 
     cout << "Finishing..." << endl;
 

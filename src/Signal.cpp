@@ -282,7 +282,7 @@ static int signal_callback(
     Signal::index_t total_samples = ((Signal *)user_data)->samples();
     Signal::index_t& counter = ((Signal *)user_data)->counter;
 
-    Signal::sample_t *out = (Signal::sample_t *)out_buf;
+    Signal::sample_t *out = static_cast<Signal::sample_t *>(out_buf);
     (void) in_buf; // prevent unused variable warning
     (void) time_info;
     (void) status_flags;
@@ -433,6 +433,8 @@ Signal::sample_t Signal::l_inf_norm() {
   *
   * Of course, the \a re and \a im vectors must be of the same size. This size
   * must be a power of two not greater than \ref tblsize.
+  *
+  * Refer to the DFTDriver class documentation for usage details.
   *
   * \throws std::runtime_error if any of the above conditions aren't met.
   *

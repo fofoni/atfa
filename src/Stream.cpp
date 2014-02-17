@@ -22,49 +22,64 @@ extern "C" {
 
 #include "Stream.h"
 
-static int stream_in_callback(
+static int stream_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
     const PaStreamCallbackTimeInfo* time_info,
     PaStreamCallbackFlags status_flags, void *user_data
 ) {
 
     Stream *data = static_cast<Stream *>(user_data);
+    Stream::index_t& delay_counter = data->delay_counter;
+    const unsigned& delay_samples = data->delay_samples;
 
-    (void) out_buf; // prevent unused variable warning
+    Stream::sample_t *out = static_cast<Stream::sample_t *>(out_buf);
     const Stream::sample_t *in = static_cast<const Stream::sample_t *>(in_buf);
-    (void) time_info;
+    (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-    if (in_buf == NULL)
-        for (unsigned long i = 0; i != frames_per_buf; ++i)
-            data->write(0);
-    else
-        for (unsigned long i = 0; i != frames_per_buf; ++i)
-            data->write(*in++);
+    if (delay_counter > delay_samples) {
+        if (in_buf != NULL && out_buf != NULL) {
+            for (unsigned long i = 0; i != frames_per_buf; ++i) {
+                data->write(*in++);
+                *out++ = 5*data->read();
+            }
+            delay_counter += frames_per_buf;
+        }
+    }
+    else {
+        if (in_buf != NULL) {
+            for (unsigned long i = 0; i != frames_per_buf; ++i) {
+                data->write(*in++);
+            }
+            delay_counter += frames_per_buf;
+        }
+    }
 
     return paContinue;
 
 }
 
-void Stream::echo(unsigned sleep) {
+void Stream::echo(int delay, unsigned sleep) {
 
     PaStream *stream;
     PaError err;
 
-    // open stream
+    delay_samples = samplerate * delay/1000;
+
+    // open i/o stream
     err = Pa_OpenDefaultStream(
                 &stream,
                 1,
-                0,
+                1,
                 paFloat32,
                 samplerate,
                 paFramesPerBufferUnspecified,
-                stream_in_callback,
+                stream_callback,
                 this
     );
     if (err != paNoError)
         throw std::runtime_error(
-                    std::string("Error opening stream for audio input:") +
+                    std::string("Error opening stream for audio I/O:") +
                     " " + Pa_GetErrorText(err)
         );
 
@@ -72,10 +87,11 @@ void Stream::echo(unsigned sleep) {
     err = Pa_StartStream(stream);
     if (err != paNoError)
         throw std::runtime_error(
-                    std::string("Error starting stream for audio input:") +
+                    std::string("Error starting stream for audio I/O:") +
                     " " + Pa_GetErrorText(err)
         );
 
+    // sleep
     if (sleep == 0)
         while (Pa_IsStreamActive(stream))
             Pa_Sleep(1000);

@@ -22,6 +22,9 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+/// \todo Achar uma estrategia pro delay que seja compativel com mudar o delay
+///       no meio do caminho.
+
 class Stream
 {
 
@@ -76,7 +79,8 @@ public:
     }
 
     Stream()
-        : data(buf_size), write_ptr(data.begin()), read_ptr(data.begin())
+        : delay_counter(0), delay_samples(0), data(buf_size),
+          write_ptr(data.begin()), read_ptr(data.begin())
     {
 #ifdef ATFA_DEBUG
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
@@ -98,7 +102,10 @@ public:
         return data[index].sample;
     }
 
-    void echo(unsigned sleep = 0);
+    void echo(int delay = 0, unsigned sleep = 0);
+
+    index_t delay_counter;
+    index_t delay_samples;
 
 private:
 
