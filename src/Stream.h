@@ -18,6 +18,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 #ifndef STREAM_H
 #define STREAM_H
@@ -36,27 +37,20 @@ public:
     typedef unsigned long index_t;
 
     struct sample_wrapper_t {
-        mutable int count;
+//        mutable int count;
         sample_t sample;
-        sample_wrapper_t() : count(0), sample(0) {}
+        sample_wrapper_t() : sample(0) {}
     };
 
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_wrapper_t> container_t;
 
-    static const size_t buf_size = 44100;
-    static const unsigned samplerate = 11025;
-
-    /* TODO: testar a classe do jeito que está, no portaudio. Tentar dar um
-       jeito de monitorar a corrida entre o write e o read (grava a distancia
-       em funcao do tempo num array, e depois bota num arquivo de maneira que
-       seja facil de plotar no matlab). Se estiver ruim de performance, tenta
-       fazer funcoes pra ler e escrever blocos inteiros de uma vez. */
+    static const size_t buf_size = 88200; // 20
+    static const unsigned samplerate = 11025; // 1
 
     // TODO: could be an operator>>
     sample_t read() {
-        read_ptr->count -= 1;
-        sample_t s = read_ptr->count ? 0 : read_ptr->sample;
+        sample_t s = read_ptr->sample;
         ++read_ptr;
         if (read_ptr == data.end()) read_ptr = data.begin();
         return s;
@@ -64,22 +58,13 @@ public:
 
     // TODO: could be an operator<<
     void write(sample_t s) {
-        write_ptr->count += 1;
         write_ptr->sample = s;
-        write_ptr++;
+        ++write_ptr;
         if (write_ptr == data.end()) write_ptr = data.begin();
     }
 
-    int bad_to_read() {
-        return read_ptr->count - 1;
-    }
-
-    int bad_to_write() {
-        return write_ptr->count;
-    }
-
     Stream()
-        : delay_counter(0), delay_samples(0), data(buf_size),
+        : delay_samples(0), data(buf_size),
           write_ptr(data.begin()), read_ptr(data.begin())
     {
 #ifdef ATFA_DEBUG
@@ -102,16 +87,28 @@ public:
         return data[index].sample;
     }
 
-    void echo(int delay = 0, unsigned sleep = 0);
+    void echo(unsigned delay = 0, unsigned sleep = 0);
 
-    index_t delay_counter;
-    index_t delay_samples;
+    void set_delay(unsigned delay) {
+        delay_samples = samplerate * delay/1000;
+        if (delay_samples <= static_cast<size_t>(write_ptr - data.begin()))
+            read_ptr = write_ptr - delay_samples;
+        else
+            // We won't ckeck, for performance, that delay_samples <= data.size
+            // The application must enforce this.
+            read_ptr = data.end() -
+                       (delay_samples - (write_ptr - data.begin()));
+    }
+
+    void dump_state(Stream::sample_t spk_buf[20]);
 
 private:
 
+    index_t delay_samples;
+
     container_t data;
     typename container_t::iterator write_ptr;
-    typename container_t::const_iterator read_ptr;
+    typename container_t::iterator read_ptr;
 
 };
 

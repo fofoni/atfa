@@ -29,42 +29,47 @@ static int stream_callback(
 ) {
 
     Stream *data = static_cast<Stream *>(user_data);
-    Stream::index_t& delay_counter = data->delay_counter;
-    const unsigned& delay_samples = data->delay_samples;
 
     Stream::sample_t *out = static_cast<Stream::sample_t *>(out_buf);
     const Stream::sample_t *in = static_cast<const Stream::sample_t *>(in_buf);
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-    if (delay_counter > delay_samples) {
-        if (in_buf != NULL && out_buf != NULL) {
-            for (unsigned long i = 0; i != frames_per_buf; ++i) {
-                data->write(*in++);
-                *out++ = 5*data->read();
-            }
-            delay_counter += frames_per_buf;
-        }
-    }
-    else {
-        if (in_buf != NULL) {
-            for (unsigned long i = 0; i != frames_per_buf; ++i) {
-                data->write(*in++);
-            }
-            delay_counter += frames_per_buf;
-        }
+    for (unsigned long i = 0; i != frames_per_buf; ++i) {
+        data->write(*in++);
+        *out++ = 5*data->read(); // TODO: tem um ganho magico aqui
     }
 
     return paContinue;
 
 }
 
-void Stream::echo(int delay, unsigned sleep) {
+void Stream::dump_state(Stream::sample_t spk_buf[20]) {
+    std::cout << "read_ptr = " << (read_ptr-data.begin()) << std::endl;
+    std::cout << "write_ptr = " << (write_ptr-data.begin()) << std::endl;
+    for (int k = 0; k < 20; ++k)
+        std::cout << data[k].sample << ", ";
+    std::cout << std::endl;
+    for (int k = 0; k < 20; ++k)
+        std::cout << spk_buf[k] << ", ";
+    std::cout << std::endl << std::endl;
+}
+
+void Stream::echo(unsigned delay, unsigned sleep) {
 
     PaStream *stream;
     PaError err;
 
-    delay_samples = samplerate * delay/1000;
+    set_delay(delay);
+
+//    sample_t mic_buf[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+//                          16, 17, 18, 19, 20};
+//    sample_t spk_buf[20];
+//    PaStreamCallbackFlags flg;
+
+//    dump_state(spk_buf);
+//    stream_callback(mic_buf, spk_buf, 4, NULL, flg, this);
+//    dump_state(spk_buf);
 
     // open i/o stream
     err = Pa_OpenDefaultStream(

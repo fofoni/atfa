@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     Stream s;
 
     portaudio_init(true);
-    s.echo(2000);
+    s.echo(300);
     portaudio_end();
 
     cout << "Finishing..." << endl;
