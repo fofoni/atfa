@@ -22,8 +22,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-/// \todo fazer o canal. meio que ta feito, mas nao funciona. Aproveitar, e
-///       escrever um framework pra simular o portaudio, e ver o resultado.
+/// \todo fazer um framework maneiro pro canal
 
 class Stream
 {
@@ -39,15 +38,20 @@ public:
 //        mutable int count;
         sample_t sample;
         sample_wrapper_t() : sample(0) {}
+        sample_wrapper_t(sample_t s) : sample(s) {}
     };
 
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_wrapper_t> container_t;
 
-    static const size_t buf_size = 88200; // 20
-    static const unsigned samplerate = 11025; // 1
+#ifndef ATFA_DEBUG
+    static const size_t buf_size = 88200;
+    static const unsigned samplerate = 11025;
+#else
+    static const size_t buf_size = 24;
+    static const unsigned samplerate = 1;
+#endif
 
-    // TODO: could be an operator>>
     sample_t read() {
         sample_t s = read_ptr->sample;
         ++read_ptr;
@@ -64,7 +68,6 @@ public:
         return p;
     }
 
-    // TODO: could be an operator<<
     void write(sample_t s) {
         write_ptr->sample = s;
         (write_ptr + buf_size)->sample = s;
@@ -75,24 +78,24 @@ public:
 
     Stream()
         : delay_samples(0), data(2*buf_size),
-          write_ptr(data.begin()), read_ptr(data.begin())
+          write_ptr(data.begin()), read_ptr(data.begin()), imp_resp(1, 1)
     {
 #ifdef ATFA_DEBUG
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
-        if (srate == 0) throw std::runtime_error("Stream: Bad srate");
+        if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
 #endif
     }
 
     sample_t& operator [](index_t index) {
 #ifdef ATFA_DEBUG
-        if (index >= samples()) throw std::runtime_error("Range error!!");
+        if (index >= data.size()) throw std::runtime_error("Range error!!");
 #endif
         return data[index].sample;
     }
 
     const sample_t& operator [](index_t index) const {
 #ifdef ATFA_DEBUG
-        if (index >= samples()) throw std::runtime_error("Range error!!");
+        if (index >= data.size()) throw std::runtime_error("Range error!!");
 #endif
         return data[index].sample;
     }
@@ -109,6 +112,9 @@ public:
             read_ptr = write_ptr + (buf_size - delay_samples);
     }
 
+    void dump_state(const container_t speaker_buf);
+    void simulate();
+
 private:
 
     index_t delay_samples;
@@ -116,6 +122,8 @@ private:
     container_t data;
     typename container_t::iterator write_ptr;
     typename container_t::iterator read_ptr;
+
+    container_t imp_resp;
 
 };
 

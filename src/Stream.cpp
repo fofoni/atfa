@@ -20,6 +20,8 @@ extern "C" {
 #   include <portaudio.h>
 }
 
+#include <iostream>
+
 #include "Stream.h"
 
 static int stream_callback(
@@ -38,7 +40,7 @@ static int stream_callback(
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
         data->write(*in++);
         Stream::container_t::const_iterator p = data->get_last_n(4);
-        *out++ = (p[0].sample+p[1].sample+p[2].sample+p[3].sample);
+        *out++ = (.5*p[0].sample + p[1].sample + p[2].sample + .5*p[3].sample);
     }
 
     return paContinue;
@@ -51,15 +53,6 @@ void Stream::echo(unsigned delay, unsigned sleep) {
     PaError err;
 
     set_delay(delay);
-
-//    sample_t mic_buf[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-//                          16, 17, 18, 19, 20};
-//    sample_t spk_buf[20];
-//    PaStreamCallbackFlags flg;
-
-//    dump_state(spk_buf);
-//    stream_callback(mic_buf, spk_buf, 4, NULL, flg, this);
-//    dump_state(spk_buf);
 
     // open i/o stream
     err = Pa_OpenDefaultStream(
@@ -87,6 +80,10 @@ void Stream::echo(unsigned delay, unsigned sleep) {
         );
 
     // sleep
+    Pa_Sleep(10000);
+    std::cout << "delay ";
+    set_delay(1000);
+    std::cout << "changed!" << std::endl;
     if (sleep == 0)
         while (Pa_IsStreamActive(stream))
             Pa_Sleep(1000);
@@ -100,5 +97,46 @@ void Stream::echo(unsigned delay, unsigned sleep) {
                     std::string("Error closing stream for audio input:") +
                     " " + Pa_GetErrorText(err)
         );
+
+}
+
+void Stream::dump_state(const container_t speaker_buf) {
+    std::cout << "internal: [ ";
+    container_t::const_iterator it = data.begin();
+    std::cout << it->sample;
+    for (++it; it != data.end(); ++it)
+        std::cout << ", " << it->sample;
+    std::cout << " ];" << std::endl;
+    std::cout << "speaker: [ ";
+    it = speaker_buf.begin();
+    std::cout << it->sample;
+    for (++it; it != speaker_buf.end(); ++it)
+        std::cout << ", " << it->sample;
+    std::cout << " ];" << std::endl << std::endl;
+}
+
+void Stream::simulate() {
+
+    PaStreamCallbackFlags flg = 0;
+    static const sample_t mic_buf_arr[24+8] = {
+        -987, 610, -377, 233, -144, 89, -55, 34,
+        -21, 13, -8, 5, -3, 2, -1, 1,
+        0, 1, 1, 2, 3, 5, 8, 13,
+        21, 34, 55, 89, 144, 233, 377, 610
+    };
+    container_t mic_buf(mic_buf_arr, mic_buf_arr + 24+8);
+    container_t speaker_buf(24+8);
+
+    set_delay(10*1000);
+
+    dump_state(speaker_buf);
+    stream_callback(&mic_buf[0], &speaker_buf[0], 8, NULL, flg, this);
+    dump_state(speaker_buf);
+    stream_callback(&mic_buf[8], &speaker_buf[8], 8, NULL, flg, this);
+    dump_state(speaker_buf);
+    stream_callback(&mic_buf[16], &speaker_buf[16], 8, NULL, flg, this);
+    dump_state(speaker_buf);
+    stream_callback(&mic_buf[24], &speaker_buf[24], 8, NULL, flg, this);
+    dump_state(speaker_buf);
 
 }

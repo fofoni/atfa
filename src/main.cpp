@@ -49,9 +49,11 @@ int main(int argc, char *argv[]) {
 
     Stream s;
 
-    portaudio_init(true);
+    portaudio_init();
     s.echo(300);
     portaudio_end();
+
+//    s.simulate();
 
     cout << "Finishing..." << endl;
 
