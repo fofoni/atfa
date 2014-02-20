@@ -11,7 +11,7 @@
  *
  * \file utils.h
  *
- * gfhdfghdfghdfgh
+ * Holds convenient definitions and other utilities.
  *
  * \author Pedro Angelo Medeiros Fonini
  */

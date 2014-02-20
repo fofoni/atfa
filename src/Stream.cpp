@@ -46,12 +46,10 @@ static int stream_callback(
 
 }
 
-void Stream::echo(unsigned delay, unsigned sleep) {
+void Stream::echo(unsigned sleep) {
 
     PaStream *stream;
     PaError err;
-
-    set_delay(delay);
 
     // open i/o stream
     err = Pa_OpenDefaultStream(
@@ -103,7 +101,7 @@ void Stream::set_filter(container_t h) {
     imp_resp = h;
 }
 
-void Stream::dump_state(const container_t speaker_buf) {
+void Stream::dump_state(const container_t speaker_buf) const {
     std::cout << "internal: [ ";
     container_t::const_iterator it = data.begin();
     std::cout << it->sample;

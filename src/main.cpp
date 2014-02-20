@@ -11,7 +11,7 @@
  *
  * \file main.cpp
  *
- * Holds the `main()` function and other routines.
+ * Holds the `main()` function.
  *
  * \author Pedro Angelo Medeiros Fonini
  */
@@ -33,6 +33,11 @@ using namespace std;
  *
  * This function:
  * 1. Prints version info
+ * 2. Creates an i/o stream to represent the communication channel with echo
+ * 3. Creates a room impulse response
+ * 4. Assigns the created impulse response to the stream
+ * 5. Assigns a value of 300ms to the stream's delay echo
+ * 6. Runs the stream
  *
  * \param[in] argc      argument count (unused)
  * \param[in] argv      argument values (unused)
@@ -52,11 +57,13 @@ int main(int argc, char *argv[]) {
     Stream::container_t h(16, 1.0);
     for (Stream::index_t k=0; k!=16; k+=2)
         h[k].sample *= 1;
+
     s.set_filter(h);
+    s.set_delay(300);
 
 #ifndef ATFA_DEBUG
     portaudio_init();
-    s.echo(300);
+    s.echo();
     portaudio_end();
 #else
     s.simulate();

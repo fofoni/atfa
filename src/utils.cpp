@@ -11,7 +11,7 @@
  *
  * \file utils.cpp
  *
- * blablabla
+ * Holds convenient routines.
  *
  * \author Pedro Angelo Medeiros Fonini
  */
