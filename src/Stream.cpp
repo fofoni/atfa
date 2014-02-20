@@ -39,7 +39,7 @@ static int stream_callback(
 
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
         data->write(*in++);
-        *out++ = data->get_filtered_sample();
+        *out++ = 2*data->get_filtered_sample(); // TODO: ganho magico
     }
 
     return paContinue;

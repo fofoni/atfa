@@ -54,9 +54,11 @@ int main(int argc, char *argv[]) {
 
     Stream s;
 
-    Stream::container_t h(16, 1.0);
-    for (Stream::index_t k=0; k!=16; k+=2)
-        h[k].sample *= 1;
+    Stream::container_t h(1024, 0);
+    for (Stream::index_t k=0; k!=64; k+=2)
+        h[k].sample = 1;
+    for (Stream::index_t k=960; k!=1024; k+=2)
+        h[k].sample = (k%2) ? .25 : -.25;
 
     s.set_filter(h);
     s.set_delay(300);
