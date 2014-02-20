@@ -31,8 +31,6 @@
   * frequency-domain signals. Currently, all Signals are an array of
   * single-precision floating-point samples. Signals are aware of their sample
   * rates.
-  *
-  * \todo Implement "stream" signals, to provide real-time processing.
   */
 class Signal
 {

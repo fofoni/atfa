@@ -49,11 +49,18 @@ int main(int argc, char *argv[]) {
 
     Stream s;
 
+    Stream::container_t h(16, 1.0);
+    for (Stream::index_t k=0; k!=16; k+=2)
+        h[k].sample *= 1;
+    s.set_filter(h);
+
+#ifndef ATFA_DEBUG
     portaudio_init();
     s.echo(300);
     portaudio_end();
-
-//    s.simulate();
+#else
+    s.simulate();
+#endif
 
     cout << "Finishing..." << endl;
 

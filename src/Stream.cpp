@@ -39,8 +39,7 @@ static int stream_callback(
 
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
         data->write(*in++);
-        Stream::container_t::const_iterator p = data->get_last_n(4);
-        *out++ = (.5*p[0].sample + p[1].sample + p[2].sample + .5*p[3].sample);
+        *out++ = data->get_filtered_sample();
     }
 
     return paContinue;
@@ -98,6 +97,10 @@ void Stream::echo(unsigned delay, unsigned sleep) {
                     " " + Pa_GetErrorText(err)
         );
 
+}
+
+void Stream::set_filter(container_t h) {
+    imp_resp = h;
 }
 
 void Stream::dump_state(const container_t speaker_buf) {

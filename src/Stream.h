@@ -18,11 +18,10 @@
 
 #include <vector>
 #include <stdexcept>
+#include <numeric>
 
 #ifndef STREAM_H
 #define STREAM_H
-
-/// \todo fazer um framework maneiro pro canal
 
 class Stream
 {
@@ -111,6 +110,16 @@ public:
             // The application must enforce this.
             read_ptr = write_ptr + (buf_size - delay_samples);
     }
+
+    sample_t get_filtered_sample() {
+        container_t::const_iterator p = get_last_n(imp_resp.size());
+        sample_t accum = 0;
+        for (index_t k = imp_resp.size(); k != 0; --k, ++p)
+            accum += imp_resp[k-1].sample * p->sample;
+        return accum;
+    }
+
+    void set_filter(container_t h);
 
     void dump_state(const container_t speaker_buf);
     void simulate();
