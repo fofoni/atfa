@@ -24,6 +24,40 @@ extern "C" {
 
 #include "Stream.h"
 
+/// Callback function for dealing with PortAudio
+static int stream_callback(
+        const void *in_buf, void *out_buf, unsigned long frames_per_buf,
+        const PaStreamCallbackTimeInfo* time_info,
+        PaStreamCallbackFlags status_flags, void *user_data
+);
+
+
+/**
+  * See the description for the `signal_callback()` function, in the Signal.cpp
+  * file for information on how this function accomplishes audio I/O, together
+  * with PortAudio.
+  *
+  * \param[in]  in_buf      Pointer to a buffer of samples retrieved from an
+  *                         input audio device. We read these samples into the
+  *                         stream, at the location pointed to by the Stream's
+  *                         Stream::write_ptr.
+  * \param[out] out_buf     Pointer to a buffer where the callback function will
+  *                         store samples to be given to an output audio device.
+  *                         We write to this location the samples we get from
+  *                         the stream through the Stream::read_ptr pointer.
+  * \param[in]  frames_per_buf  Number of samples we will write/read to/from the
+  *                             PortAudio buffers. This is actually the number
+  *                             of _frames_, which in turn is equal to number of
+  *                             samples because we're working with mono-channel
+  *                             signals.
+  * \param[in]  time_info       PortAudio time information. (unused)
+  * \param[in]  status_flags    PortAudio status flags. (unused)
+  * \param[in,out]  user_data   Pointer to an arbitrary data-holder passed to
+  *                             the stream open function. In this case, this is
+  *                             a pointer to the Stream object.
+  *
+  * \see Stream::echo
+  */
 static int stream_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
     const PaStreamCallbackTimeInfo* time_info,
@@ -46,6 +80,27 @@ static int stream_callback(
 
 }
 
+/**
+  * This is one of the main methods in the Stream class. It runs the stream,
+  * simulating a communications environment in which the user listens to echoes
+  * of his own voice.
+  *
+  * Creates a PortAudio session for audio I/O. If \a sleep is not zero, we only
+  * run the stream for the time duration specified in miliseconds. If it's zero,
+  * we run the stream until something kills the process.
+  *
+  * To use this method, you should first set the scenario parameters using the
+  * methods `set_filter` and `set_delay`.
+  *
+  * \param[in]  sleep   The duration, in miliseconds, in which to run the
+  *                     stream.
+  *
+  * \throws std::runtime_error if any of the PortAudio steps fail (check the
+  *         source code)
+  *
+  * \see Stream
+  * \see stream_callback
+  */
 void Stream::echo(unsigned sleep) {
 
     PaStream *stream;
@@ -97,10 +152,27 @@ void Stream::echo(unsigned sleep) {
 
 }
 
+/**
+  * This function just sets the internal copy of the room impulse response (RIR)
+  * samples to be equal to the one specified.
+  *
+  * \param[in]  h   A vector containing the RIR samples
+  */
 void Stream::set_filter(container_t h) {
     imp_resp = h;
 }
 
+
+/**
+  * This function is called be `simulate()` to print to the screen the current
+  * state of the simulated environment. It prints the internal state of the
+  * Stream object and the samples that have been written to the output.
+  *
+  * \param[in]  speaker_buf     A vector with the samples that have been sent
+  *                             to the output (speaker).
+  *
+  * \see simulate
+  */
 void Stream::dump_state(const container_t speaker_buf) const {
     std::cout << "internal: [ ";
     container_t::const_iterator it = data.begin();
@@ -116,6 +188,13 @@ void Stream::dump_state(const container_t speaker_buf) const {
     std::cout << " ];" << std::endl << std::endl;
 }
 
+/**
+  * This function simulates the PortAudio functioning by calling the callback
+  * function some four times, each time providing it with different in/out
+  * buffers.
+  *
+  * \see dump_state
+  */
 void Stream::simulate() {
 
     PaStreamCallbackFlags flg = 0;

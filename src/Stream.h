@@ -88,8 +88,8 @@ public:
 
     /// The number of data samples held internally be the stream structure.
     /**
-      * The actual size of the vector used to hold is `2*samplerate`, in order
-      * to make the data structure "look" circular.
+      * The actual size of the vector used to hold the samples is
+      * `2*samplerate`, in order to make the data structure "look" circular.
       */
     static const size_t buf_size = 8*samplerate;
 #else
@@ -134,6 +134,8 @@ public:
       * is one such that `read_ptr - data.begin()` is in the range
       * \f$\left\[0, \texttt buf_size\right\[\f$.
       *
+      * \param[in]  n   The size, in samples, of the "array" that is returned
+      *
       * \returns an iterator pointing to the last \a n samples.
       *
       * \see data
@@ -174,6 +176,9 @@ public:
       * "circular".
       *
       * Handles the case in which the pointer must be rewinded.
+      *
+      * \param[in]  s   The value of sample to be written to the stream's
+      *                 internal memory
       *
       * \see data
       * \see read
@@ -218,6 +223,8 @@ public:
       * the application must be sure that the delay `msec` is such that
       * \f$\texttt samplerate \cdot \texttt msec \leqslant
       *     1000\cdot \texttt buf_size\f$
+      *
+      * \param[in]  msec    The time delay, specified in miliseconds
       *
       * \see delay_samples
       * \see read_ptr

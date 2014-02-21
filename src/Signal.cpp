@@ -298,7 +298,7 @@ static int signal_callback(
 }
 
 /**
-  * Creates a PortAudio stream for audio playback of the signal content. If
+  * Creates a PortAudio session for audio playback of the signal content. If
   * \a sleep is `true`, we wait for the playback to end before returning. (If
   * it's false, the function returns, while playback goes on in the background.)
   *
