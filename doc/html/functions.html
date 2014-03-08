@@ -90,6 +90,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_b"><span>b</span></a></li>
       <li><a href="#index_c"><span>c</span></a></li>
       <li><a href="#index_d"><span>d</span></a></li>
+      <li><a href="#index_e"><span>e</span></a></li>
       <li><a href="#index_f"><span>f</span></a></li>
       <li><a href="#index_g"><span>g</span></a></li>
       <li><a href="#index_i"><span>i</span></a></li>
@@ -98,6 +99,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="#index_n"><span>n</span></a></li>
       <li><a href="#index_o"><span>o</span></a></li>
       <li><a href="#index_p"><span>p</span></a></li>
+      <li><a href="#index_r"><span>r</span></a></li>
       <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_t"><span>t</span></a></li>
       <li><a href="#index_w"><span>w</span></a></li>
@@ -124,7 +126,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -150,12 +152,16 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>br()
 : <a class="el" href="classSignal_1_1DFTDriver.html#a2746759b3a733a88805ea552ca805930">Signal::DFTDriver</a>
 </li>
+<li>buf_size
+: <a class="el" href="classStream.html#a4b5c770668079147764ae8117e724752">Stream</a>
+</li>
 </ul>
 
 
 <h3><a class="anchor" id="index_c"></a>- c -</h3><ul>
 <li>container_t
 : <a class="el" href="classSignal.html#a67935911c10fc829d8e428939a6346a1">Signal</a>
+, <a class="el" href="classStream.html#afe96241cc7279888e3514649e046fecd">Stream</a>
 </li>
 <li>costbl
 : <a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55">Signal::DFTDriver</a>
@@ -169,9 +175,13 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <h3><a class="anchor" id="index_d"></a>- d -</h3><ul>
 <li>data
 : <a class="el" href="classSignal.html#aa1d859fcde3bd06c45eacb6c7b764b27">Signal</a>
+, <a class="el" href="classStream.html#af4bb39ad50790edd1c910337f62d6b40">Stream</a>
 </li>
 <li>delay()
 : <a class="el" href="classSignal.html#abf5a86974cf6a910ad779055aee4a23d">Signal</a>
+</li>
+<li>delay_samples
+: <a class="el" href="classStream.html#a400660bfd6bcc170afbe3c80e5e5de6e">Stream</a>
 </li>
 <li>delay_t
 : <a class="el" href="classSignal.html#af3d824cd235dfe5b3218b0c2a645c573">Signal</a>
@@ -187,6 +197,16 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </li>
 <li>DIRECT
 : <a class="el" href="classSignal_1_1DFTDriver.html#a6fc76457d642e051a659320865e6291aa889d9a381ea1397c17f0b630dc35b86f">Signal::DFTDriver</a>
+</li>
+<li>dump_state()
+: <a class="el" href="classStream.html#a72f95a45d382b856fa307039938c0b56">Stream</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
+<li>echo()
+: <a class="el" href="classStream.html#af09d9e8cb24b1fee1193f8184d0e8216">Stream</a>
 </li>
 </ul>
 
@@ -208,12 +228,22 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>gain()
 : <a class="el" href="classSignal.html#a730271aeaaf2bd90c3243cc8c7acfa81">Signal</a>
 </li>
+<li>get_filtered_sample()
+: <a class="el" href="classStream.html#a0b542d1458b01674f225afd61a7320b0">Stream</a>
+</li>
+<li>get_last_n()
+: <a class="el" href="classStream.html#abd772e55045629f2b48c86df66fbbda1">Stream</a>
+</li>
 </ul>
 
 
 <h3><a class="anchor" id="index_i"></a>- i -</h3><ul>
+<li>imp_resp
+: <a class="el" href="classStream.html#a1b5429e5b2b8f7179983c400436190d3">Stream</a>
+</li>
 <li>index_t
 : <a class="el" href="classSignal.html#ab57d9e26cf075b3dbccde62573f3d292">Signal</a>
+, <a class="el" href="classStream.html#ae16cb99ad36fb7506f30d9daeeda148a">Stream</a>
 </li>
 <li>initialize_costbl()
 : <a class="el" href="classSignal_1_1DFTDriver.html#ab230e8bfb3fcbda937b769c029b8d203">Signal::DFTDriver</a>
@@ -260,6 +290,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </li>
 <li>operator[]()
 : <a class="el" href="classSignal.html#afe41c99db1258a044b44ef36ec00d919">Signal</a>
+, <a class="el" href="classStream.html#ad1b90569ad9e62d65262813d9ef1600f">Stream</a>
 </li>
 </ul>
 
@@ -271,18 +302,45 @@ $(document).ready(function(){initNavTree('functions.html','');});
 </ul>
 
 
+<h3><a class="anchor" id="index_r"></a>- r -</h3><ul>
+<li>read()
+: <a class="el" href="classStream.html#a45da601212cc96aef235933abbb77231">Stream</a>
+</li>
+<li>read_ptr
+: <a class="el" href="classStream.html#a0f016e77e086d7bcadff6e8889813882">Stream</a>
+</li>
+</ul>
+
+
 <h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
 <li>SAMPLE
 : <a class="el" href="classSignal.html#af3d824cd235dfe5b3218b0c2a645c573a29508a29e1f1dfb176239b6eb843c53d">Signal</a>
 </li>
+<li>sample
+: <a class="el" href="structStream_1_1sample__wrapper__t.html#a4662e280efa1ecfc1f363b7517fb6546">Stream::sample_wrapper_t</a>
+</li>
 <li>sample_t
 : <a class="el" href="classSignal.html#ae1911e53d057c06c7191fc5e3ec72500">Signal</a>
+, <a class="el" href="classStream.html#a83ef73f0b26948a2aaa853ba934adda5">Stream</a>
+</li>
+<li>sample_wrapper_t()
+: <a class="el" href="structStream_1_1sample__wrapper__t.html#aafbe87c5616b7b7d5af7d1d437d0ba71">Stream::sample_wrapper_t</a>
 </li>
 <li>samplerate()
 : <a class="el" href="classSignal.html#abb4772f617dfadb80c42a21e2518f8c3">Signal</a>
+, <a class="el" href="classStream.html#a170c51f25224a19bfc0eeb900f83df9a">Stream</a>
 </li>
 <li>samples()
 : <a class="el" href="classSignal.html#a68c7e57251908ba0619762ea322219e8">Signal</a>
+</li>
+<li>semantic_end
+: <a class="el" href="classStream.html#a9f313c6f8af967e8c1ed23ba2b61a40a">Stream</a>
+</li>
+<li>set_delay()
+: <a class="el" href="classStream.html#a4e6c8eeb02575865b50f3f7927d3a883">Stream</a>
+</li>
+<li>set_filter()
+: <a class="el" href="classStream.html#a24989b734efb624b13ed5c5d1df32a0c">Stream</a>
 </li>
 <li>set_samplerate()
 : <a class="el" href="classSignal.html#a62a8aa2204f3fd0b657b0985bca45f76">Signal</a>
@@ -293,11 +351,17 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>Signal()
 : <a class="el" href="classSignal.html#a98d189d267bf6b981c63867692741108">Signal</a>
 </li>
+<li>simulate()
+: <a class="el" href="classStream.html#a560125f63bb90d42b2c375015543936f">Stream</a>
+</li>
 <li>sintbl
 : <a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73">Signal::DFTDriver</a>
 </li>
 <li>srate
 : <a class="el" href="classSignal.html#aebfc9e0a2afbe69dacac858532448c26">Signal</a>
+</li>
+<li>Stream()
+: <a class="el" href="classStream.html#a8c3f05bd00361ec92627fa41f330a39b">Stream</a>
 </li>
 </ul>
 
@@ -322,6 +386,12 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <li>Wre()
 : <a class="el" href="classSignal_1_1DFTDriver.html#aad171a4b260ad53c335b8c6c90455251">Signal::DFTDriver</a>
 </li>
+<li>write()
+: <a class="el" href="classStream.html#ad74bc2ecce3ca364ac0939467ed3e151">Stream</a>
+</li>
+<li>write_ptr
+: <a class="el" href="classStream.html#a6d3a224daad76c7860db576cc6947104">Stream</a>
+</li>
 </ul>
 
 
@@ -338,7 +408,7 @@ $(document).ready(function(){initNavTree('functions.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

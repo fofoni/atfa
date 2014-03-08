@@ -15,3 +15,13 @@
 \form#14:$k$
 \form#15:$\left[0,\texttt{tblsize}\right[$
 \form#16:$N > \texttt{tblbits}$
+\form#17:$\left[\texttt read_ptr -\texttt n,\texttt read_ptr\right[$
+\form#18:$\texttt n\in\left[0, \texttt buf_size\right]$
+\form#19:$\left[0, \texttt buf_size\right[$
+\form#20:$\texttt samplerate\cdot \texttt msec < 1000\cdot \texttt buf_size$
+\form#21:$\texttt samplerate\cdot \texttt msec \leq 1000\cdot \texttt buf_size$
+\form#22:$\texttt samplerate\cdot \texttt msec \le 1000\cdot \texttt buf_size$
+\form#23:$\left[\texttt{read\_ptr} -\texttt{n},\texttt{read\_ptr}\right[$
+\form#24:$\texttt{n}\in\left[0,\texttt{buf\_size}\right]$
+\form#25:$\left[0,\texttt{buf\_size}\right[$
+\form#26:$\texttt{samplerate}\cdot\texttt{msec}\le 1000\cdot\texttt{buf\_size}$

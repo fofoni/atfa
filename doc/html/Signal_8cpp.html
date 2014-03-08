@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('Signal_8cpp.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -108,7 +108,11 @@ $(document).ready(function(){initNavTree('Signal_8cpp.html','');});
 <div class="title">Signal.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<h3 class="version">(v0.1-10-gf33dea9)</h3><div class="textblock"><code>#include &quot;<a class="el" href="Signal_8h_source.html">Signal.h</a>&quot;</code><br/>
+<h3 class="version">(v0.1.1-14-ga4f2141)</h3><div class="textblock"><code>#include &lt;iostream&gt;</code><br/>
+<code>#include &lt;stdexcept&gt;</code><br/>
+<code>#include &lt;portaudio.h&gt;</code><br/>
+<code>#include &lt;sndfile.hh&gt;</code><br/>
+<code>#include &quot;<a class="el" href="Signal_8h_source.html">Signal.h</a>&quot;</code><br/>
 </div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Include dependency graph for Signal.cpp:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -123,9 +127,9 @@ $(document).ready(function(){initNavTree('Signal_8cpp.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad59bc8cf9217c61a20bcbc0211f8fd4a"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Signal_8cpp.html#ad59bc8cf9217c61a20bcbc0211f8fd4a">callback</a> (const void *in_buf, void *out_buf, unsigned long frames_per_buf, const PaStreamCallbackTimeInfo *time_info, PaStreamCallbackFlags status_flags, void *user_data)</td></tr>
-<tr class="memdesc:ad59bc8cf9217c61a20bcbc0211f8fd4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">PortAudio callback function.  <a href="#ad59bc8cf9217c61a20bcbc0211f8fd4a">More...</a><br/></td></tr>
-<tr class="separator:ad59bc8cf9217c61a20bcbc0211f8fd4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8127a4df216b8ba0a3f50605dd391fee"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Signal_8cpp.html#a8127a4df216b8ba0a3f50605dd391fee">signal_callback</a> (const void *in_buf, void *out_buf, unsigned long frames_per_buf, const PaStreamCallbackTimeInfo *time_info, PaStreamCallbackFlags status_flags, void *user_data)</td></tr>
+<tr class="memdesc:a8127a4df216b8ba0a3f50605dd391fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">PortAudio callback function.  <a href="#a8127a4df216b8ba0a3f50605dd391fee">More...</a><br/></td></tr>
+<tr class="separator:a8127a4df216b8ba0a3f50605dd391fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Holds the implementation of the <code><a class="el" href="classSignal.html" title="A time- or frequency-domain signal. ">Signal</a></code> class.</p>
@@ -133,7 +137,7 @@ Functions</h2></td></tr>
 
 <p>Definition in file <a class="el" href="Signal_8cpp_source.html">Signal.cpp</a>.</p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ad59bc8cf9217c61a20bcbc0211f8fd4a"></a>
+<a class="anchor" id="a8127a4df216b8ba0a3f50605dd391fee"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -141,7 +145,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static int callback </td>
+          <td class="memname">static int signal_callback </td>
           <td>(</td>
           <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>in_buf</em>, </td>
@@ -205,9 +209,9 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal.html#a5e8b9f3380ee51b93325391fedabbfe1" title="Makes PortAudio playback the audio signal. ">Signal::play</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8cpp_source.html#l00258">258</a> of file <a class="el" href="Signal_8cpp_source.html">Signal.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8cpp_source.html#l00275">275</a> of file <a class="el" href="Signal_8cpp_source.html">Signal.cpp</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00298">Signal::play()</a>.</p>
+<p>Referenced by <a class="el" href="Signal_8cpp_source.html#l00315">Signal::play()</a>.</p>
 
 </div>
 </div>
@@ -217,7 +221,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="Signal_8cpp.html">Signal.cpp</a></li>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

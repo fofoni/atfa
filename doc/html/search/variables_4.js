@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['msg',['msg',['../classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3',1,'FileError']]]
+  ['imp_5fresp',['imp_resp',['../classStream.html#a1b5429e5b2b8f7179983c400436190d3',1,'Stream']]]
 ];

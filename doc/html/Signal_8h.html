@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('Signal_8h.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,20 +104,14 @@ $(document).ready(function(){initNavTree('Signal_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Signal.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<h3 class="version">(v0.1-10-gf33dea9)</h3><div class="textblock"><code>#include &lt;cmath&gt;</code><br/>
-<code>#include &lt;iostream&gt;</code><br/>
-<code>#include &lt;sstream&gt;</code><br/>
-<code>#include &lt;string&gt;</code><br/>
+<h3 class="version">(v0.1.1-14-ga4f2141)</h3><div class="textblock"><code>#include &lt;cmath&gt;</code><br/>
 <code>#include &lt;vector&gt;</code><br/>
-<code>#include &lt;stdexcept&gt;</code><br/>
-<code>#include &lt;portaudio.h&gt;</code><br/>
-<code>#include &lt;sndfile.hh&gt;</code><br/>
+<code>#include &quot;<a class="el" href="utils_8h_source.html">utils.h</a>&quot;</code><br/>
 </div><div class="textblock"><div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Include dependency graph for Signal.h:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -139,9 +133,6 @@ $(document).ready(function(){initNavTree('Signal_8h.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFileError.html">FileError</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A runtime exception while trying to process a file.  <a href="classFileError.html#details">More...</a><br/></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSignal.html">Signal</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A time- or frequency-domain signal.  <a href="classSignal.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,12 +145,6 @@ Functions</h2></td></tr>
 <tr class="memitem:af7cf3776f31036e39875dfe5a072f4c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classSignal.html">Signal</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Signal_8h.html#af7cf3776f31036e39875dfe5a072f4c3">operator+</a> (<a class="el" href="classSignal.html">Signal</a> lhs, const <a class="el" href="classSignal.html">Signal</a> &amp;rhs)</td></tr>
 <tr class="memdesc:af7cf3776f31036e39875dfe5a072f4c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds two signals.  <a href="#af7cf3776f31036e39875dfe5a072f4c3">More...</a><br/></td></tr>
 <tr class="separator:af7cf3776f31036e39875dfe5a072f4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a912f8e800275efd7406021afac1829f5"><td class="memItemLeft" align="right" valign="top">static const void *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="Signal_8h.html#a912f8e800275efd7406021afac1829f5">NULL</a></td></tr>
-<tr class="memdesc:a912f8e800275efd7406021afac1829f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Null pointer.  <a href="#a912f8e800275efd7406021afac1829f5">More...</a><br/></td></tr>
-<tr class="separator:a912f8e800275efd7406021afac1829f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Holds the interface to the <code><a class="el" href="classSignal.html" title="A time- or frequency-domain signal. ">Signal</a></code> class.</p>
@@ -202,39 +187,7 @@ Variables</h2></td></tr>
 <p>Adds two signals. </p>
 <dl class="section see"><dt>See Also</dt><dd><a class="el" href="classSignal.html#aecf69562e03caf75f0b02306f276f36c" title="Adds the other signal to the caller. ">Signal::operator+=</a> </dd></dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00477">477</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="a912f8e800275efd7406021afac1829f5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const void* const NULL</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= ((<span class="keywordtype">void</span> *)0)</div>
-<div class="line"></div>
-<div class="line"></div>
-<div class="line"></div>
-<div class="line"></div>
-<div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">double</span> TAU = 6.283185307179586477</div>
-</div><!-- fragment -->
-<p>Null pointer. </p>
-<p>Replaces the standard null pointer in case it's not defined. </p>
-
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00038">38</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="Signal_8h_source.html#l00409">409</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -244,7 +197,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="Signal_8h.html">Signal.h</a></li>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

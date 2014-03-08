@@ -94,7 +94,7 @@ $(document).ready(function(){initNavTree('classFileError.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -117,7 +117,7 @@ $(document).ready(function(){initNavTree('classFileError.html','');});
 <p>A runtime exception while trying to process a file.  
  <a href="classFileError.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="Signal_8h_source.html">Signal.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="utils_8h_source.html">utils.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
   <img id="dynsection-0-trigger" src="closed.png" alt="+"/> Inheritance diagram for FileError:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
@@ -171,7 +171,7 @@ Static Private Attributes</h2></td></tr>
 std::cin &gt;&gt; filename;
 // ...
 if (error ocurred) throw FileError(filename);</pre> 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00063">63</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00077">77</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a3da20059628a0e2c5b80c462a844472a"></a>
 <div class="memitem">
@@ -203,7 +203,7 @@ if (error ocurred) throw FileError(filename);</pre>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00081">81</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00095">95</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
 </div>
 </div>
@@ -237,7 +237,7 @@ if (error ocurred) throw FileError(filename);</pre>
 <p>Destructor that does nothing. </p>
 <p>Needed to prevent the <code>looser throw specifier</code> error because, <code>std::runtime_error::~runtime_error()</code> is declared as <code>throw()</code> </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00089">89</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00103">103</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
 </div>
 </div>
@@ -272,9 +272,9 @@ if (error ocurred) throw FileError(filename);</pre>
 <p>Gives a description for the error. </p>
 <p>Updates the <a class="el" href="classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3">msg</a> static member with the error message, and returns it as a C string. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00096">96</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00110">110</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
-<p>References <a class="el" href="Signal_8h_source.html#l00074">filename</a>, and <a class="el" href="Signal_8h_source.html#l00071">msg</a>.</p>
+<p>References <a class="el" href="utils_8h_source.html#l00088">filename</a>, and <a class="el" href="utils_8h_source.html#l00085">msg</a>.</p>
 
 </div>
 </div>
@@ -299,9 +299,9 @@ if (error ocurred) throw FileError(filename);</pre>
 
 <p>The name of the file that caused the error. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00074">74</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00088">88</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00096">what()</a>.</p>
+<p>Referenced by <a class="el" href="utils_8h_source.html#l00110">what()</a>.</p>
 
 </div>
 </div>
@@ -326,15 +326,15 @@ if (error ocurred) throw FileError(filename);</pre>
 <p>The message that will be displayed if we don't catch the exception. </p>
 <p>Must be static, so that we can modify it inside the <code><a class="el" href="classFileError.html#a189fd00f87ae8d279618fc900912e9b1" title="Gives a description for the error. ">what()</a></code> <code>const</code> function, and read it after the temporary object has been destroyed. </p>
 
-<p>Definition at line <a class="el" href="Signal_8h_source.html#l00071">71</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p>Definition at line <a class="el" href="utils_8h_source.html#l00085">85</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
 
-<p>Referenced by <a class="el" href="Signal_8h_source.html#l00096">what()</a>.</p>
+<p>Referenced by <a class="el" href="utils_8h_source.html#l00110">what()</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="Signal_8h_source.html">Signal.h (v0.1-10-gf33dea9)</a></li>
-<li><a class="el" href="main_8cpp_source.html">main.cpp (v0.1-10-gf33dea9)</a></li>
+<li><a class="el" href="utils_8h_source.html">utils.h (v0.1.1-14-ga4f2141)</a></li>
+<li><a class="el" href="utils_8cpp_source.html">utils.cpp (v0.1.1-14-ga4f2141)</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -342,7 +342,7 @@ if (error ocurred) throw FileError(filename);</pre>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="classFileError.html">FileError</a></li>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

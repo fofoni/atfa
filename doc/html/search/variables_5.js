@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['null',['NULL',['../Signal_8h.html#a912f8e800275efd7406021afac1829f5',1,'Signal.h']]]
+  ['msg',['msg',['../classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3',1,'FileError']]]
 ];

@@ -104,7 +104,7 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -118,6 +118,9 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 <li>bits
 : <a class="el" href="classSignal_1_1DFTDriver.html#a680a8a668d38dfbfda8215b9c21558db">Signal::DFTDriver</a>
 </li>
+<li>buf_size
+: <a class="el" href="classStream.html#a4b5c770668079147764ae8117e724752">Stream</a>
+</li>
 <li>costbl
 : <a class="el" href="classSignal_1_1DFTDriver.html#a8a0e5a9b84eef708ef8d536352fb7c55">Signal::DFTDriver</a>
 </li>
@@ -126,6 +129,10 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 </li>
 <li>data
 : <a class="el" href="classSignal.html#aa1d859fcde3bd06c45eacb6c7b764b27">Signal</a>
+, <a class="el" href="classStream.html#af4bb39ad50790edd1c910337f62d6b40">Stream</a>
+</li>
+<li>delay_samples
+: <a class="el" href="classStream.html#a400660bfd6bcc170afbe3c80e5e5de6e">Stream</a>
 </li>
 <li>dft
 : <a class="el" href="classSignal.html#a9ff7d1f4445c741ea024215a9f8e1e99">Signal</a>
@@ -133,8 +140,23 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 <li>filename
 : <a class="el" href="classFileError.html#a99a36f0128191f67c8eabb0cdf95c163">FileError</a>
 </li>
+<li>imp_resp
+: <a class="el" href="classStream.html#a1b5429e5b2b8f7179983c400436190d3">Stream</a>
+</li>
 <li>msg
 : <a class="el" href="classFileError.html#a23abdcaa77825b6f90134c88b3ab75d3">FileError</a>
+</li>
+<li>read_ptr
+: <a class="el" href="classStream.html#a0f016e77e086d7bcadff6e8889813882">Stream</a>
+</li>
+<li>sample
+: <a class="el" href="structStream_1_1sample__wrapper__t.html#a4662e280efa1ecfc1f363b7517fb6546">Stream::sample_wrapper_t</a>
+</li>
+<li>samplerate
+: <a class="el" href="classStream.html#a170c51f25224a19bfc0eeb900f83df9a">Stream</a>
+</li>
+<li>semantic_end
+: <a class="el" href="classStream.html#a9f313c6f8af967e8c1ed23ba2b61a40a">Stream</a>
 </li>
 <li>sintbl
 : <a class="el" href="classSignal_1_1DFTDriver.html#a1b2ecf2f8f3a0f674051d37f36963a73">Signal::DFTDriver</a>
@@ -148,13 +170,16 @@ $(document).ready(function(){initNavTree('functions_vars.html','');});
 <li>tblsize
 : <a class="el" href="classSignal_1_1DFTDriver.html#aeb1619fa60faca6af801271fdb04d27d">Signal::DFTDriver</a>
 </li>
+<li>write_ptr
+: <a class="el" href="classStream.html#a6d3a224daad76c7860db576cc6947104">Stream</a>
+</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

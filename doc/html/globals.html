@@ -77,7 +77,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li class="current"><a href="globals.html"><span>All</span></a></li>
       <li><a href="globals_func.html"><span>Functions</span></a></li>
       <li><a href="globals_vars.html"><span>Variables</span></a></li>
-      <li><a href="globals_defs.html"><span>Macros</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -100,7 +99,7 @@ $(document).ready(function(){initNavTree('globals.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -111,35 +110,28 @@ $(document).ready(function(){initNavTree('globals.html','');});
 
 <div class="contents">
 <div class="textblock">Here is a list of all file members with links to the files they belong to:</div><ul>
-<li>ATFA_DIR
-: <a class="el" href="main_8cpp.html#ab1f0877cae5e5009ade58d497f211ceb">main.cpp</a>
-</li>
-<li>callback()
-: <a class="el" href="Signal_8cpp.html#ad59bc8cf9217c61a20bcbc0211f8fd4a">Signal.cpp</a>
-</li>
 <li>main()
 : <a class="el" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main.cpp</a>
-</li>
-<li>NULL
-: <a class="el" href="Signal_8h.html#a912f8e800275efd7406021afac1829f5">Signal.h</a>
 </li>
 <li>operator+()
 : <a class="el" href="Signal_8h.html#af7cf3776f31036e39875dfe5a072f4c3">Signal.h</a>
 </li>
 <li>portaudio_end()
-: <a class="el" href="main_8cpp.html#a0b8899294bc76f0800ea25c2d5349162">main.cpp</a>
+: <a class="el" href="utils_8cpp.html#a0b8899294bc76f0800ea25c2d5349162">utils.cpp</a>
+, <a class="el" href="utils_8h.html#a0b8899294bc76f0800ea25c2d5349162">utils.h</a>
 </li>
 <li>portaudio_init()
-: <a class="el" href="main_8cpp.html#ae28b34d15dd5b21485171f735970be39">main.cpp</a>
+: <a class="el" href="utils_8cpp.html#ae2e2fedebc6b096d96ee9aad17d61e14">utils.cpp</a>
+, <a class="el" href="utils_8h.html#ae28b34d15dd5b21485171f735970be39">utils.h</a>
 </li>
-<li>static_dirname
-: <a class="el" href="main_8cpp.html#a25bfebf92b07a0956fbac90e083f7366">main.cpp</a>
+<li>signal_callback()
+: <a class="el" href="Signal_8cpp.html#a8127a4df216b8ba0a3f50605dd391fee">Signal.cpp</a>
 </li>
-<li>static_filename
-: <a class="el" href="main_8cpp.html#a99fef4d58b9127f416fb8883fb50018a">main.cpp</a>
+<li>stream_callback()
+: <a class="el" href="Stream_8cpp.html#adbc74d435214ada2bcb17616b315097d">Stream.cpp</a>
 </li>
-<li>static_projdirname
-: <a class="el" href="main_8cpp.html#a184b89ef11d6a6e49e428a5568709dd2">main.cpp</a>
+<li>TAU
+: <a class="el" href="utils_8h.html#a9fd6b95c1e5aede2fbbfacacfb38bd99">utils.h</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -147,7 +139,7 @@ $(document).ready(function(){initNavTree('globals.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Jan 29 2014 15:50:25 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -121,18 +121,18 @@ public:
         if (read_ptr == semantic_end)
             read_ptr = data.begin();
         return s;
-    }
+    } // \f$\left[\texttt{read_ptr} -\texttt{n},\texttt{read_ptr}\right[\f$
 
     /// Returns an "array" with the last \a n samples
     /**
       * Makes a pointer (actually, an iterator) to the n-th pointer behind
       * `read_ptr`. Handles the case in which the range
-      * \f$\left\[\texttt read_ptr -\texttt n,\texttt read_ptr\right\[\f$
+      * \f$\left[\texttt{read\_ptr} -\texttt{n},\texttt{read\_ptr}\right[\f$
       * crosses the end of the circular structure. That is, for any valid value
       * of `read_ptr`, this function can be called with any
-      * \f$\texttt n\in\left\[0, \texttt buf_size\right\]\f$. A valid `read_ptr`
+      * \f$\texttt{n}\in\left[0,\texttt{buf\_size}\right]\f$. A valid `read_ptr`
       * is one such that `read_ptr - data.begin()` is in the range
-      * \f$\left\[0, \texttt buf_size\right\[\f$.
+      * \f$\left[0,\texttt{buf\_size}\right[\f$.
       *
       * \param[in]  n   The size, in samples, of the "array" that is returned
       *
@@ -221,8 +221,8 @@ public:
       *
       * This function doesn't check whether the given delay is valid, so that
       * the application must be sure that the delay `msec` is such that
-      * \f$\texttt samplerate \cdot \texttt msec \leqslant
-      *     1000\cdot \texttt buf_size\f$
+      * \f$\texttt{samplerate}\cdot\texttt{msec}\le
+      *     1000\cdot\texttt{buf\_size}\f$
       *
       * \param[in]  msec    The time delay, specified in miliseconds
       *
