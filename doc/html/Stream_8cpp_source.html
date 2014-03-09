@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>Ambiente de Teste para Filtros Adaptativos: Stream.cpp (v0.1.1-14-ga4f2141) Source File</title>
+<title>Ambiente de Teste para Filtros Adaptativos: Stream.cpp (v0.1.1-17-gc9cc97d) Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -248,12 +248,12 @@ $(document).ready(function(){initNavTree('Stream_8cpp_source.html','');});
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <a class="code" href="classStream.html#a72f95a45d382b856fa307039938c0b56">dump_state</a>(speaker_buf);</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;}</div>
-<div class="ttc" id="classStream_html_af4bb39ad50790edd1c910337f62d6b40"><div class="ttname"><a href="classStream.html#af4bb39ad50790edd1c910337f62d6b40">Stream::data</a></div><div class="ttdeci">container_t data</div><div class="ttdoc">The container for holding the internal memory of the data structure. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00279">Stream.h:279</a></div></div>
+<div class="ttc" id="classStream_html_af4bb39ad50790edd1c910337f62d6b40"><div class="ttname"><a href="classStream.html#af4bb39ad50790edd1c910337f62d6b40">Stream::data</a></div><div class="ttdeci">container_t data</div><div class="ttdoc">The container for holding the internal memory of the data structure. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00272">Stream.h:272</a></div></div>
 <div class="ttc" id="Stream_8h_html"><div class="ttname"><a href="Stream_8h.html">Stream.h</a></div></div>
 <div class="ttc" id="classStream_html_a560125f63bb90d42b2c375015543936f"><div class="ttname"><a href="classStream.html#a560125f63bb90d42b2c375015543936f">Stream::simulate</a></div><div class="ttdeci">void simulate()</div><div class="ttdoc">Simulates a PortAudio session, used for debugging. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8cpp_source.html#l00198">Stream.cpp:198</a></div></div>
 <div class="ttc" id="classStream_html_a4e6c8eeb02575865b50f3f7927d3a883"><div class="ttname"><a href="classStream.html#a4e6c8eeb02575865b50f3f7927d3a883">Stream::set_delay</a></div><div class="ttdeci">void set_delay(unsigned msec)</div><div class="ttdoc">Sets the delay parameter, given in miliseconds. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00232">Stream.h:232</a></div></div>
 <div class="ttc" id="classStream_html_a72f95a45d382b856fa307039938c0b56"><div class="ttname"><a href="classStream.html#a72f95a45d382b856fa307039938c0b56">Stream::dump_state</a></div><div class="ttdeci">void dump_state(const container_t speaker_buf) const </div><div class="ttdoc">Used for debugging, together with simulate </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8cpp_source.html#l00176">Stream.cpp:176</a></div></div>
-<div class="ttc" id="classStream_html_a1b5429e5b2b8f7179983c400436190d3"><div class="ttname"><a href="classStream.html#a1b5429e5b2b8f7179983c400436190d3">Stream::imp_resp</a></div><div class="ttdeci">container_t imp_resp</div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00320">Stream.h:320</a></div></div>
+<div class="ttc" id="classStream_html_a1b5429e5b2b8f7179983c400436190d3"><div class="ttname"><a href="classStream.html#a1b5429e5b2b8f7179983c400436190d3">Stream::imp_resp</a></div><div class="ttdeci">container_t imp_resp</div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00313">Stream.h:313</a></div></div>
 <div class="ttc" id="classStream_html_af09d9e8cb24b1fee1193f8184d0e8216"><div class="ttname"><a href="classStream.html#af09d9e8cb24b1fee1193f8184d0e8216">Stream::echo</a></div><div class="ttdeci">void echo(unsigned sleep=0)</div><div class="ttdoc">Runs the stream with predefined scenario parameters. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8cpp_source.html#l00104">Stream.cpp:104</a></div></div>
 <div class="ttc" id="classStream_html_a170c51f25224a19bfc0eeb900f83df9a"><div class="ttname"><a href="classStream.html#a170c51f25224a19bfc0eeb900f83df9a">Stream::samplerate</a></div><div class="ttdeci">static const unsigned samplerate</div><div class="ttdoc">The stream&#39;s rate in samples per second. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00087">Stream.h:87</a></div></div>
 <div class="ttc" id="classStream_html_afe96241cc7279888e3514649e046fecd"><div class="ttname"><a href="classStream.html#afe96241cc7279888e3514649e046fecd">Stream::container_t</a></div><div class="ttdeci">std::vector&lt; sample_wrapper_t &gt; container_t</div><div class="ttdoc">The type for holding the whole vector of signal samples. </div><div class="ttdef"><b>Definition:</b> <a href="Stream_8h_source.html#l00083">Stream.h:83</a></div></div>
@@ -269,7 +269,7 @@ $(document).ready(function(){initNavTree('Stream_8cpp_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="Stream_8cpp.html">Stream.cpp</a></li>
-    <li class="footer">Generated on Sat Mar 8 2014 19:42:32 for Ambiente de Teste para Filtros Adaptativos by
+    <li class="footer">Generated on Sun Mar 9 2014 17:00:44 for Ambiente de Teste para Filtros Adaptativos by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

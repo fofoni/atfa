@@ -261,15 +261,8 @@ private:
       * a "circular buffer" of size `buf_size` that is used to keep track of the
       * stream's state.
       *
-      *     data.begin()                            semantic_end          data.end()
-      *          |                                        |                     |
-      *        --------------------------------------------------------------------
-      *        | 0 | 1 | ... | buf_size - 1 | buf_size | ... | 2*buf_size - 1 |   |
-      *        --------------------------------------------------------------------
-      *                                      from here on, the vector contains just
-      *                                      a repetition of the first `buf_size' samples
-      *
-      * \todo esse digrama devia ser xfig, e não ascii-art
+      * \image html diag_stream_data.png
+      * \image latex diag_stream_data.pdf "The `data` vector structure" width=\columnwidth
       *
       * \see read
       * \see get_last_n
