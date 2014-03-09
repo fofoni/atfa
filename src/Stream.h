@@ -121,7 +121,7 @@ public:
         if (read_ptr == semantic_end)
             read_ptr = data.begin();
         return s;
-    } // \f$\left[\texttt{read_ptr} -\texttt{n},\texttt{read_ptr}\right[\f$
+    }
 
     /// Returns an "array" with the last \a n samples
     /**
