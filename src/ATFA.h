@@ -46,9 +46,10 @@ private slots:
     void about_qt();
 
     // ui
-    void vad_checkbox_changed(int state);
-
     void flearn_on_toggled(bool t);
+    void flearn_off_toggled(bool t);
+    void flearn_vad_toggled(bool t);
+
 
 private:
     QAction *newscene_act;
@@ -68,7 +69,6 @@ private:
     QWidget *main_widget;
 
     // left layout
-    QCheckBox *vad_checkbox;
     QGroupBox *flearn_group;
         QRadioButton *flearn_on_radio;
         QRadioButton *flearn_off_radio;
@@ -77,6 +77,7 @@ private:
         QRadioButton *fout_on_radio;
         QRadioButton *fout_off_radio;
         QRadioButton *fout_vad_radio;
+        QPushButton *zero_button;
     // right layout
     QPushButton *play_button;
     QWidget *delay_widget;
@@ -84,7 +85,6 @@ private:
         QSlider *delay_slider;
         QSpinBox *delay_spin;
         QLabel *delay_units;
-    QPushButton *zero_button;
     QWidget *vol_widget;
         QLabel *vol_label;
         QPushButton *vol_mute_button;

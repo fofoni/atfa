@@ -127,10 +127,6 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *left_layout = new QVBoxLayout;
 
-        vad_checkbox = new QCheckBox("VAD", this);
-        vad_checkbox->setChecked(true);
-        left_layout->addWidget(vad_checkbox);
-
         flearn_group = new QGroupBox("Filter learning", this);
         QVBoxLayout *flearn_layout = new QVBoxLayout;
             flearn_on_radio = new QRadioButton("Enabled (always)", this);
@@ -144,6 +140,9 @@ ATFA::ATFA(QWidget *parent) :
             flearn_layout->addStretch(1); // TODO: do we need this?
         flearn_group->setLayout(flearn_layout);
         left_layout->addWidget(flearn_group);
+
+        zero_button = new QPushButton("Reset filter state", this);
+        left_layout->addWidget(zero_button);
 
         fout_group = new QGroupBox("Filter output", this);
         QVBoxLayout *fout_layout = new QVBoxLayout;
@@ -196,10 +195,6 @@ ATFA::ATFA(QWidget *parent) :
 
         delay_widget->setLayout(delay_layout);
         right_layout->addWidget(delay_widget);
-
-        zero_button = new QPushButton(this);
-        zero_button->setText("Reset filter state");
-        right_layout->addWidget(zero_button);
 
         vol_widget = new QWidget(this);
         QHBoxLayout *vol_layout = new QHBoxLayout;
@@ -276,8 +271,12 @@ ATFA::ATFA(QWidget *parent) :
      *
      */
 
-    connect(vad_checkbox, SIGNAL(stateChanged(int)),
-            this, SLOT(vad_checkbox_changed(int)));
+    connect(flearn_on_radio, SIGNAL(toggled(bool)),
+            this, SLOT(flearn_on_toggled(bool)));
+    connect(flearn_off_radio, SIGNAL(toggled(bool)),
+            this, SLOT(flearn_off_toggled(bool)));
+    connect(flearn_vad_radio, SIGNAL(toggled(bool)),
+            this, SLOT(flearn_vad_toggled(bool)));
 
     setCentralWidget(main_widget);
 
@@ -337,19 +336,18 @@ void ATFA::about_qt() {
     QMessageBox::aboutQt(this);
 }
 
-void ATFA::vad_checkbox_changed(int state) {
-    switch (state) {
-    case Qt::Checked:
-        scene.is_VAD_active = true;
-        statusBar()->showMessage(QString("VAD is now present"));
-        break;
-    case Qt::Unchecked:
-        scene.is_VAD_active = false;
-        statusBar()->showMessage(QString("VAD is now turned off"));
-        break;
-    }
-}
-
 void ATFA::flearn_on_toggled(bool t) {
-
+    if (!t) return;
+    statusBar()->showMessage("Filter learning is enabled even during silence.");
+    scene.filter_learning = Stream::Scenario::On;
+}
+void ATFA::flearn_off_toggled(bool t) {
+    if (!t) return;
+    statusBar()->showMessage("Filter learning is disabled.");
+    scene.filter_learning = Stream::Scenario::Off;
+}
+void ATFA::flearn_vad_toggled(bool t) {
+    if (!t) return;
+    statusBar()->showMessage("Filter learning is controlled by the VAD.");
+    scene.filter_learning = Stream::Scenario::VAD;
 }
