@@ -131,8 +131,8 @@ ATFA::ATFA(QWidget *parent) :
         QVBoxLayout *flearn_layout = new QVBoxLayout;
             flearn_on_radio = new QRadioButton("Enabled (always)", this);
             flearn_off_radio = new QRadioButton("Disabled (always)", this);
-            flearn_vad_radio = new QRadioButton("Enabled when VAD is active",
-                                                this);
+            flearn_vad_radio = new QRadioButton(
+                "Enabled when VAD detects action", this);
             flearn_vad_radio->setChecked(true);
             flearn_layout->addWidget(flearn_on_radio);
             flearn_layout->addWidget(flearn_off_radio);
@@ -148,7 +148,7 @@ ATFA::ATFA(QWidget *parent) :
         QVBoxLayout *fout_layout = new QVBoxLayout;
             fout_on_radio = new QRadioButton("Enabled (always)", this);
             fout_off_radio = new QRadioButton("Disabled (always)", this);
-            fout_vad_radio = new QRadioButton("Enabled when VAD is active",
+            fout_vad_radio = new QRadioButton("Enabled when VAD detects action",
                                               this);
             fout_vad_radio->setChecked(true);
             fout_layout->addWidget(fout_on_radio);
@@ -265,7 +265,6 @@ ATFA::ATFA(QWidget *parent) :
     main_widget = new QWidget(this);
     main_widget->setLayout(layout);
 
-
     /*
      * SIGNALING
      *
@@ -277,6 +276,27 @@ ATFA::ATFA(QWidget *parent) :
             this, SLOT(flearn_off_toggled(bool)));
     connect(flearn_vad_radio, SIGNAL(toggled(bool)),
             this, SLOT(flearn_vad_toggled(bool)));
+
+    connect(zero_button, SIGNAL(clicked()), this, SLOT(zero_filter_clicked()));
+
+    connect(fout_on_radio, SIGNAL(toggled(bool)),
+            this, SLOT(fout_on_toggled(bool)));
+    connect(fout_off_radio, SIGNAL(toggled(bool)),
+            this, SLOT(fout_off_toggled(bool)));
+    connect(fout_vad_radio, SIGNAL(toggled(bool)),
+            this, SLOT(fout_vad_toggled(bool)));
+
+    connect(play_button, SIGNAL(clicked()), this, SLOT(play_clicked()));
+
+    connect(delay_slider, SIGNAL(valueChanged(int)),
+            this, SLOT(delay_slider_changed(int)));
+    connect(delay_slider, SIGNAL(valueChanged(int)),
+            delay_spin, SLOT(setValue(int)));
+
+    /*
+     * SHOW ON SCREEN
+     *
+     */
 
     setCentralWidget(main_widget);
 
@@ -338,16 +358,44 @@ void ATFA::about_qt() {
 
 void ATFA::flearn_on_toggled(bool t) {
     if (!t) return;
-    statusBar()->showMessage("Filter learning is enabled even during silence.");
     scene.filter_learning = Stream::Scenario::On;
+    statusBar()->showMessage("Filter learning is enabled even during silence.");
 }
 void ATFA::flearn_off_toggled(bool t) {
     if (!t) return;
-    statusBar()->showMessage("Filter learning is disabled.");
     scene.filter_learning = Stream::Scenario::Off;
+    statusBar()->showMessage("Filter learning is disabled.");
 }
 void ATFA::flearn_vad_toggled(bool t) {
     if (!t) return;
-    statusBar()->showMessage("Filter learning is controlled by the VAD.");
     scene.filter_learning = Stream::Scenario::VAD;
+    statusBar()->showMessage("Filter learning is controlled by the VAD.");
+}
+
+void ATFA::zero_filter_clicked() {
+    statusBar()->showMessage("Adaptative filter memory zeroed.");
+}
+
+void ATFA::fout_on_toggled(bool t) {
+    if (!t) return;
+    scene.filter_output = Stream::Scenario::On;
+    statusBar()->showMessage("Filter output always enabled.");
+}
+void ATFA::fout_off_toggled(bool t) {
+    if (!t) return;
+    scene.filter_learning = Stream::Scenario::Off;
+    statusBar()->showMessage("Filter output always disabled.");
+}
+void ATFA::fout_vad_toggled(bool t) {
+    if (!t) return;
+    scene.filter_learning = Stream::Scenario::VAD;
+    statusBar()->showMessage("Filter output is controlled by the VAD.");
+}
+
+void ATFA::play_clicked() {
+    statusBar()->showMessage("Simulation running...");
+}
+
+void ATFA::delay_slider_changed(int v) {
+    scene.delay = v;
 }

@@ -50,6 +50,16 @@ private slots:
     void flearn_off_toggled(bool t);
     void flearn_vad_toggled(bool t);
 
+    void zero_filter_clicked();
+
+    void fout_on_toggled(bool t);
+    void fout_off_toggled(bool t);
+    void fout_vad_toggled(bool t);
+
+    void play_clicked();
+
+    void delay_slider_changed(int v);
+
 
 private:
     QAction *newscene_act;
@@ -73,11 +83,11 @@ private:
         QRadioButton *flearn_on_radio;
         QRadioButton *flearn_off_radio;
         QRadioButton *flearn_vad_radio;
+    QPushButton *zero_button;
     QGroupBox *fout_group;
         QRadioButton *fout_on_radio;
         QRadioButton *fout_off_radio;
         QRadioButton *fout_vad_radio;
-        QPushButton *zero_button;
     // right layout
     QPushButton *play_button;
     QWidget *delay_widget;
