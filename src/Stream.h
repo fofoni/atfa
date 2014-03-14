@@ -82,6 +82,35 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_wrapper_t> container_t;
 
+    struct Scenario
+    {
+
+        bool is_VAD_active; // Voice action detector
+
+        enum OOV { // On, Off, VAD
+            On,  // always enabled
+            Off, // always disabled
+            VAD  // enabled when VAD detects voice
+        };
+
+        OOV filter_learning;
+        OOV filter_output;
+
+        unsigned delay; // in miliseconds
+
+        unsigned volume; // 0 -- 100
+
+        bool paused;
+
+        container_t imp_resp;
+
+        Scenario(
+            const container_t& ir, bool vact, OOV flearn, OOV fout,
+            unsigned d, unsigned vol, bool p
+        );
+
+    };
+
 #ifndef ATFA_DEBUG
     /// The stream's rate in samples per second
     static const unsigned samplerate = 11025;
@@ -209,6 +238,21 @@ public:
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
 #endif
+    }
+
+    /// Contructs from a `Scenario` object
+    /**
+      * Constructs a Stream object from `Scenario` parameters.
+      *
+      * \see Scenario
+      */
+    Stream(const Scenario& scene)
+        : delay_samples(0), data(2*buf_size),
+          write_ptr(data.begin()), read_ptr(data.begin()),
+          semantic_end(data.begin() + buf_size)
+    {
+        set_filter(scene.imp_resp);
+        set_delay(scene.delay);
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -345,5 +389,15 @@ private:
     }
 
 };
+
+inline Stream::Scenario::Scenario(
+    const container_t& ir = container_t(), bool vact = true,
+    OOV flearn = VAD, OOV fout = VAD,
+    unsigned d = 100, unsigned vol = 50, bool p = false
+)
+  : is_VAD_active(vact), filter_learning(flearn), filter_output(fout),
+    delay(d), volume(vol), paused(p), imp_resp(ir)
+{
+}
 
 #endif // STREAM_H

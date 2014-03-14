@@ -18,12 +18,16 @@
 
 #include <iostream>
 
+#include <QtGui>
+
 extern "C" {
 #   include <portaudio.h>
 }
 
-#include "Stream.h"
-#include "utils.h"
+#include "utils.h" // TODO: deletar isso
+#include "Stream.h" // TODO: deletar isso
+
+#include "ATFA.h"
 
 using namespace std;
 
@@ -52,7 +56,20 @@ int main(int argc, char *argv[]) {
     cout << "Using " << Pa_GetVersionText() << "." << endl;
     cout << endl;
 
-    Stream s;
+    QApplication app(argc, argv);
+
+    ATFA window;
+    window.resize(window.sizeHint());
+
+    QRect r = window.geometry();
+    r.moveCenter(QApplication::desktop()->availableGeometry().center());
+    window.setGeometry(r);
+
+    window.show();
+
+    return app.exec();
+
+    /*
 
     Stream::container_t h(1024, 0);
     for (Stream::index_t k=0; k!=64; k+=2)
@@ -60,8 +77,10 @@ int main(int argc, char *argv[]) {
     for (Stream::index_t k=960; k!=1024; k+=2)
         h[k].sample = (k%2) ? .25 : -.25;
 
-    s.set_filter(h);
-    s.set_delay(300);
+    Stream::Scenario scene(h);
+    scene.delay = 300;
+
+    Stream s(scene);
 
 #ifndef ATFA_DEBUG
     portaudio_init();
@@ -71,7 +90,7 @@ int main(int argc, char *argv[]) {
     s.simulate();
 #endif
 
-    cout << "Finishing..." << endl;
+//    */
 
     return 0;
 
