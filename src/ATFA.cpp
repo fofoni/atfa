@@ -15,7 +15,7 @@
 #include "Stream.h"
 
 ATFA::ATFA(QWidget *parent) :
-    QMainWindow(parent), scene(), rir_source(NoRIR),
+    QMainWindow(parent), scene(), running(false), rir_source(NoRIR),
     rir_filetype(None), rir_file("")
 {
 
@@ -164,9 +164,8 @@ ATFA::ATFA(QWidget *parent) :
 
         play_button = new QPushButton(this);
         play_button->setMinimumHeight(80);
-        play_button->setIcon(QIcon(QPixmap("../../imgs/play2.png")));
+        play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
         play_button->setIconSize(QSize(58, 58));
-        play_button->setDisabled(true);
         right_layout->addWidget(play_button);
 
         delay_widget = new QWidget(this);
@@ -289,9 +288,14 @@ ATFA::ATFA(QWidget *parent) :
     connect(play_button, SIGNAL(clicked()), this, SLOT(play_clicked()));
 
     connect(delay_slider, SIGNAL(valueChanged(int)),
-            this, SLOT(delay_slider_changed(int)));
+            this, SLOT(delay_changed(int)));
     connect(delay_slider, SIGNAL(valueChanged(int)),
             delay_spin, SLOT(setValue(int)));
+    connect(delay_spin, SIGNAL(valueChanged(int)),
+            delay_slider, SLOT(setValue(int)));
+
+    connect(vol_mute_button, SIGNAL(toggled(bool)),
+            this, SLOT(vol_mute_toggled(bool)));
 
     /*
      * SHOW ON SCREEN
@@ -393,9 +397,31 @@ void ATFA::fout_vad_toggled(bool t) {
 }
 
 void ATFA::play_clicked() {
-    statusBar()->showMessage("Simulation running...");
+    if (running) {
+        running = false;
+        statusBar()->showMessage("Simulation stopped.");
+        play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
+    }
+    else {
+        running = true;
+        statusBar()->showMessage("Simulation running...");
+        play_button->setIcon(QIcon(QPixmap("../../imgs/pause.png")));
+    }
 }
 
-void ATFA::delay_slider_changed(int v) {
+void ATFA::delay_changed(int v) {
     scene.delay = v;
+}
+
+
+void ATFA::vol_mute_toggled(bool t) {
+    if (t) {
+        scene.volume = 0;
+        statusBar()->showMessage(
+            "Local speaker muted. Simulation still running.");
+    }
+    else {
+        scene.volume = vol_slider->value();
+        statusBar()->showMessage("Local speaker unmuted.");
+    }
 }

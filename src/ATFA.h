@@ -23,6 +23,7 @@ public:
     explicit ATFA(QWidget *parent = 0);
 
     Stream::Scenario scene;
+    bool running;
 
     enum RIR_source_t {NoRIR, Literal, Database, File};
     enum RIR_filetype_t {None, MAT, WAV};
@@ -58,7 +59,9 @@ private slots:
 
     void play_clicked();
 
-    void delay_slider_changed(int v);
+    void delay_changed(int v);
+
+    void vol_mute_toggled(bool t);
 
 
 private:
