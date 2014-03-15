@@ -297,6 +297,13 @@ ATFA::ATFA(QWidget *parent) :
     connect(vol_mute_button, SIGNAL(toggled(bool)),
             this, SLOT(vol_mute_toggled(bool)));
 
+    connect(vol_slider, SIGNAL(valueChanged(int)),
+            this, SLOT(vol_changed(int)));
+    connect(vol_slider, SIGNAL(valueChanged(int)),
+            vol_spin, SLOT(setValue(int)));
+    connect(vol_spin, SIGNAL(valueChanged(int)),
+            vol_slider, SLOT(setValue(int)));
+
     /*
      * SHOW ON SCREEN
      *
@@ -413,7 +420,6 @@ void ATFA::delay_changed(int v) {
     scene.delay = v;
 }
 
-
 void ATFA::vol_mute_toggled(bool t) {
     if (t) {
         scene.volume = 0;
@@ -424,4 +430,7 @@ void ATFA::vol_mute_toggled(bool t) {
         scene.volume = vol_slider->value();
         statusBar()->showMessage("Local speaker unmuted.");
     }
+}
+void ATFA::vol_changed(int v) {
+    scene.volume = v;
 }

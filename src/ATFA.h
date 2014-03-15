@@ -63,6 +63,8 @@ private slots:
 
     void vol_mute_toggled(bool t);
 
+    void vol_changed(int v);
+
 
 private:
     QAction *newscene_act;
