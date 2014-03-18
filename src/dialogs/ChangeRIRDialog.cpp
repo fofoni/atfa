@@ -30,15 +30,15 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
 
     layout->addLayout(choose_layout);
 
-    QLabel *none_label = new QLabel(
-                "There will be no room impulse response. This is the same "
-                "as setting <span style='font-family: monospace'>imp_resp"
-                "&nbsp;=&nbsp;[&nbsp;1&nbsp;];</span>", this);
+    none_label = new QLabel(
+        "There will be no room impulse response. This is the same as setting "
+        "<span style='font-family: monospace'>imp_resp&nbsp;=&nbsp;[&nbsp;1"
+        "&nbsp;];</span>", this);
     none_label->setWordWrap(true);
     layout->addWidget(none_label);
     none_label->hide();
 
-    QWidget *literal_widget = new QWidget(this);
+    literal_widget = new QWidget(this);
     QVBoxLayout *literal_layout = new QVBoxLayout(literal_widget);
 
         QLabel *literal_label = new QLabel(
@@ -56,11 +56,11 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     layout->addWidget(literal_widget);
     literal_widget->hide();
 
-    QWidget *database_widget = new QWidget(this);
+    database_widget = new QWidget(this);
     QHBoxLayout *database_layout = new QHBoxLayout(database_widget);
 
         QLabel *database_label = new QLabel("Choose a RIR-database file:",
-                                            literal_widget);
+                                            database_widget);
         database_layout->addWidget(database_label);
 
         QLabel *database_button_placeholder = new QLabel("NOT IMPLEMENTED YET",
@@ -69,7 +69,24 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
 
     database_widget->setLayout(database_layout);
     layout->addWidget(database_widget);
-//    database_widget->hide();
+    database_widget->hide();
+
+    file_widget = new QWidget(this);
+    QHBoxLayout *file_layout = new QHBoxLayout(file_widget);
+
+        QLabel *file_label = new QLabel("Choose a RIR file:", file_widget);
+        file_layout->addWidget(file_label);
+
+        QLabel *file_button_placeholder = new QLabel("NOT IMPLEMENTED YET",
+                                                     file_widget);
+        file_layout->addWidget(file_button_placeholder);
+
+    file_widget->setLayout(file_layout);
+    layout->addWidget(file_widget);
+    file_widget->hide();
+
+    connect(choose_combo, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(set_rir_source(int)));
 
     button_box = new QDialogButtonBox(
         QDialogButtonBox::Ok |
@@ -91,4 +108,45 @@ bool ChangeRIRDialog::run() {
         return false;
     // ...
     return true;
+}
+
+void ChangeRIRDialog::set_rir_source(int n) {
+    switch (n) {
+    case 0:
+        none_label->hide();
+        literal_widget->hide();
+        database_widget->hide();
+        file_widget->hide();
+        button_box->buttons()[0]->setDisabled(true);
+        break;
+    case 1:
+        literal_widget->hide();
+        database_widget->hide();
+        file_widget->hide();
+        none_label->show();
+        button_box->buttons()[0]->setDisabled(false);
+        break;
+    case 2:
+        none_label->hide();
+        database_widget->hide();
+        file_widget->hide();
+        literal_widget->show();
+        button_box->buttons()[0]->setDisabled(true);
+        break;
+    case 3:
+        none_label->hide();
+        literal_widget->hide();
+        file_widget->hide();
+        database_widget->show();
+        button_box->buttons()[0]->setDisabled(true);
+        break;
+    case 4:
+        none_label->hide();
+        literal_widget->hide();
+        database_widget->hide();
+        file_widget->show();
+        button_box->buttons()[0]->setDisabled(true);
+        break;
+    }
+    adjustSize();
 }

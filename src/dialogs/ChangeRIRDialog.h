@@ -25,11 +25,17 @@ public:
 private:
     QComboBox *choose_combo;
 
+    QLabel *none_label;
+    QWidget *literal_widget;
+    QWidget *database_widget;
+    QWidget *file_widget;
+
     QTextEdit *literal_edit;
 
     QDialogButtonBox *button_box;
 
 private slots:
+    void set_rir_source(int n);
 
 };
 
