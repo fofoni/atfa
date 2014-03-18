@@ -13,10 +13,13 @@
 
 #include "ATFA.h"
 #include "Stream.h"
+#include "dialogs/ShowTextDialog.h"
+#include "dialogs/ChangeAlgorithmDialog.h"
+#include "dialogs/ChangeRIRDialog.h"
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), scene(), running(false), rir_source(NoRIR),
-    rir_filetype(None), rir_file("")
+    rir_filetype(None), rir_file(""), muted(false)
 {
 
     /*
@@ -123,16 +126,19 @@ ATFA::ATFA(QWidget *parent) :
 
     setWindowTitle("ATFA");
 
+    main_widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout;
 
     QVBoxLayout *left_layout = new QVBoxLayout;
 
-        flearn_group = new QGroupBox("Filter learning", this);
+        flearn_group = new QGroupBox("Filter learning", main_widget);
         QVBoxLayout *flearn_layout = new QVBoxLayout;
-            flearn_on_radio = new QRadioButton("Enabled (always)", this);
-            flearn_off_radio = new QRadioButton("Disabled (always)", this);
+            flearn_on_radio = new QRadioButton(
+                "Enabled (always)", flearn_group);
+            flearn_off_radio = new QRadioButton(
+                "Disabled (always)", flearn_group);
             flearn_vad_radio = new QRadioButton(
-                "Enabled when VAD detects action", this);
+                "Enabled when VAD detects action", flearn_group);
             flearn_vad_radio->setChecked(true);
             flearn_layout->addWidget(flearn_on_radio);
             flearn_layout->addWidget(flearn_off_radio);
@@ -141,15 +147,15 @@ ATFA::ATFA(QWidget *parent) :
         flearn_group->setLayout(flearn_layout);
         left_layout->addWidget(flearn_group);
 
-        zero_button = new QPushButton("Reset filter state", this);
+        zero_button = new QPushButton("Reset filter state", main_widget);
         left_layout->addWidget(zero_button);
 
-        fout_group = new QGroupBox("Filter output", this);
+        fout_group = new QGroupBox("Filter output", main_widget);
         QVBoxLayout *fout_layout = new QVBoxLayout;
-            fout_on_radio = new QRadioButton("Enabled (always)", this);
-            fout_off_radio = new QRadioButton("Disabled (always)", this);
+            fout_on_radio = new QRadioButton("Enabled (always)", fout_group);
+            fout_off_radio = new QRadioButton("Disabled (always)", fout_group);
             fout_vad_radio = new QRadioButton("Enabled when VAD detects action",
-                                              this);
+                                              fout_group);
             fout_vad_radio->setChecked(true);
             fout_layout->addWidget(fout_on_radio);
             fout_layout->addWidget(fout_off_radio);
@@ -162,19 +168,19 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *right_layout = new QVBoxLayout;
 
-        play_button = new QPushButton(this);
+        play_button = new QPushButton(main_widget);
         play_button->setMinimumHeight(80);
         play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
         play_button->setIconSize(QSize(58, 58));
         right_layout->addWidget(play_button);
 
-        delay_widget = new QWidget(this);
+        delay_widget = new QWidget(main_widget);
         QHBoxLayout *delay_layout = new QHBoxLayout;
 
-            delay_label = new QLabel("Round trip delay:", this);
+            delay_label = new QLabel("Round trip delay:", delay_widget);
             delay_layout->addWidget(delay_label);
 
-            delay_slider = new QSlider(Qt::Horizontal, this);
+            delay_slider = new QSlider(Qt::Horizontal, delay_widget);
             delay_slider->setMinimumWidth(200);
             delay_slider->setMinimum(0);
             delay_slider->setMaximum(500);
@@ -182,30 +188,30 @@ ATFA::ATFA(QWidget *parent) :
             // TODO: if playback lags during sliding, disable tracking
             delay_layout->addWidget(delay_slider);
 
-            delay_spin = new QSpinBox(this);
+            delay_spin = new QSpinBox(delay_widget);
             delay_spin->setMinimum(0);
             delay_spin->setMaximum(500);
             delay_spin->setFixedWidth(60);
             delay_spin->setValue(100);
             delay_layout->addWidget(delay_spin);
 
-            delay_units = new QLabel("ms", this);
+            delay_units = new QLabel("ms", delay_widget);
             delay_layout->addWidget(delay_units);
 
         delay_widget->setLayout(delay_layout);
         right_layout->addWidget(delay_widget);
 
-        vol_widget = new QWidget(this);
+        vol_widget = new QWidget(main_widget);
         QHBoxLayout *vol_layout = new QHBoxLayout;
 
-            vol_label = new QLabel("Volume:", this);
+            vol_label = new QLabel("Volume:", vol_widget);
             vol_layout->addWidget(vol_label);
 
-            vol_mute_button = new QPushButton("Mute", this);
+            vol_mute_button = new QPushButton("Mute", vol_widget);
             vol_mute_button->setCheckable(true);
             vol_layout->addWidget(vol_mute_button);
 
-            vol_slider = new QSlider(Qt::Horizontal, this);
+            vol_slider = new QSlider(Qt::Horizontal, vol_widget);
             vol_slider->setMinimumWidth(200);
             vol_slider->setMinimum(0);
             vol_slider->setMaximum(100);
@@ -213,7 +219,7 @@ ATFA::ATFA(QWidget *parent) :
             // TODO: if playback lags during sliding, disable tracking
             vol_layout->addWidget(vol_slider);
 
-            vol_spin = new QSpinBox(this);
+            vol_spin = new QSpinBox(vol_widget);
             vol_spin->setMinimum(0);
             vol_spin->setMaximum(100);
             vol_spin->setFixedWidth(60);
@@ -223,45 +229,46 @@ ATFA::ATFA(QWidget *parent) :
         vol_widget->setLayout(vol_layout);
         right_layout->addWidget(vol_widget);
 
-        rir_widget = new QWidget(this);
+        rir_widget = new QWidget(main_widget);
         QHBoxLayout *rir_layout = new QHBoxLayout;
 
-            rir_label = new QLabel("Room impulse response:", this);
+            rir_label = new QLabel("Room impulse response:", rir_widget);
             rir_layout->addWidget(rir_label);
 
-            rir_type_label = new QLabel("None", this);
+            rir_type_label = new QLabel("None", rir_widget);
             rir_layout->addWidget(rir_type_label);
 
-            rir_show_button = new QPushButton("Show filter coefficients", this);
+            rir_show_button = new QPushButton("Show filter coefficients",
+                                              rir_widget);
+            rir_show_button->setDisabled(true);
             rir_layout->addWidget(rir_show_button);
 
-            rir_change_button = new QPushButton("Change", this);
+            rir_change_button = new QPushButton("Change", rir_widget);
             rir_layout->addWidget(rir_change_button);
 
         rir_widget->setLayout(rir_layout);
         right_layout->addWidget(rir_widget);
 
-        adapf_widget = new QWidget(this);
+        adapf_widget = new QWidget(main_widget);
         QHBoxLayout *adapf_layout = new QHBoxLayout;
 
-            adapf_label = new QLabel("Adaptative filtering algorithm:", this);
+            adapf_label = new QLabel("Adaptative filtering algorithm:",
+                                     adapf_widget);
             adapf_layout->addWidget(adapf_label);
 
-            adapf_file_label = new QLabel("None", this);
+            adapf_file_label = new QLabel("None", adapf_widget);
             adapf_layout->addWidget(adapf_file_label);
 
-            adapf_show_button = new QPushButton("Show code", this);
+            adapf_show_button = new QPushButton("Show code", adapf_widget);
             adapf_layout->addWidget(adapf_show_button);
 
-            adapf_change_button = new QPushButton("Change", this);
+            adapf_change_button = new QPushButton("Change", adapf_widget);
             adapf_layout->addWidget(adapf_change_button);
 
         adapf_widget->setLayout(adapf_layout);
         right_layout->addWidget(adapf_widget);
 
     layout->addLayout(right_layout);
-
-    main_widget = new QWidget(this);
     main_widget->setLayout(layout);
 
     /*
@@ -303,6 +310,9 @@ ATFA::ATFA(QWidget *parent) :
             vol_spin, SLOT(setValue(int)));
     connect(vol_spin, SIGNAL(valueChanged(int)),
             vol_slider, SLOT(setValue(int)));
+
+    connect(rir_change_button, SIGNAL(clicked()), this, SLOT(change_rir()));
+    connect(rir_show_button, SIGNAL(clicked()), this, SLOT(show_rir()));
 
     /*
      * SHOW ON SCREEN
@@ -408,11 +418,15 @@ void ATFA::play_clicked() {
         running = false;
         statusBar()->showMessage("Simulation stopped.");
         play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
+        rir_change_button->setDisabled(false);
+        adapf_change_button->setDisabled(false);
     }
     else {
         running = true;
         statusBar()->showMessage("Simulation running...");
         play_button->setIcon(QIcon(QPixmap("../../imgs/pause.png")));
+        rir_change_button->setDisabled(true);
+        adapf_change_button->setDisabled(true);
     }
 }
 
@@ -422,15 +436,39 @@ void ATFA::delay_changed(int v) {
 
 void ATFA::vol_mute_toggled(bool t) {
     if (t) {
+        muted = true;
         scene.volume = 0;
         statusBar()->showMessage(
-            "Local speaker muted. Simulation still running.");
+            "Local speaker muted. Simulation still running."
+        );
     }
     else {
+        muted = false;
         scene.volume = vol_slider->value();
         statusBar()->showMessage("Local speaker unmuted.");
     }
 }
 void ATFA::vol_changed(int v) {
+    if (muted) return;
     scene.volume = v;
+}
+
+void ATFA::show_rir() {
+
+    // gerar string de coeficientes!
+    QString imp_resp_html = "<span style='font-family: monospace'>"
+                            "imp_resp = <b>[</b><br /><br /><b>]</b><br />"
+                            "</span>";
+    ShowTextDialog *showrir_dialog = new ShowTextDialog(
+                "RIR coefficients", imp_resp_html);
+    showrir_dialog->exec();
+
+}
+
+void ATFA::change_rir() {
+
+    ChangeRIRDialog *chrir_dialog = new ChangeRIRDialog;
+    if (!chrir_dialog->run())
+        return;
+
 }

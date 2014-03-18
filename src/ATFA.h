@@ -15,6 +15,9 @@
 
 #include "Stream.h"
 
+// TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
+//       dono, e avulsos assim que possível)
+
 class ATFA : public QMainWindow {
 
     Q_OBJECT
@@ -32,6 +35,7 @@ public:
     RIR_filetype_t rir_filetype;
     QString rir_file;
     int database_index;
+    bool muted;
 
 private slots:
     // file
@@ -64,6 +68,9 @@ private slots:
     void vol_mute_toggled(bool t);
 
     void vol_changed(int v);
+
+    void show_rir();
+    void change_rir();
 
 
 private:
