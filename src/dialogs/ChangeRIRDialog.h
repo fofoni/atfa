@@ -10,9 +10,13 @@
 #ifndef CHANGERIRDIALOG_H
 #define CHANGERIRDIALOG_H
 
+#include <vector>
+
 #include <QDialog>
 #include <QLayout>
 #include <QtGui>
+
+#include "../ATFA.h"
 
 class ChangeRIRDialog : public QDialog
 {
@@ -20,7 +24,7 @@ class ChangeRIRDialog : public QDialog
 
 public:
     explicit ChangeRIRDialog(QWidget *parent = 0);
-    bool run();
+    bool run(ATFA *w);
 
 private:
     QComboBox *choose_combo;
@@ -46,7 +50,7 @@ class FloatStream {
 public:
     FloatStream(std::istream *p) : err_flag(0), pos(start), ip(p), curr(0) {}
     ~FloatStream() { delete ip; }
-    double get();
+    double get(bool neg = false);
     double& current();
     int err_flag;
 private:

@@ -23,6 +23,7 @@ extern "C" {
 #include <iostream>
 
 #include "Stream.h"
+#include "utils.h"
 
 /// Callback function for dealing with PortAudio
 static int stream_callback(
@@ -85,26 +86,25 @@ static int stream_callback(
   * simulating a communications environment in which the user listens to echoes
   * of his own voice.
   *
-  * Creates a PortAudio session for audio I/O. If \a sleep is not zero, we only
-  * run the stream for the time duration specified in miliseconds. If it's zero,
-  * we run the stream until something kills the process.
+  * Creates a PortAudio session for audio I/O.
   *
   * To use this method, you should first set the scenario parameters using the
   * methods `set_filter` and `set_delay`.
-  *
-  * \param[in]  sleep   The duration, in miliseconds, in which to run the
-  *                     stream.
   *
   * \throws std::runtime_error if any of the PortAudio steps fail (check the
   *         source code)
   *
   * \see Stream
   * \see stream_callback
+  * \see stop
   */
-void Stream::echo(unsigned sleep) {
+PaStream *Stream::echo() {
 
     PaStream *stream;
     PaError err;
+
+    // initialize portaudio
+    portaudio_init();
 
     // open i/o stream
     err = Pa_OpenDefaultStream(
@@ -131,24 +131,34 @@ void Stream::echo(unsigned sleep) {
                     " " + Pa_GetErrorText(err)
         );
 
-    // sleep
-    Pa_Sleep(10000);
-    std::cout << "delay ";
-    set_delay(1000);
-    std::cout << "changed!" << std::endl;
-    if (sleep == 0)
-        while (Pa_IsStreamActive(stream))
-            Pa_Sleep(1000);
-    else
-        Pa_Sleep(sleep);
+    return stream;
+
+}
+
+/**
+  * This method closes a PortAudio session created by `echo()`.
+  *
+  * \throws std::runtime_error if any of the PortAudio steps fail (check the
+  *         source code)
+  *
+  * \see Stream
+  * \see stream_callback
+  * \see echo
+  */
+void Stream::stop(PaStream *s) {
+
+    PaError err;
 
     // close stream
-    err = Pa_StopStream(stream);
+    err = Pa_StopStream(s);
     if (err != paNoError)
         throw std::runtime_error(
                     std::string("Error closing stream for audio input:") +
                     " " + Pa_GetErrorText(err)
         );
+
+    // close portaudio
+    portaudio_end();
 
 }
 
@@ -176,15 +186,15 @@ void Stream::set_filter(container_t h) {
 void Stream::dump_state(const container_t speaker_buf) const {
     std::cout << "internal: [ ";
     container_t::const_iterator it = data.begin();
-    std::cout << it->sample;
+    std::cout << *it;
     for (++it; it != data.end(); ++it)
-        std::cout << ", " << it->sample;
+        std::cout << ", " << *it;
     std::cout << " ];" << std::endl;
     std::cout << "speaker: [ ";
     it = speaker_buf.begin();
-    std::cout << it->sample;
+    std::cout << *it;
     for (++it; it != speaker_buf.end(); ++it)
-        std::cout << ", " << it->sample;
+        std::cout << ", " << *it;
     std::cout << " ];" << std::endl << std::endl;
 }
 

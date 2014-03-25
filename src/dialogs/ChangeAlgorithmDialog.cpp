@@ -15,7 +15,8 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(QWidget *parent) :
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-
+    QLabel *nimp_label = new QLabel("NOT IMPLEMENTED YET", this);
+    layout->addWidget(nimp_label);
 
     button_box = new QDialogButtonBox(
         QDialogButtonBox::Ok |
@@ -31,8 +32,7 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(QWidget *parent) :
 }
 
 bool ChangeAlgorithmDialog::run() {
-    exec();
-    if (result() == QDialog::Rejected)
+    if (exec() == QDialog::Rejected)
         return false;
     // ...
     return true;

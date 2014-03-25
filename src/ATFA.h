@@ -25,6 +25,8 @@ class ATFA : public QMainWindow {
 public:
     explicit ATFA(QWidget *parent = 0);
 
+    Stream stream;
+    PaStream *pastream;
     Stream::Scenario scene;
     bool running;
 
@@ -71,6 +73,9 @@ private slots:
 
     void show_rir();
     void change_rir();
+
+    void show_adapf();
+    void change_adapf();
 
 
 private:

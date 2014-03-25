@@ -19,6 +19,10 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+extern "C" {
+#   include <portaudio.h>
+}
+
 #include <vector>
 #include <stdexcept>
 #include <numeric>
@@ -71,16 +75,8 @@ public:
     /// The type for holding each signal sample index.
     typedef unsigned long index_t;
 
-    /// A structured type for holding a single sample. Will be simplified later.
-    struct sample_wrapper_t {
-//        mutable int count;
-        sample_t sample;
-        sample_wrapper_t() : sample(0) {}
-        sample_wrapper_t(sample_t s) : sample(s) {}
-    };
-
     /// The type for holding the whole vector of signal samples.
-    typedef std::vector<sample_wrapper_t> container_t;
+    typedef std::vector<sample_t> container_t;
 
     struct Scenario
     {
@@ -145,7 +141,7 @@ public:
       * \see write
       */
     sample_t read() {
-        sample_t s = read_ptr->sample;
+        sample_t s = *read_ptr;
         ++read_ptr;
         if (read_ptr == semantic_end)
             read_ptr = data.begin();
@@ -193,7 +189,7 @@ public:
         container_t::const_iterator p = get_last_n(imp_resp.size());
         sample_t accum = 0;
         for (index_t k = imp_resp.size(); k != 0; --k, ++p)
-            accum += imp_resp[k-1].sample * p->sample;
+            accum += imp_resp[k-1] * (*p);
         return accum;
     }
 
@@ -213,8 +209,8 @@ public:
       * \see read
       */
     void write(sample_t s) {
-        write_ptr->sample = s;
-        (write_ptr + buf_size)->sample = s;
+        *write_ptr = s;
+        *(write_ptr + buf_size) = s;
         ++write_ptr;
         if (write_ptr == semantic_end)
             write_ptr = data.begin();
@@ -256,7 +252,10 @@ public:
     }
 
     /// Runs the stream with predefined scenario parameters.
-    void echo(unsigned sleep = 0);
+    PaStream *echo();
+
+    /// Stops the stream that is running
+    void stop(PaStream *s);
 
     /// Sets the delay parameter, given in miliseconds
     /**
@@ -369,7 +368,7 @@ private:
 #ifdef ATFA_DEBUG
         if (index >= data.size()) throw std::runtime_error("Range error!!");
 #endif
-        return data[index].sample;
+        return data[index];
     }
 
     /// Returns a "read-only" sample.
@@ -385,13 +384,13 @@ private:
 #ifdef ATFA_DEBUG
         if (index >= data.size()) throw std::runtime_error("Range error!!");
 #endif
-        return data[index].sample;
+        return data[index];
     }
 
 };
 
 inline Stream::Scenario::Scenario(
-    const container_t& ir = container_t(), bool vact = true,
+    const container_t& ir = container_t(1,1), bool vact = true,
     OOV flearn = VAD, OOV fout = VAD,
     unsigned d = 100, unsigned vol = 50, bool p = false
 )

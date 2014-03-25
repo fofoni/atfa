@@ -9,6 +9,10 @@
 
 #include <sstream>
 
+extern "C" {
+# include <portaudio.h>
+}
+
 #include <QtGui>
 
 #include "ATFA.h"
@@ -18,8 +22,9 @@
 #include "dialogs/ChangeRIRDialog.h"
 
 ATFA::ATFA(QWidget *parent) :
-    QMainWindow(parent), scene(), running(false), rir_source(NoRIR),
-    rir_filetype(None), rir_file(""), muted(false)
+    QMainWindow(parent), stream(), pastream(NULL), scene(), running(false),
+    rir_source(NoRIR), rir_filetype(None), rir_file(""), database_index(-1),
+    muted(false)
 {
 
     /*
@@ -187,6 +192,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setValue(100);
             // TODO: if playback lags during sliding, disable tracking
             delay_layout->addWidget(delay_slider);
+            stream.set_delay(delay_slider->value());
 
             delay_spin = new QSpinBox(delay_widget);
             delay_spin->setMinimum(0);
@@ -260,6 +266,7 @@ ATFA::ATFA(QWidget *parent) :
             adapf_layout->addWidget(adapf_file_label);
 
             adapf_show_button = new QPushButton("Show &code", adapf_widget);
+            adapf_show_button->setDisabled(true);
             adapf_layout->addWidget(adapf_show_button);
 
             adapf_change_button = new QPushButton("Chan&ge", adapf_widget);
@@ -313,6 +320,9 @@ ATFA::ATFA(QWidget *parent) :
 
     connect(rir_change_button, SIGNAL(clicked()), this, SLOT(change_rir()));
     connect(rir_show_button, SIGNAL(clicked()), this, SLOT(show_rir()));
+
+    connect(adapf_change_button, SIGNAL(clicked()), this, SLOT(change_adapf()));
+    connect(adapf_show_button, SIGNAL(clicked()), this, SLOT(show_adapf()));
 
     /*
      * SHOW ON SCREEN
@@ -415,22 +425,35 @@ void ATFA::fout_vad_toggled(bool t) {
 
 void ATFA::play_clicked() {
     if (running) {
+
+        stream.stop(pastream);
+        pastream = NULL;
+
         running = false;
         statusBar()->showMessage("Simulation stopped.");
         play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
+
         rir_change_button->setDisabled(false);
         adapf_change_button->setDisabled(false);
+
     }
     else {
+
+        rir_change_button->setDisabled(true);
+        adapf_change_button->setDisabled(true);
+
+        stream.set_filter(scene.imp_resp);
+        pastream = stream.echo();
+
         running = true;
         statusBar()->showMessage("Simulation running...");
         play_button->setIcon(QIcon(QPixmap("../../imgs/pause.png")));
-        rir_change_button->setDisabled(true);
-        adapf_change_button->setDisabled(true);
+
     }
 }
 
 void ATFA::delay_changed(int v) {
+    stream.set_delay(v);
     scene.delay = v;
 }
 
@@ -438,8 +461,9 @@ void ATFA::vol_mute_toggled(bool t) {
     if (t) {
         muted = true;
         scene.volume = 0;
-        statusBar()->showMessage(
-            "Local speaker muted. Simulation still running."
+        statusBar()->showMessage( running ?
+            "Local speaker muted. Simulation still running." :
+            "Local speaker muted."
         );
     }
     else {
@@ -455,20 +479,74 @@ void ATFA::vol_changed(int v) {
 
 void ATFA::show_rir() {
 
-    // gerar string de coeficientes!
-    QString imp_resp_html = "<span style='font-family: monospace'>"
-                            "imp_resp = <b>[</b><br /><br /><b>]</b><br />"
-                            "</span>";
+    std::stringstream imp_resp_html;
+    imp_resp_html << "<span style='font-family: monospace'>";
+    if (scene.imp_resp.size() > 0) {
+        imp_resp_html << "room_impulse_resp = <b>[</b><br /><br />"
+                      << scene.imp_resp[0];
+        for (Stream::container_t::const_iterator it = scene.imp_resp.begin()+1;
+             it != scene.imp_resp.end(); ++it)
+            imp_resp_html << ", " << *it;
+        imp_resp_html << "<br /><br /><b>]</b><br />";
+    }
+    else {
+        imp_resp_html << "The room impulse response is empty!<br />"
+                         "This means there is no echo in the room."
+                         "You will hear nothing.";
+    }
+    imp_resp_html << "</span>";
     ShowTextDialog *showrir_dialog = new ShowTextDialog(
-                "RIR coefficients", imp_resp_html);
+                "RIR coefficients", imp_resp_html.str().c_str(), this);
     showrir_dialog->exec();
 
 }
 
 void ATFA::change_rir() {
 
-    ChangeRIRDialog *chrir_dialog = new ChangeRIRDialog;
-    if (!chrir_dialog->run())
+    ChangeRIRDialog *chrir_dialog = new ChangeRIRDialog(this);
+    if (!chrir_dialog->run(this))
         return;
+
+    switch (rir_source) {
+    case NoRIR:
+        rir_type_label->setText("None");
+        rir_show_button->setDisabled(true);
+        break;
+    case Literal:
+        rir_type_label->setText("Literal");
+        rir_show_button->setDisabled(false);
+        break;
+    case Database:
+        // rir_type_label->setText( database file-name and database index );
+    case File:
+        // rir_type_label->setText( filename );
+        rir_type_label->setText("NOT IMPLEMENTED YET");
+        rir_show_button->setDisabled(true);
+        break;
+    }
+
+    statusBar()->showMessage("Room impulse response updated.");
+
+}
+
+void ATFA::show_adapf() {
+
+    std::stringstream adapf_html;
+    adapf_html << "<span style='font-family: monospace'>";
+    adapf_html << "NOT IMPLEMENTED YET";
+    adapf_html << "</span>";
+    ShowTextDialog *showrir_dialog = new ShowTextDialog(
+                "Adaptative filtering code", adapf_html.str().c_str(), this);
+    showrir_dialog->exec();
+
+}
+
+
+void ATFA::change_adapf() {
+
+    ChangeAlgorithmDialog *chapf_dialog = new ChangeAlgorithmDialog(this);
+    if (!chapf_dialog->run())
+        return;
+    // ...
 
 }

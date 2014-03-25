@@ -7,6 +7,7 @@
  * Orientador: Markus Lima
  */
 
+#include <vector>
 #include <sstream>
 
 #include "ChangeRIRDialog.h"
@@ -111,11 +112,46 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
 
 }
 
-bool ChangeRIRDialog::run() {
+bool ChangeRIRDialog::run(ATFA *w) {
     if (exec() == QDialog::Rejected)
         return false;
-    // ...
-    return true;
+    FloatStream fs = new std::istringstream(
+        literal_edit->toPlainText().toUtf8().constData());
+    switch (choose_combo->currentIndex()) {
+    case 0: // Nothing chosen
+        return false;
+    case 1: // No RIR
+        w->scene.imp_resp.resize(1);
+        w->scene.imp_resp[0] = 1;
+        w->rir_source = ATFA::NoRIR;
+        w->rir_filetype = ATFA::None;
+        w->rir_file = "";
+        w->database_index = -1;
+        return true;
+    case 2: // Literal
+        w->scene.imp_resp.resize(0);
+        while (fs.err_flag == 0)
+            w->scene.imp_resp.push_back(fs.get());
+        if (fs.err_flag == 1) {
+            QMessageBox msg_box(parentWidget());
+            msg_box.setText("Error parsing vector input. Please try again.");
+            msg_box.setWindowTitle("ATFA - Change RIR [info]");
+            msg_box.setIcon(QMessageBox::Critical);
+            msg_box.exec();
+            return false;
+        }
+        w->scene.imp_resp.pop_back(); // remove trailing zero
+        w->rir_source = ATFA::Literal;
+        w->rir_filetype = ATFA::None;
+        w->rir_file = "";
+        w->database_index = -1;
+        return true;
+    case 3: // database
+    case 4: // file
+        return false;
+    }
+    // should never be reached
+    return false;
 }
 
 void ChangeRIRDialog::set_rir_source(int n) {
@@ -155,7 +191,7 @@ void ChangeRIRDialog::set_rir_source(int n) {
     adjustSize();
 }
 
-double FloatStream::get() {
+double FloatStream::get(bool neg) {
     char ch = 0;
     do { // skip whitespace
         if (!ip->get(ch)) {
@@ -170,8 +206,6 @@ double FloatStream::get() {
     }
     switch (ch) {
     case ',':
-        if (pos == open)
-            return get();
         pos = open;
         return get();
     case '[':
@@ -196,7 +230,16 @@ double FloatStream::get() {
     case '7': case '8': case '9': case '0': case '.':
         ip->putback(ch);
         *ip >> curr;
+        curr *= (neg ? -1 : 1);
+        pos = open;
         return curr;
+    case '-':
+        if (neg) {
+            err_flag = 1;
+            return 0;
+        }
+        pos = open;
+        return get(true);
     default:
         if (isalpha(ch)) {
             if (pos != start) {
