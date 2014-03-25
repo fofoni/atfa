@@ -6,9 +6,9 @@ Projeto Final de Graduação
 Para compilar:
 
 <pre>
-              <b>[</b> <i>pf/</i> <b>]$</b> cd build
-        <b>[</b> <i>pf/build/</i> <b>]$</b> ./config.sh
-        <b>[</b> <i>pf/build/</i> <b>]$</b> cd release
+<b>[</b> <i>pf/</i>               <b>]$</b> cd build
+<b>[</b> <i>pf/build/</i>         <b>]$</b> ./config.sh
+<b>[</b> <i>pf/build/</i>         <b>]$</b> cd release
 <b>[</b> <i>pf/build/release/</i> <b>]$</b> make
 </pre>
 
