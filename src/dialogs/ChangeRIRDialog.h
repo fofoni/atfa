@@ -34,9 +34,26 @@ private:
 
     QDialogButtonBox *button_box;
 
+    bool check_literal();
+
 private slots:
     void set_rir_source(int n);
+    void update_status();
 
+};
+
+class FloatStream {
+public:
+    FloatStream(std::istream *p) : err_flag(0), pos(start), ip(p), curr(0) {}
+    ~FloatStream() { delete ip; }
+    double get();
+    double& current();
+    int err_flag;
+private:
+    enum State {start, name, equals, open, end};
+    State pos;
+    std::istream *ip;
+    double curr;
 };
 
 #endif // CHANGERIRDIALOG_H

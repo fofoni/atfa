@@ -7,6 +7,8 @@
  * Orientador: Markus Lima
  */
 
+#include <sstream>
+
 #include "ChangeRIRDialog.h"
 
 ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
@@ -50,6 +52,8 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
         literal_layout->addWidget(literal_label);
 
         literal_edit = new QTextEdit(literal_widget);
+        literal_edit->setStyleSheet("font-family: monospace");
+        literal_edit->setLineWrapMode(QTextEdit::NoWrap);
         literal_layout->addWidget(literal_edit);
 
     literal_widget->setLayout(literal_layout);
@@ -88,6 +92,8 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     connect(choose_combo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(set_rir_source(int)));
 
+    connect(literal_edit, SIGNAL(textChanged()), this, SLOT(update_status()));
+
     button_box = new QDialogButtonBox(
         QDialogButtonBox::Ok |
         QDialogButtonBox::Cancel
@@ -100,6 +106,8 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     setLayout(layout);
     setMinimumWidth(324);
     setWindowTitle("Change RIR");
+
+    choose_combo->setFocus(Qt::PopupFocusReason);
 
 }
 
@@ -117,36 +125,116 @@ void ChangeRIRDialog::set_rir_source(int n) {
         literal_widget->hide();
         database_widget->hide();
         file_widget->hide();
-        button_box->buttons()[0]->setDisabled(true);
         break;
     case 1:
         literal_widget->hide();
         database_widget->hide();
         file_widget->hide();
         none_label->show();
-        button_box->buttons()[0]->setDisabled(false);
         break;
     case 2:
         none_label->hide();
         database_widget->hide();
         file_widget->hide();
         literal_widget->show();
-        button_box->buttons()[0]->setDisabled(true);
         break;
     case 3:
         none_label->hide();
         literal_widget->hide();
         file_widget->hide();
         database_widget->show();
-        button_box->buttons()[0]->setDisabled(true);
         break;
     case 4:
         none_label->hide();
         literal_widget->hide();
         database_widget->hide();
         file_widget->show();
-        button_box->buttons()[0]->setDisabled(true);
         break;
     }
+    update_status();
     adjustSize();
+}
+
+double FloatStream::get() {
+    char ch = 0;
+    do { // skip whitespace
+        if (!ip->get(ch)) {
+            err_flag = -1;
+            pos = end;
+            return 0;
+        }
+    } while (isspace(ch));
+    if (pos == end) {
+        err_flag = -1;
+        return 0;
+    }
+    switch (ch) {
+    case ',':
+        if (pos == open)
+            return get();
+        pos = open;
+        return get();
+    case '[':
+        if (pos == open) {
+            err_flag = 1;
+            return 0;
+        }
+        pos = open;
+        return get();
+    case '=':
+        if (pos == open || pos == equals) {
+            err_flag = 1;
+            return 0;
+        }
+        pos = equals;
+        return get();
+    case ']':
+        err_flag = -1;
+        pos = end;
+        return 0;
+    case '1': case '2': case '3': case '4': case '5': case '6':
+    case '7': case '8': case '9': case '0': case '.':
+        ip->putback(ch);
+        *ip >> curr;
+        return curr;
+    default:
+        if (isalpha(ch)) {
+            if (pos != start) {
+                err_flag = 1;
+                return 0;
+            }
+            while (ip->get(ch) && (isalnum(ch) || ch=='_')) /* pass */;
+            ip->putback(ch);
+            pos = name;
+            return get();
+        }
+        err_flag = 1;
+        return 0;
+    }
+}
+
+bool ChangeRIRDialog::check_literal() {
+    FloatStream fs = new std::istringstream(
+        literal_edit->toPlainText().toUtf8().constData());
+    while (fs.err_flag == 0)
+        fs.get();
+    return (fs.err_flag != 1);
+}
+
+void ChangeRIRDialog::update_status() {
+    switch (choose_combo->currentIndex()) {
+    case 0: // Nothing chosen
+        button_box->buttons()[0]->setDisabled(true);
+        return;
+    case 1: // No RIR
+        button_box->buttons()[0]->setDisabled(false);
+        return;
+    case 2: // Literal
+        button_box->buttons()[0]->setDisabled(!check_literal());
+        return;
+    case 3: // database
+    case 4: // file
+        button_box->buttons()[0]->setDisabled(true);
+        return;
+    }
 }

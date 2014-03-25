@@ -59,7 +59,7 @@ ATFA::ATFA(QWidget *parent) :
 
     // quit
     quit_act = new QAction(QIcon::fromTheme("application-exit"),
-                           "Quit", this);
+                           "&Quit", this);
     quit_act->setShortcuts(QKeySequence::Quit);
     connect(quit_act, SIGNAL(triggered()), this, SLOT(quit()));
 
@@ -71,11 +71,11 @@ ATFA::ATFA(QWidget *parent) :
 
     // about
     about_atfa_act = new QAction(QIcon::fromTheme("help-about"),
-                                 "&About ATFA", this);
+                                 "A&bout ATFA", this);
     connect(about_atfa_act, SIGNAL(triggered()), this, SLOT(about_atfa()));
 
     // about qt
-    about_qt_act = new QAction("About &Qt", this);
+    about_qt_act = new QAction("Abo&ut Qt", this);
     connect(about_qt_act, SIGNAL(triggered()), this, SLOT(about_qt()));
 
     /*
@@ -131,14 +131,14 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *left_layout = new QVBoxLayout;
 
-        flearn_group = new QGroupBox("Filter learning", main_widget);
+        flearn_group = new QGroupBox("Filter &learning", main_widget);
         QVBoxLayout *flearn_layout = new QVBoxLayout;
             flearn_on_radio = new QRadioButton(
-                "Enabled (always)", flearn_group);
+                "&Enabled (always)", flearn_group);
             flearn_off_radio = new QRadioButton(
-                "Disabled (always)", flearn_group);
+                "&Disabled (always)", flearn_group);
             flearn_vad_radio = new QRadioButton(
-                "Enabled when VAD detects action", flearn_group);
+                "Enabled when &VAD detects action", flearn_group);
             flearn_vad_radio->setChecked(true);
             flearn_layout->addWidget(flearn_on_radio);
             flearn_layout->addWidget(flearn_off_radio);
@@ -147,15 +147,15 @@ ATFA::ATFA(QWidget *parent) :
         flearn_group->setLayout(flearn_layout);
         left_layout->addWidget(flearn_group);
 
-        zero_button = new QPushButton("Reset filter state", main_widget);
+        zero_button = new QPushButton("&Reset filter state", main_widget);
         left_layout->addWidget(zero_button);
 
-        fout_group = new QGroupBox("Filter output", main_widget);
+        fout_group = new QGroupBox("Filter ou&tput", main_widget);
         QVBoxLayout *fout_layout = new QVBoxLayout;
-            fout_on_radio = new QRadioButton("Enabled (always)", fout_group);
-            fout_off_radio = new QRadioButton("Disabled (always)", fout_group);
-            fout_vad_radio = new QRadioButton("Enabled when VAD detects action",
-                                              fout_group);
+            fout_on_radio = new QRadioButton("Enabled (al&ways)", fout_group);
+            fout_off_radio = new QRadioButton("Disabled (alwa&ys)", fout_group);
+            fout_vad_radio = new QRadioButton(
+                "Enabled w&hen VAD detects action", fout_group);
             fout_vad_radio->setChecked(true);
             fout_layout->addWidget(fout_on_radio);
             fout_layout->addWidget(fout_off_radio);
@@ -238,7 +238,7 @@ ATFA::ATFA(QWidget *parent) :
             rir_type_label = new QLabel("None", rir_widget);
             rir_layout->addWidget(rir_type_label);
 
-            rir_show_button = new QPushButton("Show filter coefficients",
+            rir_show_button = new QPushButton("Show f&ilter coefficients",
                                               rir_widget);
             rir_show_button->setDisabled(true);
             rir_layout->addWidget(rir_show_button);
@@ -259,10 +259,10 @@ ATFA::ATFA(QWidget *parent) :
             adapf_file_label = new QLabel("None", adapf_widget);
             adapf_layout->addWidget(adapf_file_label);
 
-            adapf_show_button = new QPushButton("Show code", adapf_widget);
+            adapf_show_button = new QPushButton("Show &code", adapf_widget);
             adapf_layout->addWidget(adapf_show_button);
 
-            adapf_change_button = new QPushButton("Change", adapf_widget);
+            adapf_change_button = new QPushButton("Chan&ge", adapf_widget);
             adapf_layout->addWidget(adapf_change_button);
 
         adapf_widget->setLayout(adapf_layout);
