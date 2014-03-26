@@ -168,8 +168,8 @@ void Stream::stop(PaStream *s) {
   *
   * \param[in]  h   A vector containing the RIR samples
   */
-void Stream::set_filter(container_t h) {
-    imp_resp = h;
+void Stream::set_filter(const container_t& h) {
+    scene.imp_resp = h;
 }
 
 

@@ -101,9 +101,14 @@ public:
         container_t imp_resp;
 
         Scenario(
-            const container_t& ir, bool vact, OOV flearn, OOV fout,
-            unsigned d, unsigned vol, bool p
-        );
+            const container_t& ir = container_t(1,1), bool vact = true,
+            OOV flearn = VAD, OOV fout = VAD,
+            unsigned d = 100, unsigned vol = 50, bool p = false
+        )
+          : is_VAD_active(vact), filter_learning(flearn), filter_output(fout),
+            delay(d), volume(vol), paused(p), imp_resp(ir)
+        {
+        }
 
     };
 
@@ -186,10 +191,10 @@ public:
       * \see read_ptr
       */
     sample_t get_filtered_sample() {
-        container_t::const_iterator p = get_last_n(imp_resp.size());
+        container_t::const_iterator p = get_last_n(scene.imp_resp.size());
         sample_t accum = 0;
-        for (index_t k = imp_resp.size(); k != 0; --k, ++p)
-            accum += imp_resp[k-1] * (*p);
+        for (index_t k = scene.imp_resp.size(); k != 0; --k, ++p)
+            accum += scene.imp_resp[k-1] * (*p);
         return accum;
     }
 
@@ -226,9 +231,9 @@ public:
       * \see read
       */
     Stream()
-        : delay_samples(0), data(2*buf_size),
+        : scene(), delay_samples(0), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin()),
-          semantic_end(data.begin() + buf_size), imp_resp(1, 0)
+          semantic_end(data.begin() + buf_size)
     {
 #ifdef ATFA_DEBUG
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
@@ -242,13 +247,11 @@ public:
       *
       * \see Scenario
       */
-    Stream(const Scenario& scene)
-        : delay_samples(0), data(2*buf_size),
+    Stream(const Scenario& s)
+        : scene(s), delay_samples(s.delay*samplerate), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin()),
           semantic_end(data.begin() + buf_size)
     {
-        set_filter(scene.imp_resp);
-        set_delay(scene.delay);
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -280,16 +283,20 @@ public:
             // We won't ckeck, for performance, that delay_samples <= buf_size
             // The application must enforce this.
             read_ptr = write_ptr + (buf_size - delay_samples);
+        scene.delay = msec;
     }
 
     /// Sets the room impulse response
-    void set_filter(container_t h);
+    void set_filter(const container_t &h);
 
     /// Used for debugging, together with `simulate`
     void dump_state(const container_t speaker_buf) const;
 
     /// Simulates a PortAudio session, used for debugging
     void simulate();
+
+    /// A structure holding the many parameters that define a scenario setup
+    Scenario scene;
 
 private:
 
@@ -353,8 +360,6 @@ private:
       */
     const container_t::const_iterator semantic_end;
 
-    container_t imp_resp;
-
     /// Returns a sample.
     /**
       * Gets a sample of the signal. Used only in debugging, when we want a
@@ -388,15 +393,5 @@ private:
     }
 
 };
-
-inline Stream::Scenario::Scenario(
-    const container_t& ir = container_t(1,1), bool vact = true,
-    OOV flearn = VAD, OOV fout = VAD,
-    unsigned d = 100, unsigned vol = 50, bool p = false
-)
-  : is_VAD_active(vact), filter_learning(flearn), filter_output(fout),
-    delay(d), volume(vol), paused(p), imp_resp(ir)
-{
-}
 
 #endif // STREAM_H

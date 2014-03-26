@@ -17,6 +17,7 @@
 
 // TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
 //       dono, e avulsos assim que possível)
+//       alem disso, fechar o portaudio no destrutor do ATFA, caso necessario
 
 class ATFA : public QMainWindow {
 
@@ -27,7 +28,6 @@ public:
 
     Stream stream;
     PaStream *pastream;
-    Stream::Scenario scene;
     bool running;
 
     enum RIR_source_t {NoRIR, Literal, Database, File};

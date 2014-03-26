@@ -22,7 +22,7 @@ extern "C" {
 #include "dialogs/ChangeRIRDialog.h"
 
 ATFA::ATFA(QWidget *parent) :
-    QMainWindow(parent), stream(), pastream(NULL), scene(), running(false),
+    QMainWindow(parent), stream(), pastream(NULL), running(false),
     rir_source(NoRIR), rir_filetype(None), rir_file(""), database_index(-1),
     muted(false)
 {
@@ -389,17 +389,17 @@ void ATFA::about_qt() {
 
 void ATFA::flearn_on_toggled(bool t) {
     if (!t) return;
-    scene.filter_learning = Stream::Scenario::On;
+    stream.scene.filter_learning = Stream::Scenario::On;
     statusBar()->showMessage("Filter learning is enabled even during silence.");
 }
 void ATFA::flearn_off_toggled(bool t) {
     if (!t) return;
-    scene.filter_learning = Stream::Scenario::Off;
+    stream.scene.filter_learning = Stream::Scenario::Off;
     statusBar()->showMessage("Filter learning is disabled.");
 }
 void ATFA::flearn_vad_toggled(bool t) {
     if (!t) return;
-    scene.filter_learning = Stream::Scenario::VAD;
+    stream.scene.filter_learning = Stream::Scenario::VAD;
     statusBar()->showMessage("Filter learning is controlled by the VAD.");
 }
 
@@ -409,17 +409,17 @@ void ATFA::zero_filter_clicked() {
 
 void ATFA::fout_on_toggled(bool t) {
     if (!t) return;
-    scene.filter_output = Stream::Scenario::On;
+    stream.scene.filter_output = Stream::Scenario::On;
     statusBar()->showMessage("Filter output always enabled.");
 }
 void ATFA::fout_off_toggled(bool t) {
     if (!t) return;
-    scene.filter_learning = Stream::Scenario::Off;
+    stream.scene.filter_learning = Stream::Scenario::Off;
     statusBar()->showMessage("Filter output always disabled.");
 }
 void ATFA::fout_vad_toggled(bool t) {
     if (!t) return;
-    scene.filter_learning = Stream::Scenario::VAD;
+    stream.scene.filter_learning = Stream::Scenario::VAD;
     statusBar()->showMessage("Filter output is controlled by the VAD.");
 }
 
@@ -442,7 +442,6 @@ void ATFA::play_clicked() {
         rir_change_button->setDisabled(true);
         adapf_change_button->setDisabled(true);
 
-        stream.set_filter(scene.imp_resp);
         pastream = stream.echo();
 
         running = true;
@@ -454,13 +453,12 @@ void ATFA::play_clicked() {
 
 void ATFA::delay_changed(int v) {
     stream.set_delay(v);
-    scene.delay = v;
 }
 
 void ATFA::vol_mute_toggled(bool t) {
     if (t) {
         muted = true;
-        scene.volume = 0;
+        stream.scene.volume = 0;
         statusBar()->showMessage( running ?
             "Local speaker muted. Simulation still running." :
             "Local speaker muted."
@@ -468,24 +466,25 @@ void ATFA::vol_mute_toggled(bool t) {
     }
     else {
         muted = false;
-        scene.volume = vol_slider->value();
+        stream.scene.volume = vol_slider->value();
         statusBar()->showMessage("Local speaker unmuted.");
     }
 }
 void ATFA::vol_changed(int v) {
     if (muted) return;
-    scene.volume = v;
+    stream.scene.volume = v;
 }
 
 void ATFA::show_rir() {
 
     std::stringstream imp_resp_html;
     imp_resp_html << "<span style='font-family: monospace'>";
-    if (scene.imp_resp.size() > 0) {
+    if (stream.scene.imp_resp.size() > 0) {
         imp_resp_html << "room_impulse_resp = <b>[</b><br /><br />"
-                      << scene.imp_resp[0];
-        for (Stream::container_t::const_iterator it = scene.imp_resp.begin()+1;
-             it != scene.imp_resp.end(); ++it)
+                      << stream.scene.imp_resp[0];
+        for (Stream::container_t::const_iterator it =
+             stream.scene.imp_resp.begin() + 1;
+             it != stream.scene.imp_resp.end(); ++it)
             imp_resp_html << ", " << *it;
         imp_resp_html << "<br /><br /><b>]</b><br />";
     }

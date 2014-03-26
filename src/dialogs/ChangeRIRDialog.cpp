@@ -121,17 +121,17 @@ bool ChangeRIRDialog::run(ATFA *w) {
     case 0: // Nothing chosen
         return false;
     case 1: // No RIR
-        w->scene.imp_resp.resize(1);
-        w->scene.imp_resp[0] = 1;
+        w->stream.scene.imp_resp.resize(1);
+        w->stream.scene.imp_resp[0] = 1;
         w->rir_source = ATFA::NoRIR;
         w->rir_filetype = ATFA::None;
         w->rir_file = "";
         w->database_index = -1;
         return true;
     case 2: // Literal
-        w->scene.imp_resp.resize(0);
+        w->stream.scene.imp_resp.resize(0);
         while (fs.err_flag == 0)
-            w->scene.imp_resp.push_back(fs.get());
+            w->stream.scene.imp_resp.push_back(fs.get());
         if (fs.err_flag == 1) {
             QMessageBox msg_box(parentWidget());
             msg_box.setText("Error parsing vector input. Please try again.");
@@ -140,7 +140,7 @@ bool ChangeRIRDialog::run(ATFA *w) {
             msg_box.exec();
             return false;
         }
-        w->scene.imp_resp.pop_back(); // remove trailing zero
+        w->stream.scene.imp_resp.pop_back(); // remove trailing zero
         w->rir_source = ATFA::Literal;
         w->rir_filetype = ATFA::None;
         w->rir_file = "";
