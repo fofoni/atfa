@@ -466,13 +466,13 @@ void ATFA::vol_mute_toggled(bool t) {
     }
     else {
         muted = false;
-        stream.scene.volume = vol_slider->value();
+        stream.scene.volume = float(vol_slider->value())/100.0;
         statusBar()->showMessage("Local speaker unmuted.");
     }
 }
 void ATFA::vol_changed(int v) {
     if (muted) return;
-    stream.scene.volume = v;
+    stream.scene.volume = float(v)/100.0;
 }
 
 void ATFA::show_rir() {

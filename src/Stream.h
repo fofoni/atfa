@@ -94,7 +94,7 @@ public:
 
         unsigned delay; // in miliseconds
 
-        unsigned volume; // 0 -- 100
+        float volume; // 0 -- 100
 
         bool paused;
 
@@ -103,7 +103,7 @@ public:
         Scenario(
             const container_t& ir = container_t(1,1), bool vact = true,
             OOV flearn = VAD, OOV fout = VAD,
-            unsigned d = 100, unsigned vol = 50, bool p = false
+            unsigned d = 100, float vol = .5, bool p = false
         )
           : is_VAD_active(vact), filter_learning(flearn), filter_output(fout),
             delay(d), volume(vol), paused(p), imp_resp(ir)

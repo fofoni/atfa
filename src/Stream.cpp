@@ -58,6 +58,11 @@ static int stream_callback(
   *                             a pointer to the Stream object.
   *
   * \see Stream::echo
+  *
+  * \todo Instead of calling Stream::get_filtered_sample() for each sample, we
+  *       should use the Signal::filter mechanism, which uses the more efficient
+  *       overlap-and-add algorithm. Perhaps we will need to force the
+  *       _frames per buffer_ PortAudio parameter to be of a specific value.
   */
 static int stream_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
@@ -74,7 +79,7 @@ static int stream_callback(
 
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
         data->write(*in++);
-        *out++ = 2*data->get_filtered_sample(); // TODO: ganho magico
+        *out++ = 4 * data->scene.volume * data->get_filtered_sample();
     }
 
     return paContinue;

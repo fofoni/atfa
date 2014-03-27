@@ -33,7 +33,7 @@
     char static_projdirname[] = __FILE__;
 
     // whatch out, because dirname() may modify its argument,
-    // and ATFA_DIR might get evaluated more than once
+    // and also, ATFA_DIR might get evaluated more than once
 
     /// Macro for getting the path to the project directory from cmake
     /** Should be passed from `CMakeLists.txt`, but if it's not, we try to
