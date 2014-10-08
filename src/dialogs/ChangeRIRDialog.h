@@ -35,14 +35,20 @@ private:
     QWidget *file_widget;
 
     QTextEdit *literal_edit;
+    QLineEdit *filename_edit;
 
     QDialogButtonBox *button_box;
+
+    QString rir_file_location;
+
+    bool file_chosen;
 
     bool check_literal();
 
 private slots:
     void set_rir_source(int n);
     void update_status();
+    void choose_rir_file();
 
 };
 

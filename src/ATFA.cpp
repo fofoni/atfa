@@ -517,10 +517,13 @@ void ATFA::change_rir() {
         break;
     case Database:
         // rir_type_label->setText( database file-name and database index );
-    case File:
-        // rir_type_label->setText( filename );
         rir_type_label->setText("NOT IMPLEMENTED YET");
         rir_show_button->setDisabled(true);
+        break;
+    case File:
+        // rir_type_label->setText( filename );
+        rir_type_label->setText(QString("From file: ") + rir_file);
+        rir_show_button->setDisabled(false);
         break;
     }
 

@@ -9,11 +9,14 @@
 
 #include <vector>
 #include <sstream>
+#include <iostream>
+
+#include "../Signal.h"
 
 #include "ChangeRIRDialog.h"
 
 ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
-    QDialog(parent)
+    QDialog(parent), file_chosen(false)
 {
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -77,14 +80,23 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     database_widget->hide();
 
     file_widget = new QWidget(this);
-    QHBoxLayout *file_layout = new QHBoxLayout(file_widget);
+    QVBoxLayout *file_layout = new QVBoxLayout(file_widget);
 
-        QLabel *file_label = new QLabel("Choose a RIR file:", file_widget);
-        file_layout->addWidget(file_label);
+        QHBoxLayout *choose_file_layout = new QHBoxLayout();
 
-        QLabel *file_button_placeholder = new QLabel("NOT IMPLEMENTED YET",
-                                                     file_widget);
-        file_layout->addWidget(file_button_placeholder);
+            QLabel *file_label = new QLabel("Choose a RIR file:", file_widget);
+            choose_file_layout->addWidget(file_label);
+
+            QPushButton *file_button = new QPushButton(
+                QIcon::fromTheme("document-open"), "&Open File", file_widget);
+            choose_file_layout->addWidget(file_button);
+
+        file_layout->addLayout(choose_file_layout);
+
+        filename_edit = new QLineEdit();
+        filename_edit->setPlaceholderText("No file selected.");
+        filename_edit->setReadOnly(true);
+        file_layout->addWidget(filename_edit);
 
     file_widget->setLayout(file_layout);
     layout->addWidget(file_widget);
@@ -94,6 +106,8 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
             this, SLOT(set_rir_source(int)));
 
     connect(literal_edit, SIGNAL(textChanged()), this, SLOT(update_status()));
+
+    connect(file_button, SIGNAL(clicked()), this, SLOT(choose_rir_file()));
 
     button_box = new QDialogButtonBox(
         QDialogButtonBox::Ok |
@@ -147,8 +161,18 @@ bool ChangeRIRDialog::run(ATFA *w) {
         w->database_index = -1;
         return true;
     case 3: // database
-    case 4: // file
         return false;
+    case 4: // file
+        w->stream.scene.imp_resp.resize(0);
+        Signal *rir_signal_p =
+            new Signal(rir_file_location.toUtf8().constData());
+        w->stream.scene.imp_resp.assign(
+            rir_signal_p->array(),
+            rir_signal_p->array() + rir_signal_p->samples());
+        w->rir_source = ATFA::File;
+        w->rir_filetype = ATFA::WAV;
+        w->rir_file = rir_file_location;
+        return true;
     }
     // should never be reached
     return false;
@@ -276,8 +300,22 @@ void ChangeRIRDialog::update_status() {
         button_box->buttons()[0]->setDisabled(!check_literal());
         return;
     case 3: // database
-    case 4: // file
         button_box->buttons()[0]->setDisabled(true);
         return;
+    case 4: // file
+        button_box->buttons()[0]->setDisabled(!file_chosen);
+        return;
     }
+}
+
+void ChangeRIRDialog::choose_rir_file() {
+    QString temp_rir_filename = QFileDialog::getOpenFileName(
+        this, "Open Room Impule Response File", "",
+        "Audio Files (*.wav)");
+    if (temp_rir_filename == "")
+        return;
+    rir_file_location = temp_rir_filename;
+    filename_edit->setText(rir_file_location);
+    file_chosen = true;
+    update_status();
 }

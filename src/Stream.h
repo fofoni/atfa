@@ -78,6 +78,9 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
+    /// The number of audio samples per PortAudio buffer
+    unsigned long pa_framespb = 128;
+
     struct Scenario
     {
 
@@ -94,7 +97,7 @@ public:
 
         unsigned delay; // in miliseconds
 
-        float volume; // 0 -- 100
+        float volume; // 0 -- 1
 
         bool paused;
 
@@ -119,7 +122,7 @@ public:
     /// The number of data samples held internally be the stream structure.
     /**
       * The actual size of the vector used to hold the samples is
-      * `2*samplerate`, in order to make the data structure "look" circular.
+      * `2*buf_size`, in order to make the data structure "look" circular.
       */
     static const size_t buf_size = 8*samplerate;
 #else
@@ -224,7 +227,7 @@ public:
     /// Initializes important values
     /**
       * Constructs a scenario in which there is no delay, and the impulse
-      * response has one sample of value zero. Also acquires memory for the data
+      * response has one sample of value 1. Also acquires memory for the data
       * structure.
       *
       * \see data

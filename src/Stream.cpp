@@ -70,15 +70,17 @@ static int stream_callback(
     PaStreamCallbackFlags status_flags, void *user_data
 ) {
 
-    Stream *data = static_cast<Stream *>(user_data);
-
+    Stream * const data =
+        static_cast<Stream *>(user_data);
     Stream::sample_t *out = static_cast<Stream::sample_t *>(out_buf);
     const Stream::sample_t *in = static_cast<const Stream::sample_t *>(in_buf);
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
     for (unsigned long i = 0; i != frames_per_buf; ++i) {
+        // microphone ----> memory
         data->write(*in++);
+        // memory --(filter)--> speaker
         *out++ = 4 * data->scene.volume * data->get_filtered_sample();
     }
 
@@ -118,7 +120,7 @@ PaStream *Stream::echo() {
                 1,
                 paFloat32,
                 samplerate,
-                paFramesPerBufferUnspecified,
+                pa_framespb,
                 stream_callback,
                 this
     );
@@ -179,7 +181,7 @@ void Stream::set_filter(const container_t& h) {
 
 
 /**
-  * This function is called be `simulate()` to print to the screen the current
+  * This function is called by `simulate()` to print to the screen the current
   * state of the simulated environment. It prints the internal state of the
   * Stream object and the samples that have been written to the output.
   *

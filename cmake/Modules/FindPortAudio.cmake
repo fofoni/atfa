@@ -27,10 +27,16 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
     set(PortAudio_INCLUDE_DIRS
       ${PORTAUDIO2_INCLUDE_DIRS}
     )
+    set(PORTAUDIO_INCLUDE_DIR
+      ${PORTAUDIO2_INCLUDE_DIRS}
+    )
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set(PortAudio_LIBS "${PORTAUDIO2_LIBRARY_DIRS}/lib${PORTAUDIO2_LIBRARIES}.dylib")
     else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set(PortAudio_LIBS
+        ${PORTAUDIO2_LIBRARIES}
+      )
+      set(PORTAUDIO_LIBRARIES
         ${PORTAUDIO2_LIBRARIES}
       )
     endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -70,7 +76,7 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
     )
 
     set(PortAudio_INCLUDE_DIRS
-      ${PORTAUDIO_INCLUDE_DIR}
+      ${PortAudio_INCLUDE_DIR}
     )
     set(PortAudio_LIBS
       ${PORTAUDIO_LIBRARY}
@@ -81,7 +87,7 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
     )
 
     set(PortAudio_VERSION
-      18
+      19
     )
 
     if (PortAudio_INCLUDE_DIRS AND PortAudio_LIBS)
