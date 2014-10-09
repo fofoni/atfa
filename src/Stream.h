@@ -78,8 +78,13 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
+#ifdef ATFA_DEBUG
     /// The number of audio samples per PortAudio buffer
-    unsigned long pa_framespb = 128;
+    static const unsigned long pa_framespb = 16;
+#else
+    /// The number of audio samples per PortAudio buffer
+    static const unsigned long pa_framespb = 128;
+#endif
 
     struct Scenario
     {
@@ -127,7 +132,7 @@ public:
     static const size_t buf_size = 8*samplerate;
 #else
     /// The stream's rate in samples per second
-    static const size_t buf_size = 24;
+    static const size_t buf_size = 32;
 
     /// The number of data samples held internally be the stream structure.
     /**
@@ -224,24 +229,21 @@ public:
             write_ptr = data.begin();
     }
 
-    /// Initializes important values
-    /**
-      * Constructs a scenario in which there is no delay, and the impulse
-      * response has one sample of value 1. Also acquires memory for the data
-      * structure.
-      *
-      * \see data
-      * \see read
-      */
-    Stream()
-        : scene(), delay_samples(0), data(2*buf_size),
-          write_ptr(data.begin()), read_ptr(data.begin()),
-          semantic_end(data.begin() + buf_size)
-    {
-#ifdef ATFA_DEBUG
-        if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
-        if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
-#endif
+    /// Adds overlaping pieces of signals
+    void write_add(sample_t s) {
+        *write_ptr += s;
+        *(write_ptr + buf_size) = *write_ptr; // no need to add once again
+        ++write_ptr;
+        if (write_ptr == semantic_end)
+            write_ptr = data.begin();
+    }
+
+    /// Rewinds write_ptr to beginning of next overlapping area (OAA algorithm)
+    void ooa_rewind_wptr(unsigned long samples = pa_framespb) {
+        if (write_ptr - data.begin() < long(samples))
+            write_ptr += buf_size - samples;
+        else
+            write_ptr -= samples;
     }
 
     /// Contructs from a `Scenario` object
@@ -250,12 +252,21 @@ public:
       *
       * \see Scenario
       */
-    Stream(const Scenario& s)
-        : scene(s), delay_samples(s.delay*samplerate), data(2*buf_size),
+    Stream(const Scenario& s = Scenario())
+        : scene(s), h_freq_re(2*pa_framespb), h_freq_im(2*pa_framespb),
+          temp_container1_re(2*pa_framespb), temp_container1_im(2*pa_framespb),
+          temp_container2_re(2*pa_framespb), temp_container2_im(2*pa_framespb),
+          tempcont1_mid(temp_container1_re.begin() + pa_framespb),
+          tempcont2_mid(temp_container2_re.begin() + pa_framespb),
+          delay_samples(s.delay*samplerate), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin()),
           semantic_end(data.begin() + buf_size)
     {
+        update_freq_resp();
     }
+
+    /// Updates the stream filter's frequency response
+    void update_freq_resp();
 
     /// Runs the stream with predefined scenario parameters.
     PaStream *echo();
@@ -300,6 +311,30 @@ public:
 
     /// A structure holding the many parameters that define a scenario setup
     Scenario scene;
+
+    /// Holds the real part of the stream filter's frequency-response
+    container_t h_freq_re;
+
+    /// Holds the imaginary part of the stream filter's frequency-response
+    container_t h_freq_im;
+
+    /// A permanent, general-purpose, pre-reserved container for performance
+    container_t temp_container1_re;
+
+    /// The imaginary part of the pre-reserved container
+    container_t temp_container1_im;
+
+    /// Another one just like temp_container1_re
+    container_t temp_container2_re;
+
+    /// Another one just like temp_container1_im
+    container_t temp_container2_im;
+
+    /// A permanent iterator to the middle of temp_container1_re
+    const container_t::iterator tempcont1_mid;
+
+    /// A permanent iterator to the middle of temp_container2_re
+    const container_t::iterator tempcont2_mid;
 
 private:
 

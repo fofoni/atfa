@@ -155,6 +155,7 @@ bool ChangeRIRDialog::run(ATFA *w) {
             return false;
         }
         w->stream.scene.imp_resp.pop_back(); // remove trailing zero
+        w->stream.update_freq_resp();
         w->rir_source = ATFA::Literal;
         w->rir_filetype = ATFA::None;
         w->rir_file = "";

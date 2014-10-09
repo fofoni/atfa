@@ -23,6 +23,7 @@ extern "C" {
 #include <iostream>
 
 #include "Stream.h"
+#include "Signal.h"
 #include "utils.h"
 
 /// Callback function for dealing with PortAudio
@@ -77,12 +78,35 @@ static int stream_callback(
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-    for (unsigned long i = 0; i != frames_per_buf; ++i) {
-        // microphone ----> memory
-        data->write(*in++);
-        // memory --(filter)--> speaker
-        *out++ = 4 * data->scene.volume * data->get_filtered_sample();
+    std::copy(in, in + frames_per_buf, data->temp_container1_re.begin());
+    std::fill(data->tempcont1_mid, data->temp_container1_re.end(), 0);
+    std::fill(data->temp_container1_im.begin(),
+              data->temp_container1_im.end(), 0);
+    Signal::dft(data->temp_container1_re, data->temp_container1_im);
+    for (unsigned long i = 0; i != 2*frames_per_buf; ++i) {
+        data->temp_container2_re[i] =
+            data->temp_container1_re[i] * data->h_freq_re[i] -
+            data->temp_container1_im[i] * data->h_freq_im[i];
+        data->temp_container2_im[i] =
+            data->temp_container1_re[i] * data->h_freq_im[i] +
+            data->temp_container1_im[i] * data->h_freq_re[i];
     }
+    Signal::dft(data->temp_container2_re, data->temp_container2_im,
+                Signal::DFTDriver::INVERSE);
+
+    Stream::container_t::const_iterator it = data->temp_container2_re.begin();
+    for (; it != data->tempcont2_mid; ++it)
+        // microphone --(filter)--> memory       (part 1)
+        data->write_add(*it);
+    for (; it != data->temp_container2_re.end(); ++it) {
+        /* by now, it is already possible to start sendind audio samples to the
+           speaker buffer, and we want to do this as soon as possible. */
+        // memory ----> speaker
+        *out++ = 4 * data->scene.volume * data->read();
+        // microphone --(filter)--> memory       (part 2)
+        data->write(*it);
+    }
+    data->ooa_rewind_wptr();
 
     return paContinue;
 
@@ -173,10 +197,21 @@ void Stream::stop(PaStream *s) {
   * This function just sets the internal copy of the room impulse response (RIR)
   * samples to be equal to the one specified.
   *
+  * The caller must make sure that _h_ has at most _pa_framespb_ plus 1
+  * elements.
+  *
   * \param[in]  h   A vector containing the RIR samples
   */
-void Stream::set_filter(const container_t& h) {
+void Stream::set_filter(const container_t &h) {
     scene.imp_resp = h;
+    update_freq_resp();
+}
+
+void Stream::update_freq_resp() {
+    std::copy(scene.imp_resp.begin(), scene.imp_resp.end(), h_freq_re.begin());
+    std::fill(h_freq_re.begin() + scene.imp_resp.size(), h_freq_re.end(), 0);
+    std::fill(h_freq_im.begin(), h_freq_im.end(), 0);
+    Signal::dft(h_freq_re, h_freq_im);
 }
 
 
@@ -215,16 +250,18 @@ void Stream::dump_state(const container_t speaker_buf) const {
 void Stream::simulate() {
 
     PaStreamCallbackFlags flg = 0;
-    static const sample_t mic_buf_arr[24+8] = {
+    static const sample_t mic_buf_arr[64] = {
         -987, 610, -377, 233, -144, 89, -55, 34,
         -21, 13, -8, 5, -3, 2, -1, 1,
         0, 1, 1, 2, 3, 5, 8, 13,
-        21, 34, 55, 89, 144, 233, 377, 610
+        21, 34, 55, 89, 144, 233, 377, 610,
+        1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
     };
-    container_t mic_buf(mic_buf_arr, mic_buf_arr + 24+8);
-    container_t speaker_buf(24+8);
+    container_t mic_buf(mic_buf_arr, mic_buf_arr + 64);
+    container_t speaker_buf(64);
 
-    set_delay(10*1000);
+    set_delay(16*1000);
 
     dump_state(speaker_buf);
     stream_callback(&mic_buf[0], &speaker_buf[0], 8, NULL, flg, this);
