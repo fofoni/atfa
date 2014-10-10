@@ -27,6 +27,8 @@ extern "C" {
 #include <stdexcept>
 #include <numeric>
 
+#include <iostream>
+
 /// Represents an input/output stream of audio samples
 /**
   * Holds data and provides routines for dealing with streams that represent
@@ -230,12 +232,14 @@ public:
     }
 
     /// Adds overlaping pieces of signals
-    void write_add(sample_t s) {
+    sample_t write_add(sample_t s) {
         *write_ptr += s;
         *(write_ptr + buf_size) = *write_ptr; // no need to add once again
+        sample_t retval = *write_ptr;// DEBUG
         ++write_ptr;
         if (write_ptr == semantic_end)
             write_ptr = data.begin();
+        return retval;
     }
 
     /// Rewinds write_ptr to beginning of next overlapping area (OAA algorithm)
@@ -258,6 +262,7 @@ public:
           temp_container2_re(2*pa_framespb), temp_container2_im(2*pa_framespb),
           tempcont1_mid(temp_container1_re.begin() + pa_framespb),
           tempcont2_mid(temp_container2_re.begin() + pa_framespb),
+          ZCR(buf_size/pa_framespb),
           delay_samples(s.delay*samplerate), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin()),
           semantic_end(data.begin() + buf_size)
@@ -336,6 +341,21 @@ public:
     /// A permanent iterator to the middle of temp_container2_re
     const container_t::iterator tempcont2_mid;
 
+    /// DEBUG
+    std::vector<int>ZCR;
+    void X9() {
+        std::cout << "zc = [" << std::endl;
+        for (std::vector<int>::const_iterator it = ZCR.begin();
+             it != ZCR.end(); ++it) {
+            std::cout << "    " << *it << std::endl;
+        }
+        std::cout << "];" << std::endl << "voice = [" << std::endl;
+        for (unsigned long k = 0; k != buf_size; ++k) {
+            std::cout << "    " << data[k] << std::endl;
+        }
+        std::cout << "];" << std::endl;
+    }
+
 private:
 
     /// The delay of the communication channel, measured in samples
@@ -358,6 +378,12 @@ private:
       * \see Stream
       */
     container_t data;
+
+    /// The high-pass frequency response for the helping the VAD (real part)
+    static const container_t filter200Hz_re;
+
+    /// The high-pass frequency response for the helping the VAD (imag part)
+    static const container_t filter200Hz_im;
 
     /// An iterator to the next location to be written on the stream
     /**

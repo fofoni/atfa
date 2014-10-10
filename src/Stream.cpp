@@ -78,6 +78,8 @@ static int stream_callback(
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
+    // TODO: fazer duas FFTs pequenas, ao invés de uma gigante, e usar o truque
+    // da parte imaginária.
     std::copy(in, in + frames_per_buf, data->temp_container1_re.begin());
     std::fill(data->tempcont1_mid, data->temp_container1_re.end(), 0);
     std::fill(data->temp_container1_im.begin(),
@@ -95,11 +97,20 @@ static int stream_callback(
                 Signal::DFTDriver::INVERSE);
 
     Stream::container_t::const_iterator it = data->temp_container2_re.begin();
-    for (; it != data->tempcont2_mid; ++it)
+    bool prev_is_geq0 = true; static int zccount = 0;
+    for (; it != data->tempcont2_mid; ++it) {
         // microphone --(filter)--> memory       (part 1)
-        data->write_add(*it);
+        Stream::sample_t val = data->write_add(*it);
+        if (val >= 0) {
+            if (!prev_is_geq0) data->ZCR[zccount] += 1;
+            prev_is_geq0 = true;
+        }
+        else
+            prev_is_geq0 = false;
+    }
+    //zccount++;
     for (; it != data->temp_container2_re.end(); ++it) {
-        /* by now, it is already possible to start sendind audio samples to the
+        /* by now, it is already possible to start sending audio samples to the
            speaker buffer, and we want to do this as soon as possible. */
         // memory ----> speaker
         *out++ = 4 * data->scene.volume * data->read();
@@ -207,11 +218,22 @@ void Stream::set_filter(const container_t &h) {
     update_freq_resp();
 }
 
+#include "autogen/filter200Hz.h"
+
 void Stream::update_freq_resp() {
     std::copy(scene.imp_resp.begin(), scene.imp_resp.end(), h_freq_re.begin());
     std::fill(h_freq_re.begin() + scene.imp_resp.size(), h_freq_re.end(), 0);
     std::fill(h_freq_im.begin(), h_freq_im.end(), 0);
     Signal::dft(h_freq_re, h_freq_im);
+    // now, filter out the 0~200Hz range, to help the VAD
+    for (unsigned long k = 0; k != h_freq_re.size(); ++k) {
+        sample_t temp_re = h_freq_re[k] * filter200Hz_re[k] -
+                           h_freq_im[k] * filter200Hz_im[k];
+        sample_t temp_im = h_freq_re[k] * filter200Hz_im[k] +
+                           h_freq_im[k] * filter200Hz_re[k];
+        h_freq_re[k] = temp_re;
+        h_freq_im[k] = temp_im;
+    }
 }
 
 

@@ -9,3 +9,4 @@ build/debug
 build/release
 doc/latex/*
 !doc/latex/refman.pdf
+src/autogen

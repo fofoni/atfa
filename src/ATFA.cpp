@@ -436,6 +436,8 @@ void ATFA::play_clicked() {
         rir_change_button->setDisabled(false);
         adapf_change_button->setDisabled(false);
 
+        stream.X9();
+
     }
     else {
 
