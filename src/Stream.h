@@ -81,7 +81,7 @@ public:
     struct Scenario
     {
 
-        bool is_VAD_active; // Voice action detector
+        bool is_VAD_active; // Voice activity detector
 
         enum OOV { // On, Off, VAD
             On,  // always enabled

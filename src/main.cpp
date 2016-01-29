@@ -35,16 +35,11 @@ using namespace std;
 /**
  * No command-line parameters.
  *
- * This function:
- * 1. Prints version info
- * 2. Creates an i/o stream to represent the communication channel with echo
- * 3. Creates a room impulse response
- * 4. Assigns the created impulse response to the stream
- * 5. Assigns a value of 300ms to the stream's delay echo
- * 6. Runs the stream
+ * This function runs the "ATFA" Qt app. ATFA stands for "Ambiente de testes
+ * para filtros adaptativos".
  *
- * \param[in] argc      argument count (unused)
- * \param[in] argv      argument values (unused)
+ * \param[in] argc      command line argument count
+ * \param[in] argv      command line argument values
  * \returns 0 if no errors
  */
 int main(int argc, char *argv[]) {

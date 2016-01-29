@@ -164,6 +164,9 @@ void Signal::filter(Signal imp_resp) {
         std::copy(small->begin(), small->end(), h_re.begin());
         dft(h_re, h_im);
         index_t i;
+        // TODO: ao invés de incrementar o 'i' e calcular i1 e i2 a cada
+        // iteração, a gente podia calcular diretamente o i1 e i2, e.g.:
+        // for (i1=0, i2=N ; i1 < big->size() ; i1+=2*N, i2+=2*N)
         for (i = 0; i != big->size()/(2*N); ++i) {
             index_t i1 = i*2*N;
             index_t i2 = i1 + N;
@@ -446,6 +449,7 @@ Signal::sample_t Signal::l_inf_norm() {
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
                                     const dir_t direction) {
 
+    // TODO: esse if() aqui deveria estar dentro de um bloco #ifdef DEBUG
     if (re.size() != im.size()) {
         std::ostringstream msg;
         msg << "Error: Signal::DFTDriver `re' and `im' vectors must be of the "
@@ -456,6 +460,7 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
 
     index_t L = re.size();
 
+    // TODO: esse if() aqui deveria estar dentro de um bloco #ifdef DEBUG
     if (L > tblsize) {
         std::ostringstream msg;
         msg << "Error: DFT of size " << L << ": too big." << std::endl
@@ -467,6 +472,9 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
     {   unsigned long n = L;
         if (L == 0) // nothing to do
             return;
+        // TODO: esses if's aqui deveriam estar dentro de um bloco #ifdef DEBUG
+        //       PORÉM: cuidado, pq esse for(), além de testar os if's todos,
+        //              também é responsável por calclar bits=log2(n)
         for (bits = 0; n != 1; n /= 2, ++bits)
             if (n%2 != 0) { // then L is not power of two
                 std::ostringstream msg;

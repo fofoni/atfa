@@ -31,7 +31,7 @@ using namespace std;
 
 /**
   * Initializes a PortAudio session. Also prints out a list of available
-  * devices that PortAudio sees., if requested.
+  * devices that PortAudio sees, if requested.
   *
   * \param[in] list_devices Whether or not to print the device list.
   *

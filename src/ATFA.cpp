@@ -404,7 +404,7 @@ void ATFA::flearn_vad_toggled(bool t) {
 }
 
 void ATFA::zero_filter_clicked() {
-    statusBar()->showMessage("Adaptative filter memory zeroed.");
+    statusBar()->showMessage("Adaptive filter memory zeroed.");
 }
 
 void ATFA::fout_on_toggled(bool t) {
