@@ -4,7 +4,6 @@ project( ATFA )
 set( LOCAL_MOD_DIR "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )
 
-find_package( OpenCV )
 find_package( PortAudio REQUIRED )
 find_package( LibSndFile REQUIRED )
 find_package( Qt4 REQUIRED )
@@ -17,7 +16,6 @@ set( ATFA_Qt_headers
 
 # if we get to cmake 2.8.11 some day, see the
 # Qt tutorial on writing cmake files for Qt5
-# ==> NÃO mudar para o Ubuntu 14.04 LTS antes de 2015. O Mir pode dar problemas.
 
 QT4_WRAP_CPP( ATFA_MOC_sources ${ATFA_Qt_headers} )
 include( ${QT_USE_FILE} )
@@ -45,7 +43,6 @@ add_executable( atfa
 )
 
 target_link_libraries( atfa
-    ${OpenCV_LIBS}
     ${PortAudio_LIBS}
     ${LIBSNDFILE_LIBRARIES}
     ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES}
