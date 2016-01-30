@@ -10,7 +10,10 @@
 #include <vector>
 #include <sstream>
 
+#include <QDir>
+
 #include "ChangeRIRDialog.h"
+#include "../widgets/FileSelectWidget.h"
 
 ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     QDialog(parent)
@@ -77,14 +80,27 @@ ChangeRIRDialog::ChangeRIRDialog(QWidget *parent) :
     database_widget->hide();
 
     file_widget = new QWidget(this);
-    QHBoxLayout *file_layout = new QHBoxLayout(file_widget);
+    QVBoxLayout *file_layout = new QVBoxLayout(file_widget);
+
+        QLabel *file_directions_label = new QLabel(
+                    "You may choose either a MATLAB script file whose content"
+                    "is only a declaration of a row vector; or a WAV file.",
+                    file_widget);
+        file_directions_label->setWordWrap(true);
+        file_layout->addWidget(file_directions_label);
+
+        QHBoxLayout *file_choose_layout = new QHBoxLayout();
 
         QLabel *file_label = new QLabel("Choose a RIR file:", file_widget);
-        file_layout->addWidget(file_label);
+        file_choose_layout->addWidget(file_label);
 
-        QLabel *file_button_placeholder = new QLabel("NOT IMPLEMENTED YET",
-                                                     file_widget);
-        file_layout->addWidget(file_button_placeholder);
+        FileSelectWidget *file_select = new FileSelectWidget(
+                    "Open RIR file", QDir::currentPath(),
+                    "MATLAB script files (*.m);;WAV files (*.wav)",
+                    file_widget);
+        file_choose_layout->addWidget(file_select);
+
+        file_layout->addLayout(file_choose_layout);
 
     file_widget->setLayout(file_layout);
     layout->addWidget(file_widget);

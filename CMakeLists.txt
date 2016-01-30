@@ -10,8 +10,8 @@ find_package( Qt4 REQUIRED )
 
 set( ATFA_Qt_headers
     src/ATFA.h src/dialogs/ChangeAlgorithmDialog.h
-    src/dialogs/ChangeRIRDialog.h
-    src/dialogs/ShowTextDialog.h
+    src/dialogs/ChangeRIRDialog.h src/dialogs/ShowTextDialog.h
+    src/widgets/FileSelectWidget.h
 )
 
 # if we get to cmake 2.8.11 some day, see the
@@ -39,6 +39,7 @@ add_executable( atfa
     src/main.cpp src/Signal.cpp src/Stream.cpp src/utils.cpp src/ATFA.cpp
     src/dialogs/ChangeAlgorithmDialog.cpp src/dialogs/ChangeRIRDialog.cpp
     src/dialogs/ShowTextDialog.cpp
+    src/widgets/FileSelectWidget.cpp
     ${ATFA_MOC_sources}
 )
 
