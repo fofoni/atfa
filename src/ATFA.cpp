@@ -14,6 +14,7 @@ extern "C" {
 }
 
 #include <QtGui>
+#include <QRegExp>
 
 #include "ATFA.h"
 #include "Stream.h"
@@ -503,7 +504,7 @@ void ATFA::show_rir() {
 void ATFA::change_rir() {
 
     ChangeRIRDialog *chrir_dialog = new ChangeRIRDialog(this);
-    if (!chrir_dialog->run(this))
+    if (!chrir_dialog->run())
         return;
 
     switch (rir_source) {
@@ -517,11 +518,21 @@ void ATFA::change_rir() {
         break;
     case Database:
         // rir_type_label->setText( database file-name and database index );
-    case File:
-        // rir_type_label->setText( filename );
         rir_type_label->setText("NOT IMPLEMENTED YET");
         rir_show_button->setDisabled(true);
         break;
+    case File:
+        {
+            QString small_filename;
+            QRegExp rx("^.*/([^/]*)$");
+            rx.setPatternSyntax(QRegExp::RegExp2);
+            if (rx.indexIn(rir_file) > -1)
+                small_filename = rx.cap(1);
+            else
+                small_filename = rir_file;
+            rir_type_label->setText(small_filename);
+        }
+        rir_show_button->setDisabled(false);
     }
 
     statusBar()->showMessage("Room impulse response updated.");
