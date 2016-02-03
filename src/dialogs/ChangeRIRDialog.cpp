@@ -222,9 +222,8 @@ bool ChangeRIRDialog::run() {
                 try {
                     Signal s(filename.toUtf8().constData());
                     s.set_samplerate(atfa->stream.samplerate);
-                    atfa->stream.scene.imp_resp.resize(s.samples());
-                    std::copy(s.array(), s.array() + s.samples(),
-                              atfa->stream.scene.imp_resp.begin());
+                    atfa->stream.scene.imp_resp.assign(
+                                s.array(), s.array() + s.samples());
 
                 }
                 catch (const FileError&) {

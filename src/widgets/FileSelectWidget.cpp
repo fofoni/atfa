@@ -23,7 +23,8 @@ FileSelectWidget::FileSelectWidget(
         file_path_edit = new QLineEdit(this);
         layout->addWidget(file_path_edit);
 
-        choose_button = new QPushButton("Choose...", this);
+        choose_button = new QPushButton(QIcon::fromTheme("document-open"),
+                                        "&Open file", this);
         layout->addWidget(choose_button);
 
     connect(file_path_edit, SIGNAL(returnPressed()),
