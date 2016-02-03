@@ -44,7 +44,6 @@ QString FileSelectWidget::text() {
 
 void FileSelectWidget::showDialog() {
     QString filename = QFileDialog::getOpenFileName(pWin, caption, dir, filter);
-    if (!filename.isEmpty()) {
+    if (!filename.isEmpty())
         file_path_edit->setText(filename);
-    }
 }

@@ -525,7 +525,6 @@ void ATFA::change_rir() {
         {
             QString small_filename;
             QRegExp rx("^.*/([^/]*)$");
-            rx.setPatternSyntax(QRegExp::RegExp2);
             if (rx.indexIn(rir_file) > -1)
                 small_filename = rx.cap(1);
             else
