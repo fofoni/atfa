@@ -16,7 +16,7 @@ set( ATFA_Qt_headers
     src/widgets/FileSelectWidget.h
 )
 
-# See the Qt tutorial on writing cmake files for Qt5
+# See the Qt tutorial on writing cmake files for Qt5 (with c++11?)
 
 ### ### ### Setup Qt
 QT4_WRAP_CPP( ATFA_MOC_sources ${ATFA_Qt_headers} )
@@ -26,7 +26,9 @@ add_definitions( ${QT_DEFINITIONS} )
 set( USUAL_FLAGS "${USUAL_FLAGS} -Wno-long-long" )
 
 ### ### ### Setup PortAudio
-include_directories( "${PortAudio_INCLUDE_DIRS}" )
+if(PortAudio_INCLUDE_DIRS)
+    include_directories( "${PortAudio_INCLUDE_DIRS}" )
+endif(PortAudio_INCLUDE_DIRS)
 
 ### ### ### Setup ATFA
 execute_process( COMMAND git describe
