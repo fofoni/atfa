@@ -444,12 +444,12 @@ Signal::sample_t Signal::l_inf_norm() {
   * \param[in,out]  re  Real part of the compelx signal on which the FFT will
   *                     act.
   * \param[in,out]  im  Imaginary part.
-  * \param[in]      direction   Wether this is a direct or inverse DFT.
+  * \param[in]      direction   Whether this is a direct or inverse DFT.
   */
 void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
                                     const dir_t direction) {
 
-    // TODO: esse if() aqui deveria estar dentro de um bloco #ifdef DEBUG
+#ifdef ATFA_DEBUG
     if (re.size() != im.size()) {
         std::ostringstream msg;
         msg << "Error: Signal::DFTDriver `re' and `im' vectors must be of the "
@@ -457,31 +457,34 @@ void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
             << " and " << im.size() << ".";
         throw std::runtime_error(msg.str());
     }
+#endif
 
     index_t L = re.size();
 
-    // TODO: esse if() aqui deveria estar dentro de um bloco #ifdef DEBUG
+#ifdef ATFA_DEBUG
     if (L > tblsize) {
         std::ostringstream msg;
         msg << "Error: DFT of size " << L << ": too big." << std::endl
             << "  Maximum is " << tblsize << ".";
         throw std::runtime_error(msg.str());
     }
+#endif
 
     // checks whether n=L is power of two, and also calculates bits=log2(n)
     {   unsigned long n = L;
         if (L == 0) // nothing to do
             return;
-        // TODO: esses if's aqui deveriam estar dentro de um bloco #ifdef DEBUG
-        //       PORÉM: cuidado, pq esse for(), além de testar os if's todos,
-        //              também é responsável por calclar bits=log2(n)
         for (bits = 0; n != 1; n /= 2, ++bits)
+#ifdef ATFA_DEBUG
             if (n%2 != 0) { // then L is not power of two
                 std::ostringstream msg;
                 msg << "Error: tried to take DFT of vector of size " << L
                     << " (not power of two).";
                 throw std::runtime_error(msg.str());
             }
+#else
+            /* pass */;
+#endif
         // here, 2^bits == L
     }
 
