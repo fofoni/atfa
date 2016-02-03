@@ -1,13 +1,7 @@
 # - Try to find PortAudio
-# Once done this will define
-#
-#  PortAudio_FOUND - system has PortAudio
-#  PortAudio_INCLUDE_DIRS - the PortAudio include directory
-#  PortAudio_LIBS - Link these to use PortAudio
-#  PortAudio_DEFINITIONS - Compiler switches required for using PortAudio
-#  PortAudio_VERSION - PortAudio version
 #
 #  Copyright (c) 2006 Andreas Schneider <mail@cynapses.org>
+#  Several modifications by Pedro Angelo <pedro.fonini@smt.ufrj.br>
 #
 # Redistribution and use is allowed according to the terms of the New BSD
 #  license. For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -25,6 +19,9 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
 
   if (PORTAUDIO2_FOUND)
     set(PortAudio_INCLUDE_DIRS
+      ${PORTAUDIO2_INCLUDE_DIRS}
+    )
+    set(PORTAUDIO_INCLUDE_DIR
       ${PORTAUDIO2_INCLUDE_DIRS}
     )
     if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -49,7 +46,7 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
         /sw/include
     )
 
-    find_library(PORTAUDIO_LIBRARY
+    find_library(PortAudio_LIBRARY
       NAMES
         portaudio
       PATHS
@@ -59,7 +56,7 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
         /sw/lib
     )
 
-    find_path(PORTAUDIO_LIBRARY_DIR
+    find_path(PortAudio_LIBRARY_DIR
       NAMES
         portaudio
       PATHS
@@ -70,18 +67,18 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
     )
 
     set(PortAudio_INCLUDE_DIRS
-      ${PORTAUDIO_INCLUDE_DIR}
+      ${PortAudio_INCLUDE_DIR}
     )
     set(PortAudio_LIBS
-      ${PORTAUDIO_LIBRARY}
+      ${PortAudio_LIBRARY}
     )
 
-    set(PORTAUDIO_LIBRARY_DIRS
-      ${PORTAUDIO_LIBRARY_DIR}
+    set(PortAudio_LIBRARY_DIRS
+      ${PortAudio_LIBRARY_DIR}
     )
 
     set(PortAudio_VERSION
-      18
+      19
     )
 
     if (PortAudio_INCLUDE_DIRS AND PortAudio_LIBS)
@@ -89,19 +86,20 @@ else (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
     endif (PortAudio_INCLUDE_DIRS AND PortAudio_LIBS)
 
     if (PortAudio_FOUND)
-      if (NOT Portaudio_FIND_QUIETLY)
+      if (NOT PortAudio_FIND_QUIETLY)
         message(STATUS "Found PortAudio: ${PortAudio_LIBS}")
-      endif (NOT Portaudio_FIND_QUIETLY)
+      endif (NOT PortAudio_FIND_QUIETLY)
     else (PortAudio_FOUND)
       if (Portaudio_FIND_REQUIRED)
         message(FATAL_ERROR "Could not find PortAudio")
       endif (Portaudio_FIND_REQUIRED)
     endif (PortAudio_FOUND)
-  endif (PORTAUDIO2_FOUND)
 
+  endif (PORTAUDIO2_FOUND)
 
   # show the PortAudio_INCLUDE_DIRS and PortAudio_LIBS variables only in the
   # advanced view
   mark_as_advanced(PortAudio_INCLUDE_DIRS PortAudio_LIBS)
+  mark_as_advanced(PortAudio_INCLUDE_DIR PortAudio_LIBRARY_DIRS)
 
 endif (PortAudio_LIBS AND PortAudio_INCLUDE_DIRS)
