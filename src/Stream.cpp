@@ -59,11 +59,6 @@ static int stream_callback(
   *                             a pointer to the Stream object.
   *
   * \see Stream::echo
-  *
-  * \todo Instead of calling Stream::get_filtered_sample() for each sample, we
-  *       should use the Signal::filter mechanism, which uses the more efficient
-  *       overlap-and-add algorithm. Perhaps we will need to force the
-  *       _frames per buffer_ PortAudio parameter to be of a specific value.
   */
 static int stream_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
@@ -97,18 +92,21 @@ static int stream_callback(
                 Signal::DFTDriver::INVERSE);
 
     Stream::container_t::const_iterator it = data->temp_container2_re.begin();
-    bool prev_is_geq0 = true; static int zccount = 0;
+    bool prev_is_geq0 = true;
+    int zccount = 0;
     for (; it != data->tempcont2_mid; ++it) {
         // microphone --(filter)--> memory       (part 1)
-        Stream::sample_t val = data->write_add(*it);
-        if (val >= 0) {
-            if (!prev_is_geq0) data->ZCR[zccount] += 1;
+        if (data->write_add(*it) >= 0) {
+            if (!prev_is_geq0)
+                ++zccount;
             prev_is_geq0 = true;
         }
         else
             prev_is_geq0 = false;
     }
-    //zccount++;
+    data->write_zcr(zccount);
+    // octave:14> zc2 = conv(zc, [1 1 1 1 1 1 1 1 1 1 1 1 1]/13)(7:end-6);
+    // octave:15> vad = (kron(zc2,ones(1,128))-14.933).^2 > 8.6044;
     for (; it != data->temp_container2_re.end(); ++it) {
         /* by now, it is already possible to start sending audio samples to the
            speaker buffer, and we want to do this as soon as possible. */
@@ -201,6 +199,8 @@ void Stream::stop(PaStream *s) {
 
     // close portaudio
     portaudio_end();
+
+    X9();
 
 }
 

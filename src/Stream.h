@@ -131,7 +131,7 @@ public:
       * The actual size of the vector used to hold the samples is
       * `2*buf_size`, in order to make the data structure "look" circular.
       */
-    static const size_t buf_size = 8*samplerate;
+    static const size_t buf_size = 88320; // = 690*128 samples, 8.0109 seconds
 #else
     /// The stream's rate in samples per second
     static const size_t buf_size = 32;
@@ -234,8 +234,8 @@ public:
     /// Adds overlaping pieces of signals
     sample_t write_add(sample_t s) {
         *write_ptr += s;
-        *(write_ptr + buf_size) = *write_ptr; // no need to add once again
-        sample_t retval = *write_ptr;// DEBUG
+        sample_t retval = *write_ptr;
+        *(write_ptr + buf_size) = retval; // no need to add once again
         ++write_ptr;
         if (write_ptr == semantic_end)
             write_ptr = data.begin();
@@ -262,7 +262,8 @@ public:
           temp_container2_re(2*pa_framespb), temp_container2_im(2*pa_framespb),
           tempcont1_mid(temp_container1_re.begin() + pa_framespb),
           tempcont2_mid(temp_container2_re.begin() + pa_framespb),
-          ZCR(buf_size/pa_framespb),
+          ZCR(2*buf_size/pa_framespb), zcr_ptr(ZCR.begin()),
+          zcrptr_sem_end(ZCR.begin() + buf_size/pa_framespb),
           delay_samples(s.delay*samplerate), data(2*buf_size),
           write_ptr(data.begin()), read_ptr(data.begin()),
           semantic_end(data.begin() + buf_size)
@@ -341,8 +342,21 @@ public:
     /// A permanent iterator to the middle of temp_container2_re
     const container_t::iterator tempcont2_mid;
 
-    /// DEBUG
+    /// TODO add desc
     std::vector<int>ZCR;
+
+    /// TODO BURY THIS IN PRIVATE
+    std::vector<int>::iterator zcr_ptr;
+    const std::vector<int>::const_iterator zcrptr_sem_end;
+    void write_zcr(int count) {
+        *zcr_ptr = count;
+        *(zcr_ptr + (buf_size/pa_framespb)) = count;
+        ++zcr_ptr;
+        if (zcr_ptr == zcrptr_sem_end)
+            zcr_ptr = ZCR.begin();
+    }
+
+    /// DEBUG
     void X9() {
         std::cout << "zc = [" << std::endl;
         for (std::vector<int>::const_iterator it = ZCR.begin();
