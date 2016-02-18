@@ -21,6 +21,7 @@ FileSelectWidget::FileSelectWidget(
     QHBoxLayout *layout = new QHBoxLayout(this);
 
         file_path_edit = new QLineEdit(this);
+        file_path_edit->setPlaceholderText("No file selected.");
         layout->addWidget(file_path_edit);
 
         choose_button = new QPushButton(QIcon::fromTheme("document-open"),
