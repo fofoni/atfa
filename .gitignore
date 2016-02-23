@@ -10,3 +10,4 @@ build/release
 doc/latex/*
 !doc/latex/refman.pdf
 RIRs
+src/autogen
