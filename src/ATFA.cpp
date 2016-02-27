@@ -491,7 +491,7 @@ void ATFA::show_rir() {
     }
     else {
         imp_resp_html << "The room impulse response is empty!<br />"
-                         "This means there is no echo in the room."
+                         "This means there is no echo in the room. "
                          "You will hear nothing.";
     }
     imp_resp_html << "</span>";
