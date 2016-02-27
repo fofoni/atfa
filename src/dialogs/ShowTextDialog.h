@@ -10,9 +10,10 @@
 #ifndef SHOWTEXTDIALOG_H
 #define SHOWTEXTDIALOG_H
 
+#include <QtWidgets>
+#include <QtGui>
 #include <QDialog>
 #include <QLayout>
-#include <QtGui>
 
 class ShowTextDialog : public QDialog
 {

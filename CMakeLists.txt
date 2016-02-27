@@ -6,24 +6,15 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )
 
 find_package( PortAudio REQUIRED )
 find_package( LibSndFile REQUIRED )
-find_package( Qt4 REQUIRED )
+find_package( Qt5Core REQUIRED )
+find_package( Qt5Gui REQUIRED )
+find_package( Qt5Widgets REQUIRED )
 
 set( USUAL_FLAGS "" )
 
-set( ATFA_Qt_headers
-    src/ATFA.h src/dialogs/ChangeAlgorithmDialog.h
-    src/dialogs/ChangeRIRDialog.h src/dialogs/ShowTextDialog.h
-    src/widgets/FileSelectWidget.h
-)
-
-# See the Qt tutorial on writing cmake files for Qt5 (with c++11?)
-
 ### ### ### Setup Qt
-QT4_WRAP_CPP( ATFA_MOC_sources ${ATFA_Qt_headers} )
-include( ${QT_USE_FILE} )
-add_definitions( ${QT_DEFINITIONS} )
-# Qt4 uses `long long` a lot
-set( USUAL_FLAGS "${USUAL_FLAGS} -Wno-long-long" )
+SET( CMAKE_AUTOMOC ON )
+SET( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 ### ### ### Setup PortAudio
 if(PortAudio_INCLUDE_DIRS)
@@ -38,9 +29,9 @@ execute_process( COMMAND git describe
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 
-set( USUAL_FLAGS "${USUAL_FLAGS} -ansi -Wall -Wextra -pedantic" )
+set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 -Wall -Wextra -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )
-set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O2" )
+set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O2 -march=native -mtune=native" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 
@@ -50,8 +41,9 @@ add_executable( atfa
     src/dialogs/ChangeAlgorithmDialog.cpp src/dialogs/ChangeRIRDialog.cpp
     src/dialogs/ShowTextDialog.cpp
     src/widgets/FileSelectWidget.cpp
-    ${ATFA_MOC_sources}
 )
+
+qt5_use_modules(atfa Core Gui Widgets)
 
 target_link_libraries( atfa
     ${PortAudio_LIBS}

@@ -10,7 +10,7 @@
 #ifndef FILESELECTWIDGET_H
 #define FILESELECTWIDGET_H
 
-#include <QWidget>
+#include <QtWidgets>
 #include <QtGui>
 
 class FileSelectWidget : public QWidget

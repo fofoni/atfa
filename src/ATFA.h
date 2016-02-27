@@ -11,7 +11,8 @@
 #define ATFA_H
 
 #include <QtGui>
-#include <QWidget>
+#include <QtWidgets>
+#include <QMainWindow>
 
 #include "Stream.h"
 

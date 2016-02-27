@@ -10,9 +10,10 @@
 #ifndef CHANGEALGORITHMDIALOG_H
 #define CHANGEALGORITHMDIALOG_H
 
+#include <QtWidgets>
+#include <QtGui>
 #include <QDialog>
 #include <QLayout>
-#include <QtGui>
 
 class ChangeAlgorithmDialog : public QDialog
 {
