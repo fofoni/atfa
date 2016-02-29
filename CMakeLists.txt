@@ -51,24 +51,6 @@ target_link_libraries( atfa
     ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES}
 )
 
-if( WIN32 )
-    if( MSVC ) # Check if we are using the Visual Studio compiler
-        set_target_properties( atfa PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS" )
-    elseif( CMAKE_COMPILER_IS_GNUCXX )
-        # SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mwindows" ) # Not tested
-    else()
-        message( SEND_ERROR
-            "You are using an unsupported Windows compiler! (Not MSVC or GCC)"
-        )
-    endif()
-elseif( UNIX )
-    # Nothing special required
-else()
-    message( SEND_ERROR
-        "You are on an unsupported platform! (Not Win32 or Unix)"
-    )
-endif()
-
 # TODO: Fix the ill-positioning of latex formula images using CSS
 
 # TODO: write a CPack file for creating .rpms, and etc?

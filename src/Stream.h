@@ -81,8 +81,6 @@ public:
     struct Scenario
     {
 
-        bool is_VAD_active; // Voice activity detector
-
         enum OOV { // On, Off, VAD
             On,  // always enabled
             Off, // always disabled
@@ -101,11 +99,11 @@ public:
         container_t imp_resp;
 
         Scenario(
-            const container_t& ir = container_t(1,1), bool vact = true,
+            const container_t& ir = container_t(1,1),
             OOV flearn = VAD, OOV fout = VAD,
             unsigned d = 100, float vol = .5, bool p = false
         )
-          : is_VAD_active(vact), filter_learning(flearn), filter_output(fout),
+          : filter_learning(flearn), filter_output(fout),
             delay(d), volume(vol), paused(p), imp_resp(ir)
         {
         }
@@ -113,7 +111,7 @@ public:
     };
 
 #ifndef ATFA_DEBUG
-    /// The stream's rate in samples per second
+    /// The stream's rate in samples per second.
     static const unsigned samplerate = 11025;
 
     /// The number of data samples held internally be the stream structure.
@@ -123,15 +121,11 @@ public:
       */
     static const size_t buf_size = 8*samplerate;
 #else
-    /// The stream's rate in samples per second
-    static const size_t buf_size = 24;
+    /// The stream's rate in samples per second.
+    static const unsigned samplerate = 1;
 
     /// The number of data samples held internally be the stream structure.
-    /**
-      * The actual size of the vector used to hold is `2*samplerate`, in order
-      * to make the data structure "look" circular.
-      */
-    static const unsigned samplerate = 1;
+    static const size_t buf_size = 24;
 #endif
 
     /// Returns the next audio sample

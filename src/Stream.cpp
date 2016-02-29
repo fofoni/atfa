@@ -114,8 +114,8 @@ PaStream *Stream::echo() {
     // open i/o stream
     err = Pa_OpenDefaultStream(
                 &stream,
-                1,
-                1,
+                1,  // num. input channels
+                1,  // num. output channels
                 paFloat32,
                 samplerate,
                 paFramesPerBufferUnspecified,
