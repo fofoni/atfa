@@ -72,15 +72,12 @@ static int stream_callback(
 
     Stream * const data = static_cast<Stream *>(user_data);
 
-    Stream::sample_t *out = static_cast<Stream::sample_t *>(out_buf);
-    const Stream::sample_t *in = static_cast<const Stream::sample_t *>(in_buf);
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-    for (unsigned long i = 0; i != frames_per_buf; ++i) {
-        data->write(*in++);
-        *out++ = 4 * data->scene.volume * data->get_filtered_sample();
-    }
+    data->read_write(static_cast<const Stream::sample_t *>(in_buf),
+                     static_cast<Stream::sample_t *>(out_buf),
+                     frames_per_buf);
 
     return paContinue;
 
@@ -175,63 +172,4 @@ void Stream::stop(PaStream *s) {
   */
 void Stream::set_filter(const container_t& h) {
     scene.imp_resp = h;
-}
-
-
-/**
-  * This function is called by `simulate()` to print to the screen the current
-  * state of the simulated environment. It prints the internal state of the
-  * Stream object and the samples that have been written to the output.
-  *
-  * \param[in]  speaker_buf     A vector with the samples that have been sent
-  *                             to the output (speaker).
-  *
-  * \see simulate
-  */
-void Stream::dump_state(const container_t speaker_buf) const {
-    std::cout << "internal: [ ";
-    container_t::const_iterator it = data.begin();
-    std::cout << *it;
-    for (++it; it != data.end(); ++it)
-        std::cout << ", " << *it;
-    std::cout << " ];" << std::endl;
-    std::cout << "speaker: [ ";
-    it = speaker_buf.begin();
-    std::cout << *it;
-    for (++it; it != speaker_buf.end(); ++it)
-        std::cout << ", " << *it;
-    std::cout << " ];" << std::endl << std::endl;
-}
-
-/**
-  * This function simulates the PortAudio functioning by calling the callback
-  * function some four times, each time providing it with different in/out
-  * buffers.
-  *
-  * \see dump_state
-  */
-void Stream::simulate() {
-
-    PaStreamCallbackFlags flg = 0;
-    static const sample_t mic_buf_arr[24+8] = {
-        -987, 610, -377, 233, -144, 89, -55, 34,
-        -21, 13, -8, 5, -3, 2, -1, 1,
-        0, 1, 1, 2, 3, 5, 8, 13,
-        21, 34, 55, 89, 144, 233, 377, 610
-    };
-    container_t mic_buf(mic_buf_arr, mic_buf_arr + 24+8);
-    container_t speaker_buf(24+8);
-
-    set_delay(10*1000);
-
-    dump_state(speaker_buf);
-    stream_callback(&mic_buf[0], &speaker_buf[0], 8, NULL, flg, this);
-    dump_state(speaker_buf);
-    stream_callback(&mic_buf[8], &speaker_buf[8], 8, NULL, flg, this);
-    dump_state(speaker_buf);
-    stream_callback(&mic_buf[16], &speaker_buf[16], 8, NULL, flg, this);
-    dump_state(speaker_buf);
-    stream_callback(&mic_buf[24], &speaker_buf[24], 8, NULL, flg, this);
-    dump_state(speaker_buf);
-
 }

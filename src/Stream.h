@@ -27,6 +27,8 @@ extern "C" {
 #include <stdexcept>
 #include <numeric>
 
+typedef unsigned long pa_fperbuf_t;
+
 /// Represents an input/output stream of audio samples
 /**
   * Holds data and provides routines for dealing with streams that represent
@@ -115,11 +117,7 @@ public:
     static const unsigned samplerate = 11025;
 
     /// The number of data samples held internally be the stream structure.
-    /**
-      * The actual size of the vector used to hold the samples is
-      * `2*bufsize`, in order to make the data structure "look" circular.
-      */
-    static const size_t buf_size = 8*samplerate;
+    static const size_t buf_size = 8*samplerate; // (num. of seconds * srate)
 #else
     /// The stream's rate in samples per second.
     static const unsigned samplerate = 1;
@@ -139,80 +137,25 @@ public:
       * \see data
       * \see write
       */
-    sample_t read() {
-        sample_t s = *read_ptr;
-        ++read_ptr;
-        if (read_ptr == semantic_end)
-            read_ptr = data.begin();
-        return s;
-    }
-
-    /// Returns an "array" with the last \a n samples
-    /**
-      * Makes a pointer (actually, an iterator) to the n-th pointer behind
-      * `read_ptr`. Handles the case in which the range
-      * \f$\left[\texttt{read\_ptr} -\texttt{n},\texttt{read\_ptr}\right[\f$
-      * crosses the end of the circular structure. That is, for any valid value
-      * of `read_ptr`, this function can be called with any
-      * \f$\texttt{n}\in\left[0,\texttt{buf\_size}\right]\f$. A valid `read_ptr`
-      * is one such that `read_ptr - data.begin()` is in the range
-      * \f$\left[0,\texttt{buf\_size}\right[\f$.
-      *
-      * \param[in]  n   The size, in samples, of the "array" that is returned
-      *
-      * \returns an iterator pointing to the last \a n samples.
-      *
-      * \see data
-      */
-    container_t::const_iterator get_last_n(index_t n) {
-        ++read_ptr;
-        // think of the following summation as being "modulo buf_size",
-        // because the data structure is to be circular.
-        container_t::const_iterator p = read_ptr + buf_size - n;
-        if (read_ptr == semantic_end)
-            read_ptr = data.begin();
-        return p;
-    }
-
-    /// Returns a sample from the stream echoed by the impulse response
-    /**
-      * Just like `read()`, but returns a sample from the signal that was
-      * convolved with the room impulse response.
-      *
-      * \returns a sample of the echoed signal
-      *
-      * \see read
-      * \see read_ptr
-      */
-    sample_t get_filtered_sample() {
-        container_t::const_iterator p = get_last_n(scene.imp_resp.size());
-        sample_t accum = 0;
-        for (index_t k = scene.imp_resp.size(); k != 0; --k, ++p)
-            accum += scene.imp_resp[k-1] * (*p);
-        return accum;
-    }
-
-    /// Writes an audio sample to the stream
-    /**
-      * Writes a sample to the data structure so that it can be later read by
-      * `read()` or `get_last_n()`. Writes it twice (one in each copy of the
-      * data structure), so that the list is always "doubled" to make it look
-      * "circular".
-      *
-      * Handles the case in which the pointer must be rewinded.
-      *
-      * \param[in]  s   The value of sample to be written to the stream's
-      *                 internal memory
-      *
-      * \see data
-      * \see read
-      */
-    void write(sample_t s) {
-        *write_ptr = s;
-        *(write_ptr + buf_size) = s;
-        ++write_ptr;
-        if (write_ptr == semantic_end)
-            write_ptr = data.begin();
+    template<class InputIt, class OutputIt>
+    void read_write(InputIt in_buf, OutputIt out_buf, pa_fperbuf_t pa_frames) {
+        pa_fperbuf_t remaining = data_out.end() - read_ptr;
+        if (remaining < pa_frames) {
+            std::copy(read_ptr, read_ptr + pa_frames, out_buf);
+            std::copy(in_buf,   in_buf + pa_frames,   write_ptr);
+            read_ptr  = read_ptr  + pa_frames;
+            write_ptr = write_ptr + pa_frames;
+        }
+        else {
+            std::copy(read_ptr, data_out.end(),     out_buf);
+            std::copy(in_buf,   in_buf + remaining, write_ptr);
+            read_ptr  = data_out.begin() + (remaining - pa_frames);
+            write_ptr = data_in.begin()  + (remaining - pa_frames);
+            std::copy(data_out.begin(),   read_ptr,
+                      out_buf + remaining);
+            std::copy(in_buf + remaining, in_buf + pa_frames,
+                      data_in.begin());
+        }
     }
 
     /// Initializes important values
@@ -225,10 +168,10 @@ public:
       * \see read
       */
     Stream()
-        : scene(), delay_samples(0), data(2*buf_size),
-          write_ptr(data.begin()), read_ptr(data.begin()),
-          semantic_end(data.begin() + buf_size)
+        : scene(), data_in(buf_size), data_out(buf_size),
+          write_ptr(data_in.begin()), read_ptr(data_out.begin())
     {
+        set_delay(scene.delay); // sets delay_samples and filter_ptr
 #ifdef ATFA_DEBUG
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
@@ -242,9 +185,8 @@ public:
       * \see Scenario
       */
     Stream(const Scenario& s)
-        : scene(s), delay_samples(s.delay*samplerate), data(2*buf_size),
-          write_ptr(data.begin()), read_ptr(data.begin()),
-          semantic_end(data.begin() + buf_size)
+        : scene(s), data_in(buf_size), data_out(buf_size),
+          write_ptr(data_in.begin()), read_ptr(data_out.begin())
     {
     }
 
@@ -271,12 +213,13 @@ public:
       */
     void set_delay(unsigned msec) {
         delay_samples = static_cast<int>(samplerate * double(msec)/1000);
-        if (delay_samples <= static_cast<size_t>(write_ptr - data.begin()))
-            read_ptr = write_ptr - delay_samples;
+        size_t remaining = data_out.end() - read_ptr;
+        if (delay_samples < remaining)
+            filter_ptr = read_ptr + delay_samples;
         else
             // We won't ckeck, for performance, that delay_samples <= buf_size
             // The application must enforce this.
-            read_ptr = write_ptr + (buf_size - delay_samples);
+            filter_ptr = data_out.begin() + (delay_samples - remaining);
         scene.delay = msec;
     }
 
@@ -313,7 +256,8 @@ private:
       * \see write
       * \see Stream
       */
-    container_t data;
+    container_t data_in;
+    container_t data_out;
 
     /// An iterator to the next location to be written on the stream
     /**
@@ -344,47 +288,8 @@ private:
       * \see semantic_end
       * \see write_ptr
       */
-    container_t::const_iterator read_ptr;
-
-    /// An iterator to the middle of the vector `data`
-    /**
-      * Points to the first repeating element in `data`. See the diagram
-      * provided in the `data` element description and the explanation in the
-      * `Stream` class description.
-      */
-    const container_t::const_iterator semantic_end;
-
-    /// Returns a sample.
-    /**
-      * Gets a sample of the signal. Used only in debugging, when we want a
-      * snapshot of the stream internal data.
-      *
-      * \param[in] index    The index of the desired sample.
-      *
-      * \returns a reference to the sample.
-      */
-    sample_t& operator [](index_t index) {
-#ifdef ATFA_DEBUG
-        if (index >= data.size()) throw std::runtime_error("Range error!!");
-#endif
-        return data[index];
-    }
-
-    /// Returns a "read-only" sample.
-    /**
-      * Just like the "read-write" version, but returns a const reference to a
-      * sample.
-      *
-      * \param[in] index    The index of the desired sample.
-      *
-      * \returns a const reference to the sample.
-      */
-    const sample_t& operator [](index_t index) const {
-#ifdef ATFA_DEBUG
-        if (index >= data.size()) throw std::runtime_error("Range error!!");
-#endif
-        return data[index];
-    }
+    container_t::iterator read_ptr;
+    container_t::iterator filter_ptr;
 
 };
 
