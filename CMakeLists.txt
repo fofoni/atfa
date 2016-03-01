@@ -13,8 +13,8 @@ find_package( Qt5Widgets REQUIRED )
 set( USUAL_FLAGS "" )
 
 ### ### ### Setup Qt
-SET( CMAKE_AUTOMOC ON )
-SET( CMAKE_INCLUDE_CURRENT_DIR ON )
+set( CMAKE_AUTOMOC ON )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 ### ### ### Setup PortAudio
 if(PortAudio_INCLUDE_DIRS)
@@ -50,6 +50,8 @@ target_link_libraries( atfa
     ${LIBSNDFILE_LIBRARIES}
     ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES}
 )
+
+# TODO: dar uma limpa nesse cmakelists. Quais comando do qt são *necessários*?
 
 # TODO: Fix the ill-positioning of latex formula images using CSS
 

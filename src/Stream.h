@@ -27,6 +27,7 @@ extern "C" {
 #include <stdexcept>
 #include <algorithm>
 #include <thread>
+#include <mutex>
 #include <functional>
 
 typedef unsigned long pa_fperbuf_t;
@@ -197,7 +198,7 @@ public:
       * \see read
       */
     Stream()
-        : scene(), data_in(buf_size), data_out(buf_size),
+        : scene(), is_running(false), data_in(buf_size), data_out(buf_size),
           write_ptr(data_in.begin()), read_ptr(data_out.begin())
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
@@ -214,7 +215,7 @@ public:
       * \see Scenario
       */
     Stream(const Scenario& s)
-        : scene(s), data_in(buf_size), data_out(buf_size),
+        : scene(s), is_running(false), data_in(buf_size), data_out(buf_size),
           write_ptr(data_in.begin()), read_ptr(data_out.begin())
     {
     }
@@ -264,7 +265,15 @@ public:
     /// A structure holding the many parameters that define a scenario setup
     Scenario scene;
 
+    bool running() {
+        std::lock_guard<std::mutex> lk(running_mutex);
+        return is_running;
+    }
+
 private:
+
+    bool is_running;
+    std::mutex running_mutex;
 
     /// The delay of the communication channel, measured in samples
     index_t delay_samples;

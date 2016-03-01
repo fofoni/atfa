@@ -23,7 +23,7 @@ extern "C" {
 #include "dialogs/ChangeRIRDialog.h"
 
 ATFA::ATFA(QWidget *parent) :
-    QMainWindow(parent), stream(), pastream(NULL), running(false),
+    QMainWindow(parent), stream(), pastream(NULL),
     rir_source(NoRIR), rir_filetype(None), rir_file(""), database_index(-1),
     muted(false)
 {
@@ -425,12 +425,11 @@ void ATFA::fout_vad_toggled(bool t) {
 }
 
 void ATFA::play_clicked() {
-    if (running) {
+    if (stream.running()) {
 
         stream.stop(pastream);
         pastream = NULL;
 
-        running = false;
         statusBar()->showMessage("Simulation stopped.");
         play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
 
@@ -445,7 +444,6 @@ void ATFA::play_clicked() {
 
         pastream = stream.echo();
 
-        running = true;
         statusBar()->showMessage("Simulation running...");
         play_button->setIcon(QIcon(QPixmap("../../imgs/pause.png")));
 
@@ -460,7 +458,7 @@ void ATFA::vol_mute_toggled(bool t) {
     if (t) {
         muted = true;
         stream.scene.volume = 0;
-        statusBar()->showMessage( running ?
+        statusBar()->showMessage( stream.running() ?
             "Local speaker muted. Simulation still running." :
             "Local speaker muted."
         );

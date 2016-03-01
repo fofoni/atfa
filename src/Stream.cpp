@@ -134,19 +134,19 @@ PaStream *Stream::echo() {
 //                    " " + Pa_GetErrorText(err)
 //        );
 
-    std::chrono::steady_clock::time_point start_time, end_time;
+    {
+        std::lock_guard<std::mutex> lk(running_mutex);
+        is_running = true;
+    }
 
-    std::vector<sample_t> ib(128);
-    std::vector<sample_t> ob(128);
+    constexpr size_t blk_len = 128;
+    rir_thread = new std::thread(&Stream::rir_fft, this);
 
-    using namespace std;
-    using namespace std::chrono;
-    start_time = steady_clock::now();
+    std::vector<sample_t> ib(blk_len);
+    std::vector<sample_t> ob(blk_len);
+
     for (unsigned long coe = 0; coe < 400; coe++)
-        read_write(&(ib[0]), &(ob[0]), 128);
-    end_time = steady_clock::now();
-    auto duration = duration_cast<microseconds>(end_time - start_time).count();
-    cout << endl << "Time elapsed: " << duration << " us" << endl;
+        read_write(&(ib[0]), &(ob[0]), blk_len);
 
     return stream;
 
@@ -177,6 +177,15 @@ void Stream::stop(PaStream *s) {
 //    // close portaudio
 //    portaudio_end();
 
+    {
+        std::lock_guard<std::mutex> lk(running_mutex);
+        is_running = false;
+    }
+
+    rir_thread->join();
+    delete rir_thread;
+    rir_thread = nullptr;
+
 }
 
 /**
@@ -190,5 +199,9 @@ void Stream::set_filter(const container_t& h) {
 }
 
 void Stream::rir_fft() {
-
+    for (;;) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (!running())
+            break;
+    }
 }

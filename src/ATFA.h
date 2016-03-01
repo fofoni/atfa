@@ -29,7 +29,6 @@ public:
 
     Stream stream;
     PaStream *pastream;
-    bool running;
 
     enum RIR_source_t {NoRIR, Literal, Database, File};
     enum RIR_filetype_t {None, MAT, WAV};
