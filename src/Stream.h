@@ -25,7 +25,9 @@ extern "C" {
 
 #include <vector>
 #include <stdexcept>
-#include <numeric>
+#include <algorithm>
+#include <thread>
+#include <functional>
 
 typedef unsigned long pa_fperbuf_t;
 
@@ -117,7 +119,7 @@ public:
     static const unsigned samplerate = 11025;
 
     /// The number of data samples held internally be the stream structure.
-    static const size_t buf_size = 8*samplerate; // (num. of seconds * srate)
+    static const size_t buf_size = 1000;//8*samplerate; // (num. of seconds * srate)
 #else
     /// The stream's rate in samples per second.
     static const unsigned samplerate = 1;
@@ -139,22 +141,49 @@ public:
       */
     template<class InputIt, class OutputIt>
     void read_write(InputIt in_buf, OutputIt out_buf, pa_fperbuf_t pa_frames) {
+//        std::cout << "read_write" << std::endl;
+//        std::cout << "pa_frames: " << pa_frames << std::endl;
         pa_fperbuf_t remaining = data_out.end() - read_ptr;
-        if (remaining < pa_frames) {
-            std::copy(read_ptr, read_ptr + pa_frames, out_buf);
-            std::copy(in_buf,   in_buf + pa_frames,   write_ptr);
-            read_ptr  = read_ptr  + pa_frames;
-            write_ptr = write_ptr + pa_frames;
+//        std::cout << "remaining: " << remaining << std::endl;
+        const float volume = scene.volume;
+//        std::cout << "volume: " << volume << std::endl;
+        // The following are two ways of getting a functional times_vol which
+        // returns its argument multiplied by the current volume (that is,
+        // times_vol(x) := scene.volume * x.
+        // The measured times show that the square root of the expected value of
+        // the square of the time that takes for this function read_write to run
+        // 400 times, each with 128 frames, in a scenario in which
+        // buf_size=1000, is (68 +/- 32) us, with 99.7% confidence, when using
+        // the bind method. The same expected value for the lambda method is
+        // (84 +/- 24) ms. For comparision, the length of one sample is
+        // approximately 90 ms.
+        // The lambda method is commented-out, because the above results favor
+        // the bind method.
+        auto times_vol = std::bind(std::multiplies<sample_t>(),
+                                   scene.volume, std::placeholders::_1);
+//        auto times_vol = [volume] (sample_t sample) -> sample_t {
+//            return volume*sample;
+//        };
+        long overflow = (long)pa_frames - (long)remaining;
+//        std::cout << "times_vol(0,1,2,...,9):";
+//        for(int blau=0; blau<10; blau++) std::cout << " " << times_vol(blau);
+//        std::cout << std::endl;
+        if (overflow < 0) { // there was no overflow
+//            std::cout << "pa_frames < remaining" << std::endl;
+            auto read_end_ptr = read_ptr + pa_frames;
+            std::transform(read_ptr, read_end_ptr, out_buf, times_vol);
+            read_ptr = read_end_ptr;
+            write_ptr = std::copy(in_buf, in_buf + pa_frames, write_ptr);
         }
         else {
-            std::copy(read_ptr, data_out.end(),     out_buf);
-            std::copy(in_buf,   in_buf + remaining, write_ptr);
-            read_ptr  = data_out.begin() + (remaining - pa_frames);
-            write_ptr = data_in.begin()  + (remaining - pa_frames);
-            std::copy(data_out.begin(),   read_ptr,
-                      out_buf + remaining);
-            std::copy(in_buf + remaining, in_buf + pa_frames,
-                      data_in.begin());
+//            std::cout << "pa_frames >= remaining" << std::endl;
+            std::transform(read_ptr, data_out.end(), out_buf, times_vol);
+            std::copy(in_buf, in_buf + remaining, write_ptr);
+            read_ptr = data_out.begin() + overflow;
+            std::transform(data_out.begin(), read_ptr,
+                    out_buf + remaining, times_vol);
+            write_ptr = std::copy(in_buf + remaining, in_buf + pa_frames,
+                    data_in.begin());
         }
     }
 
@@ -290,6 +319,10 @@ private:
       */
     container_t::iterator read_ptr;
     container_t::iterator filter_ptr;
+
+    void rir_fft();
+
+    std::thread *rir_thread;
 
 };
 

@@ -21,6 +21,7 @@ extern "C" {
 }
 
 #include <iostream>
+#include <chrono>
 
 #include "Stream.h"
 #include "utils.h"
@@ -105,33 +106,47 @@ PaStream *Stream::echo() {
     PaStream *stream;
     PaError err;
 
-    // initialize portaudio
-    portaudio_init();
+//    // initialize portaudio
+//    portaudio_init();
 
-    // open i/o stream
-    err = Pa_OpenDefaultStream(
-                &stream,
-                1,  // num. input channels
-                1,  // num. output channels
-                paFloat32,
-                samplerate,
-                paFramesPerBufferUnspecified,
-                stream_callback,
-                this
-    );
-    if (err != paNoError)
-        throw std::runtime_error(
-                    std::string("Error opening stream for audio I/O:") +
-                    " " + Pa_GetErrorText(err)
-        );
+//    // open i/o stream
+//    err = Pa_OpenDefaultStream(
+//                &stream,
+//                1,  // num. input channels
+//                1,  // num. output channels
+//                paFloat32,
+//                samplerate,
+//                paFramesPerBufferUnspecified,
+//                stream_callback,
+//                this
+//    );
+//    if (err != paNoError)
+//        throw std::runtime_error(
+//                    std::string("Error opening stream for audio I/O:") +
+//                    " " + Pa_GetErrorText(err)
+//        );
 
-    // start stream
-    err = Pa_StartStream(stream);
-    if (err != paNoError)
-        throw std::runtime_error(
-                    std::string("Error starting stream for audio I/O:") +
-                    " " + Pa_GetErrorText(err)
-        );
+//    // start stream
+//    err = Pa_StartStream(stream);
+//    if (err != paNoError)
+//        throw std::runtime_error(
+//                    std::string("Error starting stream for audio I/O:") +
+//                    " " + Pa_GetErrorText(err)
+//        );
+
+    std::chrono::steady_clock::time_point start_time, end_time;
+
+    std::vector<sample_t> ib(128);
+    std::vector<sample_t> ob(128);
+
+    using namespace std;
+    using namespace std::chrono;
+    start_time = steady_clock::now();
+    for (unsigned long coe = 0; coe < 400; coe++)
+        read_write(&(ib[0]), &(ob[0]), 128);
+    end_time = steady_clock::now();
+    auto duration = duration_cast<microseconds>(end_time - start_time).count();
+    cout << endl << "Time elapsed: " << duration << " us" << endl;
 
     return stream;
 
@@ -151,16 +166,16 @@ void Stream::stop(PaStream *s) {
 
     PaError err;
 
-    // close stream
-    err = Pa_StopStream(s);
-    if (err != paNoError)
-        throw std::runtime_error(
-                    std::string("Error closing stream for audio input:") +
-                    " " + Pa_GetErrorText(err)
-        );
+//    // close stream
+//    err = Pa_StopStream(s);
+//    if (err != paNoError)
+//        throw std::runtime_error(
+//                    std::string("Error closing stream for audio input:") +
+//                    " " + Pa_GetErrorText(err)
+//        );
 
-    // close portaudio
-    portaudio_end();
+//    // close portaudio
+//    portaudio_end();
 
 }
 
@@ -172,4 +187,8 @@ void Stream::stop(PaStream *s) {
   */
 void Stream::set_filter(const container_t& h) {
     scene.imp_resp = h;
+}
+
+void Stream::rir_fft() {
+
 }
