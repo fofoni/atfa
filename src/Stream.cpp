@@ -131,6 +131,9 @@ PaStream *Stream::echo() {
                     " " + Pa_GetErrorText(err)
         );
 
+    blk_count = 0;
+    blk_offset = 0;
+
     rir_thread = new std::thread(&Stream::rir_fft, this);
 
     // start stream
@@ -195,10 +198,8 @@ void Stream::stop(PaStream *s) {
 }
 
 void Stream::rir_fft() {
-    for (;;) {
+    while (running()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (!running())
-            break;
     }
 }
 

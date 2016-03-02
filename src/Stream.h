@@ -28,6 +28,7 @@ extern "C" {
 #include <algorithm>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include <functional>
 
 typedef unsigned long pa_fperbuf_t;
@@ -117,15 +118,19 @@ public:
 
 #ifndef ATFA_DEBUG
     /// The stream's rate in samples per second.
-    static const unsigned samplerate = 44100;
+    static constexpr unsigned samplerate = 44100;
 
-    /// The number of data samples held internally be the stream structure.
-    static const size_t buf_size = 8*samplerate; // (num. of seconds * srate)
+    static constexpr size_t blk_size = 128;
+
+    static constexpr unsigned blks_in_buf = 1500;
+
+    /// The number of data samples held internally by the stream structure.
+    static constexpr size_t buf_size = blks_in_buf * blk_size;
 #else
     /// The stream's rate in samples per second.
     static const unsigned samplerate = 1;
 
-    /// The number of data samples held internally be the stream structure.
+    /// The number of data samples held internally by the stream structure.
     static const size_t buf_size = 24;
 #endif
 
@@ -186,6 +191,13 @@ public:
             write_ptr = std::copy(in_buf + remaining, in_buf + pa_frames,
                     data_in.begin());
         }
+        size_t current_offset = blk_offset + pa_frames;
+        {
+            std::lock_guard<std::mutex> lk(blk_mutex);
+            blk_count += current_offset / blk_size;
+        }
+        blk_cv.notify_one();
+        blk_offset = current_offset % blk_size;
     }
 
     /// Initializes important values
@@ -271,6 +283,13 @@ public:
     }
 
 private:
+
+    std::condition_variable blk_cv;
+    unsigned blk_count; // how many blocks need to be processed by rir_fft.
+                        // should only be accessed by owner of lock on blk_mutex
+    std::mutex blk_mutex;
+
+    size_t blk_offset; // hoy many samples gave been written to current block
 
     bool is_running;
     std::mutex running_mutex;
