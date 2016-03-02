@@ -76,6 +76,11 @@ static int stream_callback(
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
+//    float *ob=(float*)out_buf;
+//    const float *in=(const float *) in_buf;
+//    for (int i=0; i<frames_per_buf; ++i)
+//        *ob++ = *in++;
+
     data->read_write(static_cast<const Stream::sample_t *>(in_buf),
                      static_cast<Stream::sample_t *>(out_buf),
                      frames_per_buf);
@@ -106,47 +111,48 @@ PaStream *Stream::echo() {
     PaStream *stream;
     PaError err;
 
-//    // initialize portaudio
-//    portaudio_init();
+    // initialize portaudio
+    portaudio_init();
 
-//    // open i/o stream
-//    err = Pa_OpenDefaultStream(
-//                &stream,
-//                1,  // num. input channels
-//                1,  // num. output channels
-//                paFloat32,
-//                samplerate,
-//                paFramesPerBufferUnspecified,
-//                stream_callback,
-//                this
-//    );
-//    if (err != paNoError)
-//        throw std::runtime_error(
-//                    std::string("Error opening stream for audio I/O:") +
-//                    " " + Pa_GetErrorText(err)
-//        );
+    // open i/o stream
+    err = Pa_OpenDefaultStream(
+                &stream,
+                1,  // num. input channels
+                1,  // num. output channels
+                paFloat32,
+                samplerate,
+                paFramesPerBufferUnspecified,
+                stream_callback,
+                this
+    );
+    if (err != paNoError)
+        throw std::runtime_error(
+                    std::string("Error opening stream for audio I/O:") +
+                    " " + Pa_GetErrorText(err)
+        );
 
-//    // start stream
-//    err = Pa_StartStream(stream);
-//    if (err != paNoError)
-//        throw std::runtime_error(
-//                    std::string("Error starting stream for audio I/O:") +
-//                    " " + Pa_GetErrorText(err)
-//        );
+    rir_thread = new std::thread(&Stream::rir_fft, this);
+
+    // start stream
+    err = Pa_StartStream(stream);
+    if (err != paNoError)
+        throw std::runtime_error(
+                    std::string("Error starting stream for audio I/O:") +
+                    " " + Pa_GetErrorText(err)
+        );
 
     {
         std::lock_guard<std::mutex> lk(running_mutex);
         is_running = true;
     }
 
-    constexpr size_t blk_len = 128;
-    rir_thread = new std::thread(&Stream::rir_fft, this);
+//    constexpr size_t blk_len = 128;
 
-    std::vector<sample_t> ib(blk_len);
-    std::vector<sample_t> ob(blk_len);
+//    std::vector<sample_t> ib(blk_len);
+//    std::vector<sample_t> ob(blk_len);
 
-    for (unsigned long coe = 0; coe < 400; coe++)
-        read_write(&(ib[0]), &(ob[0]), blk_len);
+//    for (unsigned long coe = 0; coe < 400; coe++)
+//        read_write(&(ib[0]), &(ob[0]), blk_len);
 
     return stream;
 
@@ -166,16 +172,16 @@ void Stream::stop(PaStream *s) {
 
     PaError err;
 
-//    // close stream
-//    err = Pa_StopStream(s);
-//    if (err != paNoError)
-//        throw std::runtime_error(
-//                    std::string("Error closing stream for audio input:") +
-//                    " " + Pa_GetErrorText(err)
-//        );
+    // close stream
+    err = Pa_StopStream(s);
+    if (err != paNoError)
+        throw std::runtime_error(
+                    std::string("Error closing stream for audio input:") +
+                    " " + Pa_GetErrorText(err)
+        );
 
-//    // close portaudio
-//    portaudio_end();
+    // close portaudio
+    portaudio_end();
 
     {
         std::lock_guard<std::mutex> lk(running_mutex);
@@ -188,6 +194,14 @@ void Stream::stop(PaStream *s) {
 
 }
 
+void Stream::rir_fft() {
+    for (;;) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        if (!running())
+            break;
+    }
+}
+
 /**
   * This function just sets the internal copy of the room impulse response (RIR)
   * samples to be equal to the one specified.
@@ -196,12 +210,4 @@ void Stream::stop(PaStream *s) {
   */
 void Stream::set_filter(const container_t& h) {
     scene.imp_resp = h;
-}
-
-void Stream::rir_fft() {
-    for (;;) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        if (!running())
-            break;
-    }
 }

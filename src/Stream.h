@@ -117,10 +117,10 @@ public:
 
 #ifndef ATFA_DEBUG
     /// The stream's rate in samples per second.
-    static const unsigned samplerate = 11025;
+    static const unsigned samplerate = 44100;
 
     /// The number of data samples held internally be the stream structure.
-    static const size_t buf_size = 1000;//8*samplerate; // (num. of seconds * srate)
+    static const size_t buf_size = 8*samplerate; // (num. of seconds * srate)
 #else
     /// The stream's rate in samples per second.
     static const unsigned samplerate = 1;
@@ -146,7 +146,6 @@ public:
 //        std::cout << "pa_frames: " << pa_frames << std::endl;
         pa_fperbuf_t remaining = data_out.end() - read_ptr;
 //        std::cout << "remaining: " << remaining << std::endl;
-        const float volume = scene.volume;
 //        std::cout << "volume: " << volume << std::endl;
         // The following are two ways of getting a functional times_vol which
         // returns its argument multiplied by the current volume (that is,
@@ -162,6 +161,7 @@ public:
         // the bind method.
         auto times_vol = std::bind(std::multiplies<sample_t>(),
                                    scene.volume, std::placeholders::_1);
+//        const float volume = scene.volume;
 //        auto times_vol = [volume] (sample_t sample) -> sample_t {
 //            return volume*sample;
 //        };
