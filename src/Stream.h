@@ -229,7 +229,7 @@ public:
       * \see read_ptr
       */
     void set_delay(unsigned msec) {
-        delay_samples = static_cast<int>(samplerate * double(msec)/1000);
+        delay_samples = static_cast<int>(samplerate/4 * double(msec)/1000);
         size_t remaining = data_out.end() - read_ptr;
         if (delay_samples < remaining)
             filter_ptr = read_ptr + delay_samples;
