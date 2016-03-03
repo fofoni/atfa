@@ -128,10 +128,6 @@ static int stream_callback(
   */
 PaStream *Stream::echo() {
 
-#ifndef ATFA_DEBUG
-    PaStream *stream;
-    PaError err;
-
     // no need for mutex, because the rir_thread has not started yet
     is_running = true;
 
@@ -147,6 +143,10 @@ PaStream *Stream::echo() {
     read_ptr  = data_out.begin();
     rir_ptr   = data_in.begin();
     set_delay(scene.delay);
+
+#ifndef ATFA_DEBUG
+    PaStream *stream;
+    PaError err;
 
     // initialize portaudio
     portaudio_init();
@@ -222,18 +222,42 @@ PaStream *Stream::echo() {
 
     PaStreamCallbackFlags status_flags;
 
-    stream_callback(&(ib[0]), &(ob[0]), 10, nullptr, status_flags, this);
-    SDUMP(10);
-    stream_callback(&(ib[0]), &(ob[0]), 10, nullptr, status_flags, this);
-    SDUMP(10);
-    stream_callback(&(ib[0]), &(ob[0]), 120, nullptr, status_flags, this);
-    SDUMP(120);
-    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
-    SDUMP(130);
-    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
-    SDUMP(130);
-    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
-    SDUMP(130);
+    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
+    SDUMP(12);
+    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
+    SDUMP(8);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
+    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
+    SDUMP(12);
+    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
+    SDUMP(8);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
+    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
+    SDUMP(12);
+    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
+    SDUMP(8);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
+    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
+    SDUMP(256);
+    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
+    SDUMP(300);
 
     SCOUT("======= end ECHO =======");
     return nullptr;
