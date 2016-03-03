@@ -35,6 +35,8 @@ static int stream_callback(
         PaStreamCallbackFlags status_flags, void *user_data
 );
 
+static float teste1[1024];
+static float teste2[1024];
 
 /**
   * See the description for the `signal_callback()` function, in the Signal.cpp
@@ -78,9 +80,30 @@ static int stream_callback(
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-    data->read_write(static_cast<const Stream::sample_t *>(in_buf),
-                     static_cast<Stream::sample_t *>(out_buf),
-                     frames_per_buf);
+    float *ib = (float*)in_buf;
+    float *ob = (float*)out_buf;
+
+    for (unsigned i=0; i<frames_per_buf/4; ++i) {
+        teste1[i] = (ib[4*i]+ib[4*i+1]+ib[4*i+2]+ib[4*i+3])/4;
+    }
+
+    data->read_write(static_cast<const Stream::sample_t *>(teste1),
+                     static_cast<Stream::sample_t *>(teste2),
+                     frames_per_buf/4);
+
+    if (frames_per_buf/4 == 0) return paContinue;
+
+    ob[0] = teste2[0];
+    ob[1] = teste2[0];
+    ob[2] = teste2[0];
+    ob[3] = teste2[0];
+
+    for (unsigned i=1; i<frames_per_buf/4; ++i) {
+        ob[4*i]   = teste2[i-1]*0.75 + teste2[i]*0.25;
+        ob[4*i+1] = teste2[i-1]*0.50 + teste2[i]*0.50;
+        ob[4*i+2] = teste2[i-1]*0.25 + teste2[i]*0.75;
+        ob[4*i+3] =                    teste2[i]*1.00;
+    }
 
     return paContinue;
 
