@@ -20,12 +20,15 @@ extern "C" {
 #   include <portaudio.h>
 }
 
+#include <exception>
+
 #ifdef ATFA_DEBUG
 #include <iostream>
 #include <algorithm>
 #endif
 
 #include "Stream.h"
+#include "Signal.h"
 #include "utils.h"
 
 /// Callback function for dealing with PortAudio
@@ -157,7 +160,7 @@ PaStream *Stream::echo() {
                 1,  // num. input channels
                 1,  // num. output channels
                 paFloat32,
-                samplerate,
+                samplerate*4,
                 paFramesPerBufferUnspecified,
                 stream_callback,
                 this
@@ -374,5 +377,13 @@ void Stream::rir_fft() {
   * \param[in]  h   A vector containing the RIR samples
   */
 void Stream::set_filter(const container_t& h) {
+    if (h.size() >= fft_size - blk_size)
+        // A convolução de 'h' com um bloco deve caber em uma fft
+        throw std::length_error(
+                "RIR pode ter no máximo `Stream::fft_size' samples.");
     scene.imp_resp = h;
+    std::fill(h_freq_re.begin(), h_freq_re.end(), 0);
+    std::fill(h_freq_im.begin(), h_freq_im.end(), 0);
+    std::copy(scene.imp_resp.begin(), scene.imp_resp.end(), h_freq_re.begin());
+    Signal::dft(h_freq_re, h_freq_im);
 }

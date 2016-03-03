@@ -117,11 +117,13 @@ public:
     };
 
     /// The stream's rate in samples per second.
-    static constexpr unsigned samplerate = 44100;
+    static constexpr unsigned samplerate = 11025;
 
     static constexpr size_t blk_size = 128;
 
     static constexpr unsigned blks_in_buf = 1500;
+
+    static constexpr size_t fft_size = 1024;
 
     /// The number of data samples held internally by the stream structure.
     static constexpr size_t buf_size = blks_in_buf * blk_size;
@@ -200,7 +202,8 @@ public:
       */
     Stream(const Scenario& s = Scenario())
         : scene(s), is_running(false), data_in(buf_size), data_out(buf_size),
-          write_ptr(data_in.begin()), read_ptr(data_out.begin())
+          write_ptr(data_in.begin()), read_ptr(data_out.begin()),
+          h_freq_re(fft_size), h_freq_im(fft_size)
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
@@ -229,7 +232,7 @@ public:
       * \see read_ptr
       */
     void set_delay(unsigned msec) {
-        delay_samples = static_cast<int>(samplerate/4 * double(msec)/1000);
+        delay_samples = static_cast<int>(samplerate * double(msec)/1000);
         size_t remaining = data_out.end() - read_ptr;
         if (delay_samples < remaining)
             filter_ptr = read_ptr + delay_samples;
@@ -330,6 +333,9 @@ private:
     std::thread *rir_thread;
 
     container_t::const_iterator rir_ptr;
+
+    container_t h_freq_re;
+    container_t h_freq_im;
 
 };
 

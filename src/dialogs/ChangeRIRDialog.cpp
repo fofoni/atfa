@@ -18,6 +18,7 @@
 #include "ChangeRIRDialog.h"
 #include "../widgets/FileSelectWidget.h"
 #include "../Signal.h"
+#include "../Stream.h"
 
 ChangeRIRDialog::ChangeRIRDialog(ATFA *parent) :
     QDialog(parent), atfa(parent)
@@ -154,8 +155,7 @@ bool ChangeRIRDialog::run() {
     case 0: // Nothing chosen
         return false;
     case 1: // No RIR
-        atfa->stream.scene.imp_resp.resize(1);
-        atfa->stream.scene.imp_resp[0] = 1;
+        atfa->stream.set_filter(std::vector<Stream::sample_t>(1,1));
         atfa->rir_source = ATFA::NoRIR;
         atfa->rir_filetype = ATFA::None;
         atfa->rir_file = "";
@@ -165,14 +165,21 @@ bool ChangeRIRDialog::run() {
         {
             FloatStream fs = new std::istringstream(
                 literal_edit->toPlainText().toUtf8().constData());
-            atfa->stream.scene.imp_resp.resize(0);
+            Stream::container_t h();
             while (fs.err_flag == 0)
-                atfa->stream.scene.imp_resp.push_back(fs.get());
+                h.push_back(fs.get());
             if (fs.err_flag == 1) {
                 err_dialog("Error parsing vector input. Please try again.");
                 return false;
             }
-            atfa->stream.scene.imp_resp.pop_back(); // remove trailing zero
+            h.pop_back(); // remove trailing zero
+            if (h.size() >= Stream::fft_size - Stream::blk_size)
+                err_dialog(
+                    std::string("RIR deve ter no máximo ") +
+                    std::to_string(Stream::fft_size - Stream::blk_size) +
+                    std::string(" samples.")
+                );
+            atfa->stream.set_filter(h);
         }
         atfa->rir_source = ATFA::Literal;
         atfa->rir_filetype = ATFA::None;
@@ -208,30 +215,43 @@ bool ChangeRIRDialog::run() {
                 }
                 FloatStream fs = new std::istringstream(
                             file.readAll().constData());
-                atfa->stream.scene.imp_resp.resize(0);
+                Stream::container_t h();
                 while (fs.err_flag == 0)
-                    atfa->stream.scene.imp_resp.push_back(fs.get());
+                    h.push_back(fs.get());
                 if (fs.err_flag == 1) {
                     err_dialog("Error parsing file contents."
                                " Please try again.");
                     return false;
                 }
-                atfa->stream.scene.imp_resp.pop_back(); // remove trailing zero
+                h.pop_back(); // remove trailing zero
+                if (h.size() >= Stream::fft_size - Stream::blk_size)
+                    err_dialog(
+                        std::string("RIR deve ter no máximo ") +
+                        std::to_string(Stream::fft_size - Stream::blk_size) +
+                        std::string(" samples.")
+                    );
+                atfa->stream.set_filter(h);
             }
             else {
+                Signal s;
                 try {
-                    Signal s(filename.toUtf8().constData());
-                    s.set_samplerate(atfa->stream.samplerate);
-                    atfa->stream.scene.imp_resp.assign(
-                                s.array(), s.array() + s.samples());
-
+                    Signal sig_from_file(filename.toUtf8().constData());
+                    s = sig_from_file;
                 }
                 catch (const FileError&) {
                     err_dialog("Error opening file.");
                     return false;
                 }
+                s.set_samplerate(atfa->stream.samplerate);
+                if (s.samples() >= Stream::fft_size - Stream::blk_size)
+                    err_dialog(
+                        std::string("RIR deve ter no máximo ") +
+                        std::to_string(Stream::fft_size - Stream::blk_size) +
+                        std::string(" samples.")
+                    );
+                atfa->stream.scene.imp_resp.assign(
+                            s.array(), s.array() + s.samples());
             }
-
             atfa->rir_filetype = filetype;
             atfa->rir_source = ATFA::File;
             atfa->rir_file = filename;
