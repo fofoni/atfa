@@ -116,7 +116,6 @@ public:
 
     };
 
-#ifndef ATFA_DEBUG
     /// The stream's rate in samples per second.
     static constexpr unsigned samplerate = 44100;
 
@@ -126,13 +125,6 @@ public:
 
     /// The number of data samples held internally by the stream structure.
     static constexpr size_t buf_size = blks_in_buf * blk_size;
-#else
-    /// The stream's rate in samples per second.
-    static const unsigned samplerate = 1;
-
-    /// The number of data samples held internally by the stream structure.
-    static const size_t buf_size = 24;
-#endif
 
     /// Returns the next audio sample
     /**
@@ -160,8 +152,8 @@ public:
         // 400 times, each with 128 frames, in a scenario in which
         // buf_size=1000, is (68 +/- 32) us, with 99.7% confidence, when using
         // the bind method. The same expected value for the lambda method is
-        // (84 +/- 24) ms. For comparision, the length of one sample is
-        // approximately 90 ms.
+        // (84 +/- 24) us. For comparision, the length of one sample is
+        // approximately 90 us.
         // The lambda method is commented-out, because the above results favor
         // the bind method.
         auto times_vol = std::bind(std::multiplies<sample_t>(),
@@ -200,36 +192,19 @@ public:
         blk_offset = current_offset % blk_size;
     }
 
-    /// Initializes important values
-    /**
-      * Constructs a scenario in which there is no delay, and the impulse
-      * response has one sample of value 1. Also acquires memory for the data
-      * structure.
-      *
-      * \see data
-      * \see read
-      */
-    Stream()
-        : scene(), is_running(false), data_in(buf_size), data_out(buf_size),
-          write_ptr(data_in.begin()), read_ptr(data_out.begin())
-    {
-        set_delay(scene.delay); // sets delay_samples and filter_ptr
-#ifdef ATFA_DEBUG
-        if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
-        if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
-#endif
-    }
-
     /// Contructs from a `Scenario` object
     /**
       * Constructs a Stream object from `Scenario` parameters.
       *
       * \see Scenario
       */
-    Stream(const Scenario& s)
+    Stream(const Scenario& s = Scenario())
         : scene(s), is_running(false), data_in(buf_size), data_out(buf_size),
           write_ptr(data_in.begin()), read_ptr(data_out.begin())
     {
+        set_delay(scene.delay); // sets delay_samples and filter_ptr
+        if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
+        if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -285,7 +260,7 @@ public:
 private:
 
     std::condition_variable blk_cv;
-    unsigned blk_count; // how many blocks need to be processed by rir_fft.
+    int blk_count; // how many blocks need to be processed by rir_fft.
                         // should only be accessed by owner of lock on blk_mutex
     std::mutex blk_mutex;
 
@@ -293,6 +268,8 @@ private:
 
     bool is_running;
     std::mutex running_mutex;
+
+    std::mutex io_mutex;
 
     /// The delay of the communication channel, measured in samples
     index_t delay_samples;
@@ -351,6 +328,8 @@ private:
     void rir_fft();
 
     std::thread *rir_thread;
+
+    container_t::const_iterator rir_ptr;
 
 };
 

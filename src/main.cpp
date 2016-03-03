@@ -64,29 +64,4 @@ int main(int argc, char *argv[]) {
 
     return app.exec();
 
-    /*
-
-    Stream::container_t h(1024, 0);
-    for (Stream::index_t k=0; k!=64; k+=2)
-        h[k].sample = 1;
-    for (Stream::index_t k=960; k!=1024; k+=2)
-        h[k].sample = (k%2) ? .25 : -.25;
-
-    Stream::Scenario scene(h);
-    scene.delay = 300;
-
-    Stream s(scene);
-
-#ifndef ATFA_DEBUG
-    portaudio_init();
-    s.echo();
-    portaudio_end();
-#else
-    s.simulate();
-#endif
-
-//    */
-
-    return 0;
-
 }

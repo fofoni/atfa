@@ -20,8 +20,10 @@ extern "C" {
 #   include <portaudio.h>
 }
 
+#ifdef ATFA_DEBUG
 #include <iostream>
-#include <chrono>
+#include <algorithm>
+#endif
 
 #include "Stream.h"
 #include "utils.h"
@@ -76,11 +78,6 @@ static int stream_callback(
     (void) time_info; // prevent unused variable warning
     (void) status_flags;
 
-//    float *ob=(float*)out_buf;
-//    const float *in=(const float *) in_buf;
-//    for (int i=0; i<frames_per_buf; ++i)
-//        *ob++ = *in++;
-
     data->read_write(static_cast<const Stream::sample_t *>(in_buf),
                      static_cast<Stream::sample_t *>(out_buf),
                      frames_per_buf);
@@ -108,6 +105,7 @@ static int stream_callback(
   */
 PaStream *Stream::echo() {
 
+#ifndef ATFA_DEBUG
     PaStream *stream;
     PaError err;
 
@@ -130,12 +128,69 @@ PaStream *Stream::echo() {
                     std::string("Error opening stream for audio I/O:") +
                     " " + Pa_GetErrorText(err)
         );
+#endif
 
     blk_count = 0;
     blk_offset = 0;
+    std::fill(data_in.begin(),  data_in.end(),  0);
+    std::fill(data_out.begin(), data_out.end(), 0);
+    write_ptr = data_in.begin();
+    read_ptr  = data_out.begin();
+    rir_ptr   = data_in.begin();
+    set_delay(scene.delay);
+
+    // no need for mutex, because the rir_thread has not started yet
+    is_running = true;
+
+#ifdef ATFA_DEBUG
+#define SCOUT(COE) do { \
+    std::lock_guard<std::mutex> lk(io_mutex); \
+    std::cout << "[main] " << COE << std::endl; \
+} while(0)
+#else
+#define SCOUT(COE) do {} while(0)
+#define SDUMP(N)
+#endif
+
+#ifdef ATFA_DEBUG
+    SCOUT("======= ECHO =======");
+    std::vector<sample_t> ib(500);
+    std::vector<sample_t> ob(500);
+    sample_t g_n=0;
+    std::generate(ib.begin(), ib.end(), [&g_n]{g_n+=.002; return g_n-.002;});
+#define SDUMP(N) do { \
+    { \
+        std::unique_lock<std::mutex> lk1(io_mutex, std::defer_lock); \
+        std::unique_lock<std::mutex> lk2(blk_mutex, std::defer_lock); \
+        std::lock(lk1, lk2); \
+        std::cout << "[main] blk_count = " << blk_count << std::endl; \
+    } \
+    SCOUT("blk_offset = " << blk_offset); \
+    SCOUT("write_ptr = data_in.begin()  + " << (write_ptr - data_in.begin())); \
+    SCOUT("read_ptr  = data_out.begin() + " << (read_ptr - data_out.begin())); \
+    { \
+        std::lock_guard<std::mutex> lk(io_mutex); \
+        std::cout << "[main] ob -> ["; \
+        for (auto it=ob.begin(); it<ob.begin()+((N)-1); ++it) { \
+            std::cout << *it << ", "; \
+        } \
+        std::cout << *(ob.begin()+((N)-1)) << "]" << std::endl; \
+    } \
+} while(0)
+    SDUMP(500);
+    {
+        std::lock_guard<std::mutex> lk(io_mutex);
+        std::cout << "[main] ib -> [";
+        for (auto it=ib.begin(); it<ib.begin()+499; ++it) {
+            std::cout << *it << ", ";
+        }
+        std::cout << *(ib.begin()+499) << "]" << std::endl;
+    }
+#endif
 
     rir_thread = new std::thread(&Stream::rir_fft, this);
 
+#ifndef ATFA_DEBUG
     // start stream
     err = Pa_StartStream(stream);
     if (err != paNoError)
@@ -144,20 +199,26 @@ PaStream *Stream::echo() {
                     " " + Pa_GetErrorText(err)
         );
 
-    {
-        std::lock_guard<std::mutex> lk(running_mutex);
-        is_running = true;
-    }
-
-//    constexpr size_t blk_len = 128;
-
-//    std::vector<sample_t> ib(blk_len);
-//    std::vector<sample_t> ob(blk_len);
-
-//    for (unsigned long coe = 0; coe < 400; coe++)
-//        read_write(&(ib[0]), &(ob[0]), blk_len);
-
     return stream;
+#else
+    PaStreamCallbackFlags status_flags;
+
+    stream_callback(&(ib[0]), &(ob[0]), 10, nullptr, status_flags, this);
+    SDUMP(10);
+    stream_callback(&(ib[0]), &(ob[0]), 10, nullptr, status_flags, this);
+    SDUMP(10);
+    stream_callback(&(ib[0]), &(ob[0]), 120, nullptr, status_flags, this);
+    SDUMP(120);
+    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
+    SDUMP(130);
+    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
+    SDUMP(130);
+    stream_callback(&(ib[0]), &(ob[0]), 130, nullptr, status_flags, this);
+    SDUMP(130);
+
+    SCOUT("======= end ECHO =======");
+    return nullptr;
+#endif
 
 }
 
@@ -173,6 +234,7 @@ PaStream *Stream::echo() {
   */
 void Stream::stop(PaStream *s) {
 
+#ifndef ATFA_DEBUG
     PaError err;
 
     // close stream
@@ -185,21 +247,95 @@ void Stream::stop(PaStream *s) {
 
     // close portaudio
     portaudio_end();
+#endif
+
+#ifdef ATFA_DEBUG
+    (void)s;
+    SCOUT("======= STOP =======");
+#endif
 
     {
         std::lock_guard<std::mutex> lk(running_mutex);
         is_running = false;
     }
+    SCOUT("is_running = false!");
+    {
+        std::lock_guard<std::mutex> lk(blk_mutex);
+        blk_count = -1;
+    }
+    SCOUT("blk_count set to -1");
+    blk_cv.notify_one();
+    SCOUT("blk_cv notified");
 
     rir_thread->join();
+    SCOUT("rir_thread joined");
     delete rir_thread;
+    SCOUT("rir_thread deleted");
     rir_thread = nullptr;
 
 }
 
 void Stream::rir_fft() {
+#ifdef ATFA_DEBUG
+#define RCOUT(COE) do { \
+    std::lock_guard<std::mutex> lk(io_mutex); \
+    std::cout << "[rir_thread] " << COE << std::endl; \
+} while(0)
+#else
+#define RCOUT(COE) do {} while (0)
+#endif
+    RCOUT("spawned!");
     while (running()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        RCOUT("=== running ===");
+        int count;
+        std::unique_lock<std::mutex> lk(blk_mutex);
+        blk_cv.wait(lk, [this]{return blk_count != 0;});
+        count = blk_count;
+        blk_count = 0;
+        lk.unlock();
+        RCOUT("count = " << count);
+        if (count < 0) return;
+        RCOUT("gonna process " << count << " block(s).");
+        for (int i=0; i<count; ++i) {
+            // process a single block.
+            pa_fperbuf_t remaining = data_out.end() - filter_ptr;
+            long overflow = (long)blk_size - (long)remaining;
+#ifdef ATFA_DEBUG
+            RCOUT("block #" << i);
+            RCOUT("rir_ptr    = data_in.begin()  + " <<
+                  (rir_ptr    - data_in.begin()));
+            RCOUT("filter_ptr = data_out.begin() + " <<
+                  (filter_ptr - data_out.begin()));
+            {
+                std::lock_guard<std::mutex> lk(io_mutex);
+                std::cout << "[rir_thread] block -> [";
+                for (auto it=rir_ptr; it<rir_ptr+(blk_size-1); ++it) {
+                    std::cout << *it << ", ";
+                }
+                std::cout << *(rir_ptr+(blk_size-1)) << "]" << std::endl;
+            }
+#endif
+            auto rir_end_ptr = rir_ptr + blk_size;
+            if (overflow < 0) {
+                filter_ptr = std::copy(rir_ptr, rir_end_ptr, filter_ptr);
+            }
+            else {
+                auto rir_rem_ptr = rir_ptr + remaining;
+                std::copy(rir_ptr, rir_rem_ptr, filter_ptr);
+                filter_ptr = std::copy(rir_rem_ptr, rir_end_ptr,
+                                       data_out.begin());
+            }
+            if (rir_end_ptr == data_in.end())
+                rir_ptr = data_in.begin();
+            else
+                rir_ptr = rir_end_ptr;
+#ifdef ATFA_DEBUG
+            RCOUT("rir_ptr    = data_in.begin()  + " <<
+                  (rir_ptr    - data_in.begin()));
+            RCOUT("filter_ptr = data_out.begin() + " <<
+                  (filter_ptr - data_out.begin()));
+#endif
+        }
     }
 }
 
