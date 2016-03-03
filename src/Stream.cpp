@@ -109,6 +109,22 @@ PaStream *Stream::echo() {
     PaStream *stream;
     PaError err;
 
+    // no need for mutex, because the rir_thread has not started yet
+    is_running = true;
+
+    // the rir_thread will wait until it is notified, so no problem starting it
+    // right away.
+    rir_thread = new std::thread(&Stream::rir_fft, this);
+
+    blk_count = 0;
+    blk_offset = 0;
+    std::fill(data_in.begin(),  data_in.end(),  0);
+    std::fill(data_out.begin(), data_out.end(), 0);
+    write_ptr = data_in.begin();
+    read_ptr  = data_out.begin();
+    rir_ptr   = data_in.begin();
+    set_delay(scene.delay);
+
     // initialize portaudio
     portaudio_init();
 
@@ -128,31 +144,25 @@ PaStream *Stream::echo() {
                     std::string("Error opening stream for audio I/O:") +
                     " " + Pa_GetErrorText(err)
         );
-#endif
 
-    blk_count = 0;
-    blk_offset = 0;
-    std::fill(data_in.begin(),  data_in.end(),  0);
-    std::fill(data_out.begin(), data_out.end(), 0);
-    write_ptr = data_in.begin();
-    read_ptr  = data_out.begin();
-    rir_ptr   = data_in.begin();
-    set_delay(scene.delay);
+    // start stream
+    err = Pa_StartStream(stream);
+    if (err != paNoError)
+        throw std::runtime_error(
+                    std::string("Error starting stream for audio I/O:") +
+                    " " + Pa_GetErrorText(err)
+        );
 
-    // no need for mutex, because the rir_thread has not started yet
-    is_running = true;
+    return stream;
 
-#ifdef ATFA_DEBUG
+#define SCOUT(COE) do {} while(0)
+#define SDUMP(N)
+#else
 #define SCOUT(COE) do { \
     std::lock_guard<std::mutex> lk(io_mutex); \
     std::cout << "[main] " << COE << std::endl; \
 } while(0)
-#else
-#define SCOUT(COE) do {} while(0)
-#define SDUMP(N)
-#endif
 
-#ifdef ATFA_DEBUG
     SCOUT("======= ECHO =======");
     std::vector<sample_t> ib(500);
     std::vector<sample_t> ob(500);
@@ -186,21 +196,7 @@ PaStream *Stream::echo() {
         }
         std::cout << *(ib.begin()+499) << "]" << std::endl;
     }
-#endif
 
-    rir_thread = new std::thread(&Stream::rir_fft, this);
-
-#ifndef ATFA_DEBUG
-    // start stream
-    err = Pa_StartStream(stream);
-    if (err != paNoError)
-        throw std::runtime_error(
-                    std::string("Error starting stream for audio I/O:") +
-                    " " + Pa_GetErrorText(err)
-        );
-
-    return stream;
-#else
     PaStreamCallbackFlags status_flags;
 
     stream_callback(&(ib[0]), &(ob[0]), 10, nullptr, status_flags, this);
@@ -300,21 +296,6 @@ void Stream::rir_fft() {
             // process a single block.
             pa_fperbuf_t remaining = data_out.end() - filter_ptr;
             long overflow = (long)blk_size - (long)remaining;
-#ifdef ATFA_DEBUG
-            RCOUT("block #" << i);
-            RCOUT("rir_ptr    = data_in.begin()  + " <<
-                  (rir_ptr    - data_in.begin()));
-            RCOUT("filter_ptr = data_out.begin() + " <<
-                  (filter_ptr - data_out.begin()));
-            {
-                std::lock_guard<std::mutex> lk(io_mutex);
-                std::cout << "[rir_thread] block -> [";
-                for (auto it=rir_ptr; it<rir_ptr+(blk_size-1); ++it) {
-                    std::cout << *it << ", ";
-                }
-                std::cout << *(rir_ptr+(blk_size-1)) << "]" << std::endl;
-            }
-#endif
             auto rir_end_ptr = rir_ptr + blk_size;
             if (overflow < 0) {
                 filter_ptr = std::copy(rir_ptr, rir_end_ptr, filter_ptr);
