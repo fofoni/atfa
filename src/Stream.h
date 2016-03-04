@@ -123,7 +123,9 @@ public:
 
     static constexpr unsigned blks_in_buf = 1500;
 
-    static constexpr size_t fft_size = 1024;
+    static constexpr unsigned blks_in_fft = 8;
+
+    static constexpr size_t fft_size = blks_in_fft * blk_size;
 
     /// The number of data samples held internally by the stream structure.
     static constexpr size_t buf_size = blks_in_buf * blk_size;
