@@ -165,7 +165,7 @@ bool ChangeRIRDialog::run() {
         {
             FloatStream fs = new std::istringstream(
                 literal_edit->toPlainText().toUtf8().constData());
-            Stream::container_t h();
+            Stream::container_t h;
             while (fs.err_flag == 0)
                 h.push_back(fs.get());
             if (fs.err_flag == 1) {
@@ -175,9 +175,9 @@ bool ChangeRIRDialog::run() {
             h.pop_back(); // remove trailing zero
             if (h.size() >= Stream::fft_size - Stream::blk_size)
                 err_dialog(
-                    std::string("RIR deve ter no máximo ") +
+                    (std::string("RIR deve ter no máximo ") +
                     std::to_string(Stream::fft_size - Stream::blk_size) +
-                    std::string(" samples.")
+                    std::string(" samples.")).c_str()
                 );
             atfa->stream.set_filter(h);
         }
@@ -215,7 +215,7 @@ bool ChangeRIRDialog::run() {
                 }
                 FloatStream fs = new std::istringstream(
                             file.readAll().constData());
-                Stream::container_t h();
+                Stream::container_t h;
                 while (fs.err_flag == 0)
                     h.push_back(fs.get());
                 if (fs.err_flag == 1) {
@@ -226,9 +226,9 @@ bool ChangeRIRDialog::run() {
                 h.pop_back(); // remove trailing zero
                 if (h.size() >= Stream::fft_size - Stream::blk_size)
                     err_dialog(
-                        std::string("RIR deve ter no máximo ") +
+                        (std::string("RIR deve ter no máximo ") +
                         std::to_string(Stream::fft_size - Stream::blk_size) +
-                        std::string(" samples.")
+                        std::string(" samples.")).c_str()
                     );
                 atfa->stream.set_filter(h);
             }
@@ -245,9 +245,9 @@ bool ChangeRIRDialog::run() {
                 s.set_samplerate(atfa->stream.samplerate);
                 if (s.samples() >= Stream::fft_size - Stream::blk_size)
                     err_dialog(
-                        std::string("RIR deve ter no máximo ") +
+                        (std::string("RIR deve ter no máximo ") +
                         std::to_string(Stream::fft_size - Stream::blk_size) +
-                        std::string(" samples.")
+                        std::string(" samples.")).c_str()
                     );
                 atfa->stream.scene.imp_resp.assign(
                             s.array(), s.array() + s.samples());
