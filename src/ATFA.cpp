@@ -476,6 +476,8 @@ void ATFA::vol_changed(int v) {
 
 void ATFA::show_rir() {
 
+    /// TODO: mostrar também a resp ao impulso na frequência!
+
     std::stringstream imp_resp_html;
     imp_resp_html << "<span style='font-family: monospace'>";
     if (stream.scene.imp_resp.size() > 0) {

@@ -222,6 +222,30 @@ PaStream *Stream::echo() {
         }
         std::cout << *(ib.begin()+499) << "]" << std::endl;
     }
+    {
+        std::lock_guard<std::mutex> lk(io_mutex);
+        std::cout << "[main] h_freq_re -> [";
+        auto it=h_freq_re.begin();
+        for (;
+             it != h_freq_re.begin() + (h_freq_re.size() - 1);
+             ++it)
+        {
+            std::cout << *it << ", ";
+        }
+        std::cout << *it << "]" << std::endl;
+    }
+    {
+        std::lock_guard<std::mutex> lk(io_mutex);
+        std::cout << "[main] h_freq_im -> [";
+        auto it=h_freq_im.begin();
+        for (;
+             it != h_freq_im.begin() + (h_freq_im.size() - 1);
+             ++it)
+        {
+            std::cout << *it << ", ";
+        }
+        std::cout << *it << "]" << std::endl;
+    }
 
     PaStreamCallbackFlags status_flags;
 
@@ -347,6 +371,7 @@ void Stream::rir_fft() {
         if (count < 0) return;
         RCOUT("gonna process " << count << " block(s).");
         for (int i=0; i<count; ++i) {
+            RCOUT("-> Block #" << i);
             // process a single block.
             // TODO: com o truque da parte imaginária (ver Signal::filter),
             // talvez dê  pra aceitar RIRs com até o dobro do tamanho (a gente
@@ -354,50 +379,81 @@ void Stream::rir_fft() {
             // real e a segunda metade na parte imaginária, e convoluiria o
             // bloco com essa RIR complexa)
             pa_fperbuf_t remaining = data_out.end() - filter_ptr;
+            RCOUT("remaining = " << remaining);
             long overflow = (long)fft_size - (long)remaining;
+            RCOUT("overflow = " << overflow);
             // buf_size is an integer multiple of blk_size, so that
             // rir_ptr+blk_size is guaranteed to be <= data_in.end() .
             auto rir_end_ptr = rir_ptr + blk_size;
+            RCOUT("rir_end_ptr    = data_in.begin()  + " <<
+                  (rir_end_ptr    - data_in.begin()));
+            { auto blk_end = std::copy(rir_ptr, rir_end_ptr, x_re.begin());
+              std::fill(blk_end, x_re.end(), 0); }
+            std::fill(x_im.begin(), x_im.end(), 0);
+            Signal::dft(x_re, x_im);
+            for (index_t j = 0; j != fft_size; ++j) {
+                y_re[j] = x_re[j]*h_freq_re[j] - x_im[j]*h_freq_im[j];
+                y_im[j] = x_re[j]*h_freq_im[j] + x_im[j]*h_freq_re[j];
+            }
+            Signal::dft(y_re, y_im, Signal::DFTDriver::INVERSE);
+            // overlap and add: we add the first 'blks_in_fft-1' blocks,
+            // which do overlap, and then we force the last block, which is
+            // plain new and will override the old samples from one buffer
+            // ago.
+            auto y_last = y_re.begin() + (blks_in_fft-1)*blk_size;
+            auto f_ptr = filter_ptr;
+            auto y_first = y_re.begin();
             if (overflow < 0) {
                 // there is no overflow
-                auto blk_end = std::copy(rir_ptr, rir_end_ptr, x_re.begin());
-                std::fill(blk_end, x_re.end(), 0);
-                std::fill(x_im.begin(), x_im.end(), 0);
-                Signal::dft(x_re, x_im);
-                for (index_t j = 0; j != fft_size; ++j) {
-                    y_re[j] = x_re[j]*h_freq_re[j] - x_im[j]*h_freq_im[j];
-                    y_im[j] = x_re[j]*h_freq_im[j] + x_im[j]*h_freq_re[j];
-                }
-                Signal::dft(y_re, y_im, Signal::DFTDriver::INVERSE);
-                // overlap and add: we add the first 'blks_in_fft-1' blocks,
-                // which do overlap, and then we force the last block, which is
-                // plain new and will override the old samples from one buffer
-                // ago.
-                auto y_last = y_re.begin() + (blks_in_fft-1)*blk_size;
-                auto f_ptr = filter_ptr;
-                for (auto it = y_re.begin(); it != y_last; ++it, ++f_ptr)
-                    *f_ptr += *it;
-                for (; y_last != y_re.end(); ++y_last, ++f_ptr)
-                    *f_ptr = *y_last;
+                RCOUT("No overflow in this block.");
+                for (; y_first != y_last;     ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                for (; y_first != y_re.end(); ++y_first, ++f_ptr)
+                    *f_ptr = *y_first;
+                filter_ptr += blk_size;
+            }
+            else if (size_t(overflow) < blk_size) {
+                RCOUT("Only the last block of the RIR overflows");
+                for (; y_first != y_last;       ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                for (; f_ptr != data_out.end(); ++y_first,  ++f_ptr)
+                    *f_ptr = *y_first;
+                f_ptr = data_out.begin();
+                for (; y_first != y_re.end(); ++y_first, ++f_ptr)
+                    *f_ptr = *y_first;
+                filter_ptr += blk_size;
+            }
+            else if (size_t(overflow) < (blks_in_fft-1)*blk_size) {
+                RCOUT("The first block fits the remaining of the buffer.");
+                for (; f_ptr != data_out.end(); ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                f_ptr = data_out.begin();
+                for (; y_first != y_last;       ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
+                    *f_ptr = *y_first;
                 filter_ptr += blk_size;
             }
             else {
-                // This block overflows beyond the buffer end.
-                // Here, we enforce the circular nature of the buffer.
-                auto rir_rem_ptr = rir_ptr + remaining;
-                std::copy(rir_ptr, rir_rem_ptr, filter_ptr);
-                filter_ptr = std::copy(rir_rem_ptr, rir_end_ptr,
-                                       data_out.begin());
+                RCOUT("The convolution overflows already on the first block.");
+                for (; f_ptr != data_out.end(); ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                f_ptr = data_out.begin();
+                for (; y_first != y_last;       ++y_first, ++f_ptr)
+                    *f_ptr += *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
+                    *f_ptr = *y_first;
+                filter_ptr = data_out.begin() + (blk_size - remaining);
             }
             if (rir_end_ptr == data_in.end())
                 rir_ptr = data_in.begin();
             else
                 rir_ptr = rir_end_ptr;
 #ifdef ATFA_DEBUG
-            RCOUT("rir_ptr    = data_in.begin()  + " <<
-                  (rir_ptr    - data_in.begin()));
-            RCOUT("filter_ptr = data_out.begin() + " <<
-                  (filter_ptr - data_out.begin()));
+            RCOUT("rir_ptr        = data_in.begin()  + " <<
+                  (rir_ptr        - data_in.begin()));
+            RCOUT("filter_ptr     = data_out.begin() + " <<
+                  (filter_ptr     - data_out.begin()));
 #endif
         }
     }
@@ -409,13 +465,14 @@ void Stream::rir_fft() {
   *
   * \param[in]  h   A vector containing the RIR samples
   */
-void Stream::set_filter(const container_t& h) {
+void Stream::set_filter(const container_t& h, bool substitute) {
     if (h.size() >= fft_size - blk_size)
         // A convolução de 'h' com um bloco deve caber em uma fft
         throw std::length_error(std::string("RIR pode ter no máximo ") +
                                 std::to_string(fft_size - blk_size) +
                                 std::string(" amostras."));
-    scene.imp_resp = h;
+    if (substitute)
+        scene.imp_resp = h;
     std::fill(h_freq_re.begin(), h_freq_re.end(), 0);
     std::fill(h_freq_im.begin(), h_freq_im.end(), 0);
     std::copy(scene.imp_resp.begin(), scene.imp_resp.end(), h_freq_re.begin());

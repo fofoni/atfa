@@ -208,6 +208,7 @@ public:
           h_freq_re(fft_size), h_freq_im(fft_size)
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
+        set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
     }
@@ -246,7 +247,7 @@ public:
     }
 
     /// Sets the room impulse response
-    void set_filter(const container_t &h);
+    void set_filter(const container_t &h, bool substitute = true);
 
     /// Used for debugging, together with `simulate`
     void dump_state(const container_t speaker_buf) const;
