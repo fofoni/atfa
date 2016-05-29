@@ -33,7 +33,8 @@ h = [x(end-31:end) x(1:33) zeros(1,191)];
 h(1:8) = -[.1 .2 .3 .4 .6 .8 1 1.25]*1e-5;
 h(58:65) = fliplr(h(1:8));
 h(33) = h(33) - sum(h);
-h=h/norm(h);
+fh=fft(h);
+h=h/abs(fh(length(h)/2));
 
 if nargin == 0
     h'
