@@ -15,6 +15,7 @@
 #include <QMainWindow>
 
 #include "Stream.h"
+#include "widgets/LEDIndicatorWidget.h"
 
 // TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
 //       dono, e avulsos assim que possível)
@@ -106,6 +107,9 @@ private:
         QRadioButton *fout_off_radio;
         QRadioButton *fout_vad_radio;
     // right layout
+    QWidget *vad_indicator_widget;
+        QLabel *vad_indicator_label;
+        LEDIndicatorWidget *vad_indicator_led;
     QPushButton *play_button;
     QWidget *delay_widget;
         QLabel *delay_label;

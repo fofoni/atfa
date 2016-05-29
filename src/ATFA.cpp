@@ -174,6 +174,19 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *right_layout = new QVBoxLayout;
 
+        vad_indicator_widget = new QWidget(main_widget);
+        QHBoxLayout *vad_indicator_layout = new QHBoxLayout;
+
+            vad_indicator_label = new QLabel("Voice Activity:",
+                                             vad_indicator_widget);
+            vad_indicator_layout->addWidget(vad_indicator_label);
+
+            vad_indicator_led = new LEDIndicatorWidget(vad_indicator_widget);
+            vad_indicator_layout->addWidget(vad_indicator_led);
+
+        vad_indicator_widget->setLayout(vad_indicator_layout);
+        right_layout->addWidget(vad_indicator_widget);
+
         play_button = new QPushButton(main_widget);
         play_button->setMinimumHeight(80);
         play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));

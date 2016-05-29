@@ -41,6 +41,7 @@ add_executable( atfa
     src/dialogs/ChangeAlgorithmDialog.cpp src/dialogs/ChangeRIRDialog.cpp
     src/dialogs/ShowTextDialog.cpp
     src/widgets/FileSelectWidget.cpp
+    src/widgets/LEDIndicatorWidget.cpp
 )
 
 qt5_use_modules(atfa Core Gui Widgets)
