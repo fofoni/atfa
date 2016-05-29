@@ -391,9 +391,9 @@ void Stream::rir_fft() {
             if (overflow < 0) {
                 // there is no overflow
                 RCOUT("No overflow in this block.");
-                for (; y_first != y_last;     ++y_first, ++f_ptr)
+                for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;
-                for (; y_first != y_re.end(); ++y_first, ++f_ptr)
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
                     *f_ptr = *y_first;
                 filter_ptr += blk_size;
             }
@@ -404,7 +404,7 @@ void Stream::rir_fft() {
                 for (; f_ptr != data_out.end(); ++y_first,  ++f_ptr)
                     *f_ptr = *y_first;
                 f_ptr = data_out.begin();
-                for (; y_first != y_re.end(); ++y_first, ++f_ptr)
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
                     *f_ptr = *y_first;
                 filter_ptr += blk_size;
             }
