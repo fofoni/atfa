@@ -29,6 +29,7 @@ QSize LEDIndicatorWidget::minimumSizeHint() const {
 }
 
 void LEDIndicatorWidget::paintEvent(QPaintEvent *event) {
+    (void) event;
     QPainter painter(this);
     QPen pen(Qt::black);
     pen.setWidth(1.5);
