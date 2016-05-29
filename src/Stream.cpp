@@ -359,7 +359,11 @@ void Stream::rir_fft() {
         RCOUT("=== running ===");
         int count;
         std::unique_lock<std::mutex> lk(blk_mutex);
-        blk_cv.wait(lk, [this]{return blk_count != 0;});
+        blk_cv.wait(lk, [this]{
+            // É !=0 mesmo, e não >0, pois blk_count<0 é um sinal para
+            // abortar o thread
+            return blk_count != 0;
+        });
         count = blk_count;
         blk_count = 0;
         lk.unlock();
