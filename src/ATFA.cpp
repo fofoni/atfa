@@ -449,6 +449,8 @@ void ATFA::play_clicked() {
         rir_change_button->setDisabled(false);
         adapf_change_button->setDisabled(false);
 
+        vad_indicator_led->setLEDStatus(false);
+
     }
     else {
 
