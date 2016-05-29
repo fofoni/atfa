@@ -22,6 +22,9 @@ extern "C" {
 
 #include <exception>
 
+/// DEBUG
+#include <fstream>
+
 #ifdef ATFA_DEBUG
 #include <iostream>
 #include <algorithm>
@@ -327,6 +330,14 @@ void Stream::stop(PaStream *s) {
     delete rir_thread;
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
+
+    std::ofstream sampss;
+    sampss.open("sampss_may29.m");
+    sampss << "sampss = [\n";
+    for (auto x : data_in)
+        sampss << x << "\n";
+    sampss << "];" << std::endl;
+    sampss.close();
 
 }
 
