@@ -43,7 +43,7 @@ bool vad_hard(std::vector<float>::const_iterator first,
         ++num_samples;
     }
     power = std::sqrt(power/num_samples);
-    return (power > VAD_COEF_1*zero_crossing + VAD_COEF_0)
+    return (power > VAD_COEF_1*zero_crossing + VAD_COEF_0 +.002)
            && ((zero_crossing <= 20) || (zero_crossing >= 60));
 }
 
@@ -68,5 +68,5 @@ bool vad_soft(std::vector<float>::const_iterator first,
     }
     power = std::sqrt(power/num_samples);
     return (power > VAD_COEF_1*zero_crossing + VAD_COEF_0-0.004)
-           && ((zero_crossing <= 28) || (zero_crossing >= 52));
+           && ((zero_crossing <= 25) || (zero_crossing >= 55));
 }
