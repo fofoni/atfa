@@ -110,6 +110,7 @@ private:
     QWidget *vad_indicator_widget;
         QLabel *vad_indicator_label;
         LEDIndicatorWidget *vad_indicator_led;
+        QComboBox *vad_algorithm_combo;
     QPushButton *play_button;
     QWidget *delay_widget;
         QLabel *delay_label;

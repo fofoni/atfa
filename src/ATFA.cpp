@@ -185,6 +185,11 @@ ATFA::ATFA(QWidget *parent) :
             vad_indicator_layout->addWidget(vad_indicator_led);
             stream.setLED(vad_indicator_led);
 
+            vad_algorithm_combo = new QComboBox;
+            vad_algorithm_combo->addItem("Hard");
+            vad_algorithm_combo->addItem("Soft");
+            vad_indicator_layout->addWidget(vad_algorithm_combo);
+
         vad_indicator_widget->setLayout(vad_indicator_layout);
         right_layout->addWidget(vad_indicator_widget);
 
@@ -313,6 +318,14 @@ ATFA::ATFA(QWidget *parent) :
             this, SLOT(fout_off_toggled(bool)));
     connect(fout_vad_radio, SIGNAL(toggled(bool)),
             this, SLOT(fout_vad_toggled(bool)));
+
+    // Sintaxe nova -> complicada porque QComboBox::currentIndexChanged é
+    //                 um sinal com overload, aí a gente tem que especificar
+    //                 qual deles a gente quer.
+    connect(vad_algorithm_combo,
+            static_cast<void (QComboBox::*)(int)>(
+                &QComboBox::currentIndexChanged),
+            [this](int idx){stream.setVADAlgorithm(idx);});
 
     connect(play_button, SIGNAL(clicked()), this, SLOT(play_clicked()));
 

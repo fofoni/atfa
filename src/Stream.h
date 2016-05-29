@@ -87,6 +87,9 @@ public:
     /// The type for holding the whole vector of signal samples.
     typedef std::vector<sample_t> container_t;
 
+    typedef bool (*vad_algorithm_t)(container_t::const_iterator,
+                                    container_t::const_iterator);
+
     struct Scenario
     {
 
@@ -275,6 +278,11 @@ public:
         led_widget = ledw;
     }
 
+    void setVADAlgorithm(int idx) {
+        vad_algorithm_t algs[2] = { &vad_hard, &vad_soft };
+        calcVAD = algs[idx];
+    }
+
 private:
 
     std::condition_variable blk_cv;
@@ -346,8 +354,7 @@ private:
     container_t::iterator filter_ptr;
 
     std::vector<bool>::iterator vad_ptr;
-    bool (*calcVAD)(container_t::const_iterator, container_t::const_iterator) =
-            &vad_soft;
+    vad_algorithm_t calcVAD = &vad_hard;
 
     void rir_fft();
 
