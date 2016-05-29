@@ -31,6 +31,9 @@ extern "C" {
 #include <condition_variable>
 #include <functional>
 
+#include "VAD.h"
+#include "widgets/LEDIndicatorWidget.h"
+
 typedef unsigned long pa_fperbuf_t;
 
 /// Represents an input/output stream of audio samples
@@ -204,10 +207,13 @@ public:
       *
       * \see Scenario
       */
-    Stream(const Scenario& s = Scenario())
+    Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
         : scene(s), is_running(false), data_in(buf_size), data_out(buf_size),
+          vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
-          h_freq_re(fft_size), h_freq_im(fft_size)
+          vad_ptr(vad.begin()),
+          h_freq_re(fft_size), h_freq_im(fft_size),
+          led_widget(ledw)
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
@@ -265,6 +271,10 @@ public:
         return is_running;
     }
 
+    void setLED(LEDIndicatorWidget *ledw) {
+        led_widget = ledw;
+    }
+
 private:
 
     std::condition_variable blk_cv;
@@ -301,6 +311,8 @@ private:
     container_t data_in;
     container_t data_out;
 
+    std::vector<bool> vad;
+
     /// An iterator to the next location to be written on the stream
     /**
       * A sample should be written to the stream like:
@@ -333,6 +345,10 @@ private:
     container_t::iterator read_ptr;
     container_t::iterator filter_ptr;
 
+    std::vector<bool>::iterator vad_ptr;
+    bool (*calcVAD)(container_t::const_iterator, container_t::const_iterator) =
+            &vad_soft;
+
     void rir_fft();
 
     std::thread *rir_thread;
@@ -341,6 +357,8 @@ private:
 
     container_t h_freq_re;
     container_t h_freq_im;
+
+    LEDIndicatorWidget *led_widget;
 
 };
 

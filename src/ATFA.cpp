@@ -183,6 +183,7 @@ ATFA::ATFA(QWidget *parent) :
 
             vad_indicator_led = new LEDIndicatorWidget(vad_indicator_widget);
             vad_indicator_layout->addWidget(vad_indicator_led);
+            stream.setLED(vad_indicator_led);
 
         vad_indicator_widget->setLayout(vad_indicator_layout);
         right_layout->addWidget(vad_indicator_widget);

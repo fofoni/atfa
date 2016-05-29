@@ -32,6 +32,7 @@ extern "C" {
 
 #include "Stream.h"
 #include "Signal.h"
+#include "VAD.h"
 #include "utils.h"
 
 /// Callback function for dealing with PortAudio
@@ -336,6 +337,10 @@ void Stream::stop(PaStream *s) {
     sampss << "sampss = [\n";
     for (auto x : data_in)
         sampss << x << "\n";
+    sampss << "];\n\n";
+    sampss << "cpp_vad = [\n";
+    for (auto x : vad)
+        sampss << int(x) << "\n";
     sampss << "];" << std::endl;
     sampss.close();
 
@@ -387,6 +392,14 @@ void Stream::rir_fft() {
             auto rir_end_ptr = rir_ptr + blk_size;
             RCOUT("rir_end_ptr    = data_in.begin()  + " <<
                   (rir_end_ptr    - data_in.begin()));
+            {
+                bool vad_in_this_block = (*calcVAD)(rir_ptr, rir_end_ptr);
+                if (led_widget)
+                    led_widget->setLEDStatus(vad_in_this_block);
+                *vad_ptr++ = vad_in_this_block;
+                if (vad_ptr == vad.end())
+                    vad_ptr = vad.begin();
+            }
             { auto blk_end = std::copy(rir_ptr, rir_end_ptr, x_re.begin());
               std::fill(blk_end, x_re.end(), 0); }
             std::fill(x_im.begin(), x_im.end(), 0);

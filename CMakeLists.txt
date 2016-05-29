@@ -37,8 +37,14 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 
 ### ### ### Setup compiler
 add_executable( atfa
-    src/main.cpp src/Signal.cpp src/Stream.cpp src/utils.cpp src/ATFA.cpp
-    src/dialogs/ChangeAlgorithmDialog.cpp src/dialogs/ChangeRIRDialog.cpp
+    src/main.cpp
+    src/Signal.cpp
+    src/Stream.cpp
+    src/VAD.cpp
+    src/utils.cpp
+    src/ATFA.cpp
+    src/dialogs/ChangeAlgorithmDialog.cpp
+    src/dialogs/ChangeRIRDialog.cpp
     src/dialogs/ShowTextDialog.cpp
     src/widgets/FileSelectWidget.cpp
     src/widgets/LEDIndicatorWidget.cpp
