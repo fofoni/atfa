@@ -188,9 +188,11 @@ public:
                     data_in.begin());
         }
         size_t current_offset = blk_offset + pa_frames;
+        unsigned blk_count_inc = current_offset / blk_size;
+        // if (blk_count_inc)
         {
             std::lock_guard<std::mutex> lk(blk_mutex);
-            blk_count += current_offset / blk_size;
+            blk_count += blk_count_inc;
         }
         blk_cv.notify_one();
         blk_offset = current_offset % blk_size;
