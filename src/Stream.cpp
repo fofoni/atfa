@@ -249,42 +249,27 @@ PaStream *Stream::echo() {
 
     PaStreamCallbackFlags status_flags;
 
-    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
-    SDUMP(12);
-    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
-    SDUMP(8);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
-    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
-    SDUMP(12);
-    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
-    SDUMP(8);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
-    stream_callback(&(ib[0]), &(ob[0]), 12, nullptr, status_flags, this);
-    SDUMP(12);
-    stream_callback(&(ib[0]), &(ob[0]), 8, nullptr, status_flags, this);
-    SDUMP(8);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
-    stream_callback(&(ib[0]), &(ob[0]), 256, nullptr, status_flags, this);
-    SDUMP(256);
-    stream_callback(&(ib[0]), &(ob[0]), 300, nullptr, status_flags, this);
-    SDUMP(300);
+#define CALLBACK_THEN_DUMP(N) do { \
+    stream_callback(&(ib[0]), &(ob[0]), (N), nullptr, status_flags, this); \
+    SDUMP((N)); \
+} while (0)
+    CALLBACK_THEN_DUMP(8);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
+    CALLBACK_THEN_DUMP(12);
+    CALLBACK_THEN_DUMP(8);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
+    CALLBACK_THEN_DUMP(12);
+    CALLBACK_THEN_DUMP(8);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
+    CALLBACK_THEN_DUMP(256);
+    CALLBACK_THEN_DUMP(300);
 
     SCOUT("======= end ECHO =======");
     return nullptr;
