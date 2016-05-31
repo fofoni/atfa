@@ -186,7 +186,7 @@ PaStream *Stream::echo() {
     return stream;
 
 #define SCOUT(COE) do {} while(0)
-#define SDUMP(N)
+#define SDUMP(N) do {} while(0)
 #else
 #define SCOUT(COE) do { \
     std::lock_guard<std::mutex> lk(io_mutex); \
