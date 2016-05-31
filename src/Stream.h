@@ -94,9 +94,9 @@ public:
     {
 
         enum OOV { // On, Off, VAD
-            On,  // always enabled
-            Off, // always disabled
-            VAD  // enabled when VAD detects voice
+            On,  ///< always enabled
+            Off, ///< always disabled
+            VAD  ///< enabled when VAD detects voice
         };
 
         OOV filter_learning;
@@ -117,8 +117,7 @@ public:
         )
           : filter_learning(flearn), filter_output(fout),
             delay(d), volume(vol), paused(p), imp_resp(ir)
-        {
-        }
+        {}
 
     };
 
