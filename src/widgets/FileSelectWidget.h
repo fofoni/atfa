@@ -19,8 +19,10 @@ class FileSelectWidget : public QWidget
 
 public:
     explicit FileSelectWidget(
-        const QString& cpt = QString(), const QString& d = QString(),
-        const QString& flt = QString(), QWidget *parent = 0,
+        const QString& cpt = QString(),
+        const QString& d = QString(),
+        const QString& flt = QString(),
+        QWidget *parent = 0,
         QWidget *parentWindow = 0
     );
 

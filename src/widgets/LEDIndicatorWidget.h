@@ -25,15 +25,11 @@ public:
 
     static constexpr int LEDRADIUS = 5;
 
-signals:
-
+public slots:
+    void setLEDStatus(bool status);
 
 protected:
     void paintEvent (QPaintEvent *event) Q_DECL_OVERRIDE;
-
-
-public slots:
-    void setLEDStatus(bool status);
 
 private:
     bool ledstatus;

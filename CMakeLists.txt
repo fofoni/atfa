@@ -1,5 +1,18 @@
 cmake_minimum_required( VERSION 3.3.2 )
 project( ATFA )
+set( PROJ "Ambiente de Testes para Filtros Adaptativos" )
+
+if( NOT CMAKE_BUILD_TYPE )
+    message(WARNING "No build type set: using \"Release\"")
+    set( CMAKE_BUILD_TYPE "Release" )
+endif()
+
+message(STATUS "=============================================================")
+message(STATUS "${PROJ} -- ${CMAKE_BUILD_TYPE} build")
+message(STATUS "")
+message(STATUS "CMAKE GENERATOR : ${CMAKE_GENERATOR}")
+message(STATUS "SYSTEM NAME     : ${CMAKE_SYSTEM_NAME}")
+message(STATUS "=============================================================")
 
 set( LOCAL_MOD_DIR "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${LOCAL_MOD_DIR} )

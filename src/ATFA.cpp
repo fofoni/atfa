@@ -137,6 +137,11 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *left_layout = new QVBoxLayout;
 
+        /* TODO: esse QGroupBox devia ser um QButtonGroup. Ver:
+         * http://stackoverflow.com/questions/25280146/do-i-need-to-check-one-by-one-to-know-which-radiobutton-is-checked-in-a-group-in
+         * http://stackoverflow.com/questions/33809177/get-index-of-checked-radio-button-in-group
+         * http://stackoverflow.com/questions/26319977/how-to-find-out-which-radio-button-chosen-by-the-user
+         */
         flearn_group = new QGroupBox("Filter &learning", main_widget);
         QVBoxLayout *flearn_layout = new QVBoxLayout;
             flearn_on_radio = new QRadioButton(

@@ -116,4 +116,17 @@ public:
 
 };
 
+// Compile-time utils
+namespace CTUtils {
+// compile-time exponentiation (using exponentiation-by-squaring algorithm)
+// Taken from:
+// http://stackoverflow.com/a/16443849
+template<class T>
+inline constexpr T pow(const T base, unsigned const exponent) {
+    return (exponent == 0)     ? 1 :
+           (exponent % 2 == 0) ? pow(base, exponent/2)*pow(base, exponent/2) :
+           base * pow(base, (exponent-1)/2) * pow(base, (exponent-1)/2);
+}
+}
+
 #endif // UTILS_H

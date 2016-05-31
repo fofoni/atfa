@@ -12,8 +12,11 @@
 #include "FileSelectWidget.h"
 
 FileSelectWidget::FileSelectWidget(
-    const QString& cpt, const QString& d,
-    const QString& flt, QWidget *parent, QWidget *parentWindow
+    const QString& cpt,
+    const QString& d,
+    const QString& flt,
+    QWidget *parent,
+    QWidget *parentWindow
 )
     : QWidget(parent), caption(cpt), dir(d), filter(flt), pWin(parentWindow)
 {

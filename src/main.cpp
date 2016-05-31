@@ -24,7 +24,7 @@ extern "C" {
 #   include <portaudio.h>
 }
 
-#include "utils.h" // TODO: deletar isso
+#include "utils.h"
 #include "Stream.h" // TODO: deletar isso
 
 #include "ATFA.h"
