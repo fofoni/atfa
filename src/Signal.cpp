@@ -26,12 +26,12 @@ extern "C" {
 
 #include "Signal.h"
 
-const std::vector<double> Signal::DFTDriver::costbl =
-        Signal::DFTDriver::initialize_costbl();
-const std::vector<double> Signal::DFTDriver::sintbl =
-        Signal::DFTDriver::initialize_sintbl();
+template <>
+const std::vector<double> DefaultDFT::costbl = DefaultDFT::initialize_costbl();
+template <>
+const std::vector<double> DefaultDFT::sintbl = DefaultDFT::initialize_sintbl();
 
-Signal::DFTDriver Signal::dft;
+DefaultDFT Signal::dft;
 
 /// PortAudio callback function
 static int signal_callback(
@@ -116,134 +116,6 @@ void Signal::delay(delay_t t, unsigned long d) {
     std::copy_backward(data.begin(), data.end()-d, data.end());
     for (index_t i = 0; i < d; i++)
         data[i] = 0;
-}
-
-/**
-  * Convolves the signal with the given finite impulse response (FIR).
-  *
-  * The algorthm used is the "overlap-and-add", and we use the FFT implemented
-  * in the DFTDriver class to compute each step. We try to do it using the least
-  * possible number of DFTs.
-  *
-  * \param[in]  imp_resp    The filter impulse response to be convolved with.
-  *
-  * \see DFTDriver::operator()
-  */
-void Signal::filter(Signal imp_resp) {
-    imp_resp.set_samplerate(srate);
-    index_t final_size = samples() + imp_resp.samples() - 1;
-    if (final_size > Signal::DFTDriver::tblsize) {
-        // divide the signal in chunks of size N such that N+K-1==tblsize
-        container_t *big, *small;
-        if (samples() > imp_resp.samples())
-            big = &data, small = &imp_resp.data;
-        else
-            big = &imp_resp.data, small = &data;
-        long N = DFTDriver::tblsize - small->size() + 1;
-        container_t conv(final_size);
-        if (N <= 0) {
-            // fall back to time-domain filtering
-            for (index_t i = 0; i < imp_resp.samples(); i++)
-                for (index_t j = 0; j <= i; j++)
-                    conv[i] += data[i-j] * imp_resp[j];
-            for (index_t i = imp_resp.samples(); i < samples(); i++)
-                for (index_t j = 0; j < imp_resp.samples(); j++)
-                    conv[i] += data[i-j] * imp_resp[j];
-            for (index_t i = 0; i < conv.size()-samples(); i++)
-                for (index_t j = i+1; j < imp_resp.samples(); j++)
-                    conv[samples()+i] += data[samples()+i-j] * imp_resp[j];
-            data = conv; // destroy old data, and copy new from `conv'
-            return;
-        }
-        container_t h_re(DFTDriver::tblsize);
-        container_t h_im(DFTDriver::tblsize);
-        container_t x1(DFTDriver::tblsize);
-        container_t x2(DFTDriver::tblsize);
-        container_t y1(DFTDriver::tblsize);
-        container_t y2(DFTDriver::tblsize);
-        std::copy(small->begin(), small->end(), h_re.begin());
-        dft(h_re, h_im);
-        index_t i;
-        // TODO: ao invés de incrementar o 'i' e calcular i1 e i2 a cada
-        // iteração, a gente podia calcular diretamente o i1 e i2, e.g.:
-        // for (i1=0, i2=N ; i1 < big->size() ; i1+=2*N, i2+=2*N)
-        for (i = 0; i != big->size()/(2*N); ++i) {
-            index_t i1 = i*2*N;
-            index_t i2 = i1 + N;
-            std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
-            std::fill(x1.begin() + N, x1.end(), 0);
-            std::copy(big->begin() + i2, big->begin() + i2 + N, x2.begin());
-            std::fill(x2.begin() + N, x2.end(), 0);
-            dft(x1, x2);
-            for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-                y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
-                y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
-            }
-            dft(y1, y2, DFTDriver::INVERSE);
-            for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-                conv[i1 + j] += y1[j];
-                conv[i2 + j] += y2[j];
-            }
-        }
-        {
-            index_t i1 = i*2*N;
-            index_t i2 = i1 + N;
-            long L = big->size() - i1;
-            if (L > N) {
-                std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
-                std::fill(x1.begin() + N, x1.end(), 0);
-                std::copy(big->begin() + i2, big->end(), x2.begin());
-                std::fill(x2.begin() + (L-N), x2.end(), 0);
-                dft(x1, x2);
-                for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-                    y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
-                    y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
-                }
-                dft(y1, y2, DFTDriver::INVERSE);
-                for (index_t j = 0; j != DFTDriver::tblsize; ++j)
-                    conv[i1 + j] += y1[j];
-                for (index_t j = 0; j != L-N+small->size()-1; ++j)
-                    conv[i2 + j] += y2[j];
-            }
-            else {
-                std::copy(big->begin() + i1, big->end(), x1.begin());
-                std::fill(x1.begin() + L, x1.end(), 0);
-                std::fill(x2.begin(), x2.end(), 0);
-                dft(x1, x2);
-                for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-                    y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
-                    y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
-                }
-                dft(y1, y2, DFTDriver::INVERSE);
-                for (index_t j = 0; j != L+small->size()-1; ++j)
-                    conv[i1 + j] += y1[j];
-            }
-        }
-        data = conv; // destroy old data, and copy new from `conv'
-    }
-    else {
-        // fit the whole signal in only one fft
-        index_t L;
-        for (L = DFTDriver::tblsize; L/2 >= final_size; L /= 2) ;
-        // here, final_size fits in L
-        container_t h_re(L);
-        container_t h_im(L);
-        container_t x1(L);
-        container_t x2(L);
-        container_t y1(L);
-        container_t y2(L);
-        std::copy(imp_resp.data.begin(), imp_resp.data.end(), h_re.begin());
-        dft(h_re, h_im);
-        std::copy(data.begin(), data.end(), x1.begin());
-        dft(x1, x2);
-        for (index_t j = 0; j != DFTDriver::tblsize; ++j) {
-            y1[j] = x1[j]*h_re[j] - x2[j]*h_im[j];
-            y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
-        }
-        dft(y1, y2, DFTDriver::INVERSE);
-        set_size(final_size);
-        std::copy(y1.begin(), y1.begin() + final_size, data.begin());
-    }
 }
 
 /**
@@ -446,8 +318,9 @@ Signal::sample_t Signal::l_inf_norm() {
   * \param[in,out]  im  Imaginary part.
   * \param[in]      direction   Whether this is a direct or inverse DFT.
   */
-void Signal::DFTDriver::operator ()(container_t& re, container_t& im,
-                                    const dir_t direction) {
+template<>
+void DefaultDFT::operator ()(container_t& re, container_t& im,
+                             const dir_t direction) {
 
 #ifdef ATFA_DEBUG
     if (re.size() != im.size()) {

@@ -408,7 +408,7 @@ void Stream::rir_fft() {
                 y_re[j] = x_re[j]*h_freq_re[j] - x_im[j]*h_freq_im[j];
                 y_im[j] = x_re[j]*h_freq_im[j] + x_im[j]*h_freq_re[j];
             }
-            Signal::dft(y_re, y_im, Signal::DFTDriver::INVERSE);
+            Signal::dft(y_re, y_im, DefaultDFT::INVERSE);
             // overlap and add: we add the first 'blks_in_fft-1' blocks,
             // which do overlap, and then we force the last block, which is
             // plain new and will override the old samples from one buffer
