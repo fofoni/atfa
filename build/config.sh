@@ -1,12 +1,33 @@
 #!/bin/bash
 
-#(cd ../codegen/filter200Hz/ && bash mkheader.sh)
+BRed='\e[1;31m'
+Color_Off='\e[0m'
 
-rm -rf debug release
-mkdir debug release
+DBGDIR="debug"
+RLSDIR="release"
 
-cd debug
-cmake -DCMAKE_BUILD_TYPE=Debug ../../
+set -e
 
-cd ../release
-cmake -DCMAKE_BUILD_TYPE=Release ../../
+for build_dir in "$DBGDIR" "$RLSDIR"; do
+    if [[ -e "$build_dir" ]]; then
+        if [[ ! -d "$build_dir" ]]; then
+            printf "Fatal: %s\n" \
+                   "file ‘${build_dir}’ exists and is not an empty directory." >&2
+            exit 1
+        fi
+        if ! rmdir "$build_dir"; then
+            exit 2
+        fi
+    fi
+    mkdir "$build_dir"
+done
+
+(
+    cd -- "$DBGDIR"
+    cmake -DCMAKE_BUILD_TYPE="Debug" ../../
+)
+
+(
+    cd -- "$RLSDIR"
+    cmake -DCMAKE_BUILD_TYPE="Release" ../../
+)
