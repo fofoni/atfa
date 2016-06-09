@@ -34,6 +34,15 @@ extern "C" {
 #include "VAD.h"
 #include "widgets/LEDIndicatorWidget.h"
 
+
+extern "C" {
+void *lms_init(void);
+
+int lms_close(void *data);
+
+float lms_run(void *data, float x, float y);
+}
+
 typedef unsigned long pa_fperbuf_t;
 
 /// Represents an input/output stream of audio samples
@@ -148,47 +157,25 @@ public:
       */
     template<class InputIt, class OutputIt>
     void read_write(InputIt in_buf, OutputIt out_buf, pa_fperbuf_t pa_frames) {
-//        std::cout << "read_write" << std::endl;
-//        std::cout << "pa_frames: " << pa_frames << std::endl;
         pa_fperbuf_t remaining = data_out.end() - read_ptr;
-//        std::cout << "remaining: " << remaining << std::endl;
-//        std::cout << "volume: " << volume << std::endl;
-        // The following are two ways of getting a functional times_vol which
-        // returns its argument multiplied by the current volume (that is,
-        // times_vol(x) := scene.volume * x.
-        // The measured times show that the square root of the expected value of
-        // the square of the time that takes for this function read_write to run
-        // 400 times, each with 128 frames, in a scenario in which
-        // buf_size=1000, is (68 +/- 32) us, with 99.7% confidence, when using
-        // the bind method. The same expected value for the lambda method is
-        // (84 +/- 24) us. For comparision, the length of one sample is
-        // approximately 90 us.
-        // The lambda method is commented-out, because the above results favor
-        // the bind method.
-        auto times_vol = std::bind(std::multiplies<sample_t>(),
-                                   scene.volume, std::placeholders::_1);
-//        const float volume = scene.volume;
-//        auto times_vol = [volume] (sample_t sample) -> sample_t {
-//            return volume*sample;
-//        };
         long overflow = (long)pa_frames - (long)remaining;
-//        std::cout << "times_vol(0,1,2,...,9):";
-//        for(int blau=0; blau<10; blau++) std::cout << " " << times_vol(blau);
-//        std::cout << std::endl;
+        auto read_end_ptr = (overflow < 0) ?
+                    (read_ptr + pa_frames) :
+                    (data_out.begin() + overflow);
+        while (read_ptr != read_end_ptr) {
+            *out_buf = scene.volume *
+                       lms_run(nullptr, *adapf_ptr, *read_ptr);
+            ++read_ptr, ++adapf_ptr, ++out_buf;
+            if (read_ptr == data_out.end())
+                read_ptr = data_out.begin();
+            if (adapf_ptr == data_in.end())
+                adapf_ptr = data_in.begin();
+        }
         if (overflow < 0) { // there was no overflow
-//            std::cout << "pa_frames < remaining" << std::endl;
-            auto read_end_ptr = read_ptr + pa_frames;
-            std::transform(read_ptr, read_end_ptr, out_buf, times_vol);
-            read_ptr = read_end_ptr;
             write_ptr = std::copy(in_buf, in_buf + pa_frames, write_ptr);
         }
         else {
-//            std::cout << "pa_frames >= remaining" << std::endl;
-            std::transform(read_ptr, data_out.end(), out_buf, times_vol);
             std::copy(in_buf, in_buf + remaining, write_ptr);
-            read_ptr = data_out.begin() + overflow;
-            std::transform(data_out.begin(), read_ptr,
-                    out_buf + remaining, times_vol);
             write_ptr = std::copy(in_buf + remaining, in_buf + pa_frames,
                     data_in.begin());
         }
@@ -253,6 +240,13 @@ public:
             // We won't ckeck, for performance, that delay_samples <= buf_size
             // The application must enforce this.
             filter_ptr = data_out.begin() + (delay_samples - remaining);
+        // ---
+        size_t passed = write_ptr - data_in.begin();
+        if (passed >= delay_samples)
+            adapf_ptr = write_ptr - delay_samples;
+        else
+            adapf_ptr = data_in.end() - (delay_samples - passed);
+        // ---
         scene.delay = msec;
     }
 
@@ -360,6 +354,7 @@ private:
     std::thread *rir_thread;
 
     container_t::const_iterator rir_ptr;
+    container_t::const_iterator adapf_ptr;
 
     container_t h_freq_re;
     container_t h_freq_im;
