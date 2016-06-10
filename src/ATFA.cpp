@@ -9,6 +9,10 @@
 
 #include <sstream>
 
+// TODO: fazer alguma coisa a respeito das imagens de play/pause/etc.
+//       (quando a gente roda o atfa de outro lugar que não seja o
+//        build/release/, o qt não acha os arquivos)
+
 extern "C" {
 # include <portaudio.h>
 }
