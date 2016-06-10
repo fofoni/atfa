@@ -69,6 +69,7 @@ target_link_libraries( atfa
     ${PortAudio_LIBS}
     ${LIBSNDFILE_LIBRARIES}
     ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES}
+    -ldl
 )
 
 # TODO: dar uma limpa nesse cmakelists. Quais comando do qt são *necessários*?

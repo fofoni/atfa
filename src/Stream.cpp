@@ -43,28 +43,36 @@ extern "C" {
 
 extern "C" {
 struct LMS_data {
-    float w[5];
+    float w[2];
+    float x[2];
 };
 
 void *lms_init(void) {
     auto data = new LMS_data();
     if (!data) return nullptr;
-    for (float *p=data->w; p != data->w+5; ++p)
-        *p = 0;
+    data->w[0] = 0;
+    data->w[1] = 0;
     return data;
 }
 
-int lms_close(void *data)
+int lms_close(void *&data)
 {
     delete static_cast<LMS_data *>(data);
+    data = nullptr;
     return 1; // success
 }
 
-float lms_run(void *data, float x, float y)
+float lms_run(void *data, float x_novo, float y)
 {
-    (void) data;
-    (void) x;
-    return y;
+    float *x = static_cast<LMS_data *>(data)->x;
+    float *w = static_cast<LMS_data *>(data)->w;
+    // atualiza x
+    x[1] = x[0];
+    x[0] = x_novo;
+    float err = y - (x[0]*w[0] + x[1]*w[1]);
+    w[0] = w[0] + 2*30*err*x[0];
+    w[1] = w[1] + 2*30*err*x[1];
+    return err;
 }
 }
 

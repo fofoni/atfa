@@ -38,7 +38,7 @@ extern "C" {
 extern "C" {
 void *lms_init(void);
 
-int lms_close(void *data);
+int lms_close(void *&data);
 
 float lms_run(void *data, float x, float y);
 }
