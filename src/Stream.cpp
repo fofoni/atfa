@@ -16,6 +16,12 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
+/*
+ * TODO: olhar todos os 'throw's, ao longo do projeto inteiro, e se
+ * certificar de que eles são pegos por um 'catch', que gera uma error
+ * dialog, ao invés de crashar o programa.
+ */
+
 extern "C" {
 #   include <portaudio.h>
 }
@@ -42,6 +48,7 @@ struct LMS_data {
 
 void *lms_init(void) {
     auto data = new LMS_data();
+    if (!data) return nullptr;
     for (float *p=data->w; p != data->w+5; ++p)
         *p = 0;
     return data;
@@ -160,6 +167,10 @@ static int stream_callback(
   * \see stop
   */
 PaStream *Stream::echo() {
+
+    adapf_data = (*adapf_init)();
+    if (!adapf_data)
+        throw std::runtime_error("Couldn't initialize adapf.");
 
     // no need for mutex, because the rir_thread has not started yet
     is_running = true;
@@ -357,6 +368,10 @@ void Stream::stop(PaStream *s) {
     delete rir_thread;
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
+
+    if (!(*adapf_close)(adapf_data))
+        throw std::runtime_error("Couldn't close adapf.");
+    adapf_data = nullptr;
 
     std::ofstream sampss;
     sampss.open("sampss_may29.m");

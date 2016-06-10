@@ -99,6 +99,11 @@ public:
     typedef bool (*vad_algorithm_t)(container_t::const_iterator,
                                     container_t::const_iterator);
 
+    // adaptive filter {init, close, run}
+    typedef void *(*afi_t)(void);
+    typedef int (*afc_t)(void *);
+    typedef sample_t (*afr_t)(void *, sample_t, sample_t);
+
     struct Scenario
     {
 
@@ -164,7 +169,7 @@ public:
                     (data_out.begin() + overflow);
         while (read_ptr != read_end_ptr) {
             *out_buf = scene.volume *
-                       lms_run(nullptr, *adapf_ptr, *read_ptr);
+                       (*adapf_run)(adapf_data, *adapf_ptr, *read_ptr);
             ++read_ptr, ++adapf_ptr, ++out_buf;
             if (read_ptr == data_out.end())
                 read_ptr = data_out.begin();
@@ -197,7 +202,8 @@ public:
       * \see Scenario
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
-        : scene(s), is_running(false), data_in(buf_size), data_out(buf_size),
+        : scene(s), adapf_data(nullptr),
+          is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
           vad_ptr(vad.begin()),
@@ -208,6 +214,9 @@ public:
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
+        adapf_init = &lms_init;
+        adapf_close = &lms_close;
+        adapf_run = &lms_run;
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -276,7 +285,13 @@ public:
         calcVAD = algs[idx];
     }
 
+    afi_t adapf_init;
+    afc_t adapf_close;
+    afr_t adapf_run;
+
 private:
+
+    void *adapf_data;
 
     std::condition_variable blk_cv;
     int blk_count; // how many blocks need to be processed by rir_fft.
