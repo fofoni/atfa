@@ -21,6 +21,7 @@
 
 extern "C" {
 #   include <portaudio.h>
+#   include <dlfcn.h>
 }
 
 #include <vector>
@@ -33,15 +34,6 @@ extern "C" {
 
 #include "VAD.h"
 #include "widgets/LEDIndicatorWidget.h"
-
-
-extern "C" {
-void *lms_init(void);
-
-int lms_close(void *&data);
-
-float lms_run(void *data, float x, float y);
-}
 
 typedef unsigned long pa_fperbuf_t;
 
@@ -208,15 +200,28 @@ public:
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
           vad_ptr(vad.begin()),
           h_freq_re(fft_size), h_freq_im(fft_size),
-          led_widget(ledw)
+          led_widget(ledw), adapf_lib(nullptr)
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
-        adapf_init = &lms_init;
-        adapf_close = &lms_close;
-        adapf_run = &lms_run;
+
+        void *adapf_lib = dlopen("/home/pedro/ufrj/atfa-libs/LMS/lms.so", RTLD_NOW);
+        if (!adapf_lib)
+            throw std::runtime_error("Cannot open .so!");
+        adapf_init = reinterpret_cast<afi_t>(dlsym(adapf_lib, "adapf_init"));
+        if (!adapf_init)
+            throw std::runtime_error(std::string("Cannot open adapf_init:")
+                                     + dlerror());
+        adapf_close = reinterpret_cast<afc_t>(dlsym(adapf_lib, "adapf_close"));
+        if (!adapf_close)
+            throw std::runtime_error(std::string("Cannot open adapf_close:")
+                                     + dlerror());
+        adapf_run = reinterpret_cast<afr_t>(dlsym(adapf_lib, "adapf_run"));
+        if (!adapf_run)
+            throw std::runtime_error(std::string("Cannot open adapf_run:")
+                                     + dlerror());
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -375,6 +380,8 @@ private:
     container_t h_freq_im;
 
     LEDIndicatorWidget *led_widget;
+
+    void *adapf_lib;
 
 };
 

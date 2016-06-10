@@ -41,41 +41,6 @@ extern "C" {
 #include "VAD.h"
 #include "utils.h"
 
-extern "C" {
-struct LMS_data {
-    float w[2];
-    float x[2];
-};
-
-void *lms_init(void) {
-    auto data = new LMS_data();
-    if (!data) return nullptr;
-    data->w[0] = 0;
-    data->w[1] = 0;
-    return data;
-}
-
-int lms_close(void *&data)
-{
-    delete static_cast<LMS_data *>(data);
-    data = nullptr;
-    return 1; // success
-}
-
-float lms_run(void *data, float x_novo, float y)
-{
-    float *x = static_cast<LMS_data *>(data)->x;
-    float *w = static_cast<LMS_data *>(data)->w;
-    // atualiza x
-    x[1] = x[0];
-    x[0] = x_novo;
-    float err = y - (x[0]*w[0] + x[1]*w[1]);
-    w[0] = w[0] + 2*30*err*x[0];
-    w[1] = w[1] + 2*30*err*x[1];
-    return err;
-}
-}
-
 /// Callback function for dealing with PortAudio
 static int stream_callback(
         const void *in_buf, void *out_buf, unsigned long frames_per_buf,
