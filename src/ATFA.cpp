@@ -13,6 +13,14 @@
 //       (quando a gente roda o atfa de outro lugar que não seja o
 //        build/release/, o qt não acha os arquivos)
 
+/* TODO: fazer adapfs parametrizáveis. Isto é, o adapf.so deve poder
+ *       especificar uma lista de parâmetros modificáveis (e.g., mu e
+ *       Delta para o NLMS), e a interface gráfica deve deixar o usuário
+ *       modificar esses parâmetros. O adapf.so deve especificar, para
+ *       cada parâmetro coisas como: tipo (int, float, enum, etc), faixa
+ *       permitida, nome, valor default, etc, etc
+ */
+
 extern "C" {
 # include <portaudio.h>
 }

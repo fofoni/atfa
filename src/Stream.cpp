@@ -28,7 +28,7 @@ extern "C" {
 
 #include <exception>
 
-/// DEBUG
+/// TODO: DEBUG
 #include <fstream>
 
 #ifdef ATFA_DEBUG
