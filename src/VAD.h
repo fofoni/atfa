@@ -11,7 +11,7 @@
  *
  * \file Stream.h
  *
- * Holds the interface to the `Stream` class.
+ * Holds the interfaces to VAD functions.
  *
  * \author Pedro Angelo Medeiros Fonini
  */

@@ -39,6 +39,7 @@ extern "C" {
 #include "Stream.h"
 #include "Signal.h"
 #include "VAD.h"
+#include "AdaptiveFilter.h"
 #include "utils.h"
 
 /// Callback function for dealing with PortAudio
@@ -141,9 +142,7 @@ static int stream_callback(
   */
 PaStream *Stream::echo() {
 
-    adapf_data = (*adapf_init)();
-    if (!adapf_data)
-        throw std::runtime_error("Couldn't initialize adapf.");
+    adapf = new AdaptiveFilter<sample_t>("/home/pedro/ufrj/atfa-libs/LMS/lms.so");
 
     // no need for mutex, because the rir_thread has not started yet
     is_running = true;
@@ -342,21 +341,8 @@ void Stream::stop(PaStream *s) {
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
 
-    if (!(*adapf_close)(adapf_data))
-        throw std::runtime_error("Couldn't close adapf.");
-    adapf_data = nullptr;
-
-    std::ofstream sampss;
-    sampss.open("sampss_may29.m");
-    sampss << "sampss = [\n";
-    for (auto x : data_in)
-        sampss << x << "\n";
-    sampss << "];\n\n";
-    sampss << "cpp_vad = [\n";
-    for (auto x : vad)
-        sampss << int(x) << "\n";
-    sampss << "];" << std::endl;
-    sampss.close();
+    delete adapf;
+    adapf = nullptr;
 
 }
 

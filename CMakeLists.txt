@@ -54,6 +54,7 @@ add_executable( atfa
     src/Signal.cpp
     src/Stream.cpp
     src/VAD.cpp
+    src/AdaptiveFilter.cpp
     src/utils.cpp
     src/ATFA.cpp
     src/dialogs/ChangeAlgorithmDialog.cpp

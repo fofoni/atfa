@@ -33,6 +33,7 @@ extern "C" {
 #include <functional>
 
 #include "VAD.h"
+#include "AdaptiveFilter.h"
 #include "widgets/LEDIndicatorWidget.h"
 
 typedef unsigned long pa_fperbuf_t;
@@ -90,11 +91,6 @@ public:
 
     typedef bool (*vad_algorithm_t)(container_t::const_iterator,
                                     container_t::const_iterator);
-
-    // adaptive filter {init, close, run}
-    typedef void *(*afi_t)(void);
-    typedef int (*afc_t)(void *);
-    typedef sample_t (*afr_t)(void *, sample_t, sample_t);
 
     struct Scenario
     {
@@ -161,7 +157,7 @@ public:
                     (data_out.begin() + overflow);
         while (read_ptr != read_end_ptr) {
             *out_buf = scene.volume *
-                       (*adapf_run)(adapf_data, *adapf_ptr, *read_ptr);
+                       adapf->get_sample(*adapf_ptr, *read_ptr);
             ++read_ptr, ++adapf_ptr, ++out_buf;
             if (read_ptr == data_out.end())
                 read_ptr = data_out.begin();
@@ -194,34 +190,18 @@ public:
       * \see Scenario
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
-        : scene(s), adapf_data(nullptr),
+        : scene(s), adapf(nullptr),
           is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
           vad_ptr(vad.begin()),
           h_freq_re(fft_size), h_freq_im(fft_size),
-          led_widget(ledw), adapf_lib(nullptr)
+          led_widget(ledw)
     {
         set_delay(scene.delay); // sets delay_samples and filter_ptr
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
-
-        void *adapf_lib = dlopen("/home/pedro/ufrj/atfa-libs/LMS/lms.so", RTLD_NOW);
-        if (!adapf_lib)
-            throw std::runtime_error("Cannot open .so!");
-        adapf_init = reinterpret_cast<afi_t>(dlsym(adapf_lib, "adapf_init"));
-        if (!adapf_init)
-            throw std::runtime_error(std::string("Cannot open adapf_init:")
-                                     + dlerror());
-        adapf_close = reinterpret_cast<afc_t>(dlsym(adapf_lib, "adapf_close"));
-        if (!adapf_close)
-            throw std::runtime_error(std::string("Cannot open adapf_close:")
-                                     + dlerror());
-        adapf_run = reinterpret_cast<afr_t>(dlsym(adapf_lib, "adapf_run"));
-        if (!adapf_run)
-            throw std::runtime_error(std::string("Cannot open adapf_run:")
-                                     + dlerror());
     }
 
     /// Runs the stream with predefined scenario parameters.
@@ -290,13 +270,9 @@ public:
         calcVAD = algs[idx];
     }
 
-    afi_t adapf_init;
-    afc_t adapf_close;
-    afr_t adapf_run;
-
 private:
 
-    void *adapf_data;
+    AdaptiveFilter<sample_t> *adapf;
 
     std::condition_variable blk_cv;
     int blk_count; // how many blocks need to be processed by rir_fft.
@@ -380,8 +356,6 @@ private:
     container_t h_freq_im;
 
     LEDIndicatorWidget *led_widget;
-
-    void *adapf_lib;
 
 };
 
