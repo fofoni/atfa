@@ -73,8 +73,6 @@ target_link_libraries( atfa
     -ldl
 )
 
-# TODO: dar uma limpa nesse cmakelists. Quais comando do qt são *necessários*?
-
 # TODO: Fix the ill-positioning of latex formula images using CSS
 
 # TODO: write a CPack file for creating .rpms, and etc?
