@@ -18,7 +18,7 @@
 #include "../widgets/FileSelectWidget.h"
 
 ChangeAlgorithmDialog::ChangeAlgorithmDialog(ATFA *parent) :
-    QDialog(parent), atfa(parent)
+    QDialog(parent), atfa(parent), discard(false)
 {
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -45,14 +45,21 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(ATFA *parent) :
 
     button_box = new QDialogButtonBox(
         QDialogButtonBox::Ok |
-        QDialogButtonBox::Cancel
+        QDialogButtonBox::Cancel |
+        QDialogButtonBox::Discard
     );
     button_box->buttons()[0]->setDisabled(true);
+    button_box->buttons()[2]->setToolTip(
+                "Go back to a scenario with no adaptive filtering.");
+    if (atfa->adapf_is_dummy)
+        button_box->buttons()[2]->setDisabled(true);
     layout->addWidget(button_box);
     connect(file_select, SIGNAL(textChanged(const QString&)),
             this, SLOT(update_status()));
     connect(button_box, SIGNAL(accepted()), this, SLOT(accept()));
     connect(button_box, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(button_box->buttons()[2], &QAbstractButton::clicked,
+            [this](){discard = true; accept();});
     connect(file_select, SIGNAL(returnPressed()),
             this, SLOT(accept_if_validated()));
 
@@ -74,16 +81,30 @@ bool ChangeAlgorithmDialog::run() {
     if (exec() == QDialog::Rejected)
         return false;
 
-    QString filename = file_select->text();
-    QRegExp rx_so("*.so", Qt::CaseInsensitive, QRegExp::Wildcard);
-    if (!rx_so.exactMatch(filename)) {
-        err_dialog("Please, choose a *.so file.");
-        return false;
-    }
+    if (discard) {
 
-    atfa->stream.setAdapfAlgorithm(
-        new AdaptiveFilter<Stream::sample_t>(filename.toUtf8().constData())
-    );
+        atfa->stream.setAdapfAlgorithm(new AdaptiveFilter<Stream::sample_t>());
+        atfa->adapf_is_dummy = true;
+        atfa->adapf_file = "";
+
+    }
+    else {
+
+        QString filename = file_select->text();
+        QRegExp rx_so("*.so", Qt::CaseInsensitive, QRegExp::Wildcard);
+        if (!rx_so.exactMatch(filename)) {
+            err_dialog("Please, choose a *.so file.");
+            return false;
+        }
+
+        atfa->stream.setAdapfAlgorithm(
+            new AdaptiveFilter<Stream::sample_t>(filename.toUtf8().constData())
+        );
+
+        atfa->adapf_is_dummy = false;
+        atfa->adapf_file = filename;
+
+    }
 
     return true;
 

@@ -52,6 +52,10 @@ public:
         return dummy;
     }
 
+    std::string get_path() {
+        return path;
+    }
+
 private:
 
     bool dummy;

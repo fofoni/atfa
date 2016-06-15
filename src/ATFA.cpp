@@ -37,7 +37,7 @@ extern "C" {
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
     rir_source(NoRIR), rir_filetype(None), rir_file(""), database_index(-1),
-    muted(false)
+    adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
     /*
@@ -602,6 +602,22 @@ void ATFA::change_adapf() {
     ChangeAlgorithmDialog *chapf_dialog = new ChangeAlgorithmDialog(this);
     if (!chapf_dialog->run())
         return;
-    // ...
+
+    if (adapf_is_dummy) {
+        adapf_file_label->setText("None");
+        adapf_show_button->setDisabled(true);
+    }
+    else {
+        QString small_filename;
+        QRegExp rx("^.*/([^/]*)$");
+        if (rx.indexIn(adapf_file) > -1)
+            small_filename = rx.cap(1);
+        else
+            small_filename = adapf_file;
+        adapf_file_label->setText(small_filename);
+        adapf_show_button->setDisabled(false);
+    }
+
+    statusBar()->showMessage("Adaptive filter algorithm updated.");
 
 }

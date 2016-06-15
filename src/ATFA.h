@@ -40,6 +40,10 @@ public:
     RIR_filetype_t rir_filetype;
     QString rir_file;
     int database_index;
+
+    bool adapf_is_dummy;
+    QString adapf_file;
+
     bool muted;
 
 private slots:

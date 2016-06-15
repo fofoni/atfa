@@ -40,6 +40,8 @@ private:
 
     void err_dialog(const QString &err_msg);
 
+    bool discard;
+
 private slots:
     void update_status();
     void accept_if_validated();
