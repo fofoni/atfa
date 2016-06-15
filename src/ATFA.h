@@ -16,10 +16,12 @@
 
 #include "Stream.h"
 #include "widgets/LEDIndicatorWidget.h"
+#include "dialogs/ChangeAlgorithmDialog.h"
 
 // TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
 //       dono, e avulsos assim que possível)
 //       alem disso, fechar o portaudio no destrutor do ATFA, caso necessario
+//       Dica: substituir a maioria dos pointers por unique_ptr
 
 class ATFA : public QMainWindow {
 
@@ -132,6 +134,8 @@ private:
         QLabel *adapf_file_label;
         QPushButton *adapf_show_button;
         QPushButton *adapf_change_button;
+
+    friend class ChangeAlgorithmDialog;
 
 };
 

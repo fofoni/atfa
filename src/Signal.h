@@ -312,9 +312,7 @@ public:
         /// Number of bits for the index of the table of sines and cosines
         /**
           * We won't be able to perform an \f$N\f$-bit dft if
-          * \f$N > \texttt{tblbits}\f$, so this should be big. Also, this
-          * __must__ be equal to \f$\log_2\left(\texttt{tblsize}\right)\f$, but
-          * there's nothing in the source code that enforces it.
+          * \f$N > \texttt{tblbits}\f$, so this should be big.
           *
           * \see tblsize
           */

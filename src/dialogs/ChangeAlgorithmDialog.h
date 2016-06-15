@@ -15,18 +15,34 @@
 #include <QDialog>
 #include <QLayout>
 
+#include "../widgets/FileSelectWidget.h"
+
+class ATFA;
+
 class ChangeAlgorithmDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ChangeAlgorithmDialog(QWidget *parent = 0);
+    explicit ChangeAlgorithmDialog(ATFA *parent);
     bool run();
 
+    bool validate_everything();
+
 private:
+    ATFA *atfa;
+
+    QLabel *file_directions_label;
+    QLabel *file_label;
+    FileSelectWidget *file_select;
+
     QDialogButtonBox *button_box;
 
+    void err_dialog(const QString &err_msg);
+
 private slots:
+    void update_status();
+    void accept_if_validated();
 
 };
 

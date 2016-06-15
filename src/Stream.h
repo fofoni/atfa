@@ -270,6 +270,12 @@ public:
         calcVAD = algs[idx];
     }
 
+    void setAdapfAlgorithm(AdaptiveFilter<sample_t> *adapf_new) {
+        if (adapf)
+            delete adapf;
+        adapf = adapf_new;
+    }
+
 private:
 
     AdaptiveFilter<sample_t> *adapf;

@@ -142,7 +142,7 @@ static int stream_callback(
   */
 PaStream *Stream::echo() {
 
-    adapf = new AdaptiveFilter<sample_t>("/home/pedro/ufrj/atfa-libs/LMS/lms.so");
+    adapf->initialize_data_structures();
 
     // no need for mutex, because the rir_thread has not started yet
     is_running = true;
@@ -341,8 +341,7 @@ void Stream::stop(PaStream *s) {
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
 
-    delete adapf;
-    adapf = nullptr;
+    adapf->destroy_data_structures();
 
 }
 

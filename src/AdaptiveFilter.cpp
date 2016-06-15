@@ -27,14 +27,12 @@ extern "C" {
 
 #include "AdaptiveFilter.h"
 
-std::ostringstream AdapfException::statwstream;
-
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
-  : path(dso_path)
+  : path(dso_path), data(nullptr)
 {
 
-    lib = dlopen(dso_path.c_str(), RTLD_NOW);
+    lib = dlopen(path.c_str(), RTLD_NOW);
     if (!lib)
         throw AdapfException(
                 "Could not open shared object file",
@@ -47,12 +45,38 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
 
     test();
 
+}
+
+template <typename SAMPLE_T>
+AdaptiveFilter<SAMPLE_T>::~AdaptiveFilter()
+{
+    if (dlclose(lib) != 0)
+        std::cerr << "[Adaptive Filter DSO] Warning: could not close dynamic "
+                  << "shared object." << std::endl
+                  << "[Adaptive Filter DSO] DSO path: " << path << std::endl
+                  << "[Adaptive Filter DSO] DL error: " << dlerror()
+                  << std::endl;
+    if (data)
+        destroy_data_structures();
+}
+
+template <typename SAMPLE_T>
+void AdaptiveFilter<SAMPLE_T>::initialize_data_structures() {
     data = (*init)();
     if (!data)
         throw AdapfException(
                 "Could not initialize adaptive filter data structures",
                 path, dlerror());
+}
 
+// TODO: deve ser noexcept, ou throw(), etc, pq é chamado de dentro do destrutor
+template <typename SAMPLE_T>
+void AdaptiveFilter<SAMPLE_T>::destroy_data_structures() {
+    if (!(*close)(data))
+        std::cerr << "[Adaptive Filter] Warning: could not close adaptive "
+                  << "filter data structures." << std::endl
+                  << "[Adaptive Filter] DSO path: " << path << std::endl;
+    data = nullptr;
 }
 
 template <typename SAMPLE_T>
@@ -78,21 +102,6 @@ void AdaptiveFilter<SAMPLE_T>::test() {
                 "Error while closing adaptive filter data structures"
                 " during testing",
                 path, dlerror());
-}
-
-template <typename SAMPLE_T>
-AdaptiveFilter<SAMPLE_T>::~AdaptiveFilter()
-{
-    if (!(*close)(data))
-        std::cerr << "[Adaptive Filter] Warning: could not close adaptive "
-                  << "filter data structures." << std::endl
-                  << "[Adaptive Filter] DSO path: " << path << std::endl;
-    if (dlclose(lib) != 0)
-        std::cerr << "[Adaptive Filter DSO] Warning: could not close dynamic "
-                  << "shared object." << std::endl
-                  << "[Adaptive Filter DSO] DSO path: " << path << std::endl
-                  << "[Adaptive Filter DSO] DL error: " << dlerror()
-                  << std::endl;
 }
 
 template class AdaptiveFilter<float>;

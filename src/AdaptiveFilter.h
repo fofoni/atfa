@@ -43,6 +43,9 @@ public:
 
     void test();
 
+    void initialize_data_structures();
+    void destroy_data_structures();
+
     SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y) {
         return (*run)(data, x, y);
     }
@@ -93,7 +96,6 @@ private:
     std::string dlerror;
     std::string path;
     std::string what_msg;
-    static std::ostringstream statwstream;
 
 };
 

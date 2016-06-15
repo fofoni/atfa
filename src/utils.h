@@ -51,7 +51,7 @@
   * Useful in the generation of the table of sines and cosines for the
   * Signal::DFTDriver class, for example.
   */
-static const double TAU = 6.283185307179586477;
+static constexpr double TAU = 6.283185307179586477;
 
 /// Initialize PortAudio.
 void portaudio_init(bool list_devices=false);
