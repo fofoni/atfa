@@ -200,7 +200,7 @@ void Signal::play(bool sleep) {
                 paFloat32,
                 srate,
                 paFramesPerBufferUnspecified,
-                signal_callback,
+                &signal_callback,
                 this
     );
     if (err != paNoError)

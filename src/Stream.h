@@ -190,7 +190,7 @@ public:
       * \see Scenario
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
-        : scene(s), adapf(nullptr),
+        : scene(s), adapf(new AdaptiveFilter<sample_t>()),
           is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),

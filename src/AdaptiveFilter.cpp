@@ -29,7 +29,7 @@ extern "C" {
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
-  : path(dso_path), data(nullptr)
+  : dummy(false), path(dso_path), data(nullptr)
 {
 
     lib = dlopen(path.c_str(), RTLD_NOW);
@@ -50,6 +50,8 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::~AdaptiveFilter()
 {
+    if (dummy)
+        return;
     if (dlclose(lib) != 0)
         std::cerr << "[Adaptive Filter DSO] Warning: could not close dynamic "
                   << "shared object." << std::endl
@@ -62,6 +64,8 @@ AdaptiveFilter<SAMPLE_T>::~AdaptiveFilter()
 
 template <typename SAMPLE_T>
 void AdaptiveFilter<SAMPLE_T>::initialize_data_structures() {
+    if (dummy)
+        return;
     data = (*init)();
     if (!data)
         throw AdapfException(
@@ -70,8 +74,12 @@ void AdaptiveFilter<SAMPLE_T>::initialize_data_structures() {
 }
 
 // TODO: deve ser noexcept, ou throw(), etc, pq é chamado de dentro do destrutor
+//       UPDATE: mentira. Deve jogar uma exceção se der merda sim. MAS essa
+//               exceção deve ser pega dentro do construtor
 template <typename SAMPLE_T>
 void AdaptiveFilter<SAMPLE_T>::destroy_data_structures() {
+    if (dummy)
+        return;
     if (!(*close)(data))
         std::cerr << "[Adaptive Filter] Warning: could not close adaptive "
                   << "filter data structures." << std::endl
@@ -81,6 +89,8 @@ void AdaptiveFilter<SAMPLE_T>::destroy_data_structures() {
 
 template <typename SAMPLE_T>
 void AdaptiveFilter<SAMPLE_T>::test() {
+    if (dummy)
+        return;
     void *dat = (*init)();
     if (!dat)
         throw AdapfException(
@@ -103,5 +113,29 @@ void AdaptiveFilter<SAMPLE_T>::test() {
                 " during testing",
                 path, dlerror());
 }
+
+/* DUMMY (NO OP) FILTER */
+
+void *dummy_init() { return nullptr; }
+int dummy_close(void *) { return 1; }
+void *dummy_restart(void *) { return nullptr; }
+template <typename SAMPLE_T>
+SAMPLE_T dummy_run(void *, SAMPLE_T, SAMPLE_T y) { return y; }
+
+template <typename SAMPLE_T>
+AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
+  : dummy(true), data(nullptr)
+{
+
+    lib = nullptr;
+
+    init = &dummy_init;
+    close = &dummy_close;
+    run = &dummy_run<SAMPLE_T>;
+    restart = &dummy_restart;
+
+}
+
+/* Explicit template instantiation for use with `Stream` */
 
 template class AdaptiveFilter<float>;

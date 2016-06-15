@@ -175,7 +175,7 @@ PaStream *Stream::echo() {
                 paFloat32,
                 samplerate*4,
                 paFramesPerBufferUnspecified,
-                stream_callback,
+                &stream_callback,
                 this
     );
     if (err != paNoError)

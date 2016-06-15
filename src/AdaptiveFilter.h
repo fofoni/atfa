@@ -36,10 +36,8 @@ public:
     typedef void *(*aft_t)(void *);
 
     AdaptiveFilter(std::string dso_path);
+    AdaptiveFilter();
     ~AdaptiveFilter();
-
-    // TODO: fazer outro ctor, sem nenhum argumento, que inicializa um
-    // adapf "dummy", no op.
 
     void test();
 
@@ -50,7 +48,13 @@ public:
         return (*run)(data, x, y);
     }
 
+    bool is_dummy() {
+        return dummy;
+    }
+
 private:
+
+    bool dummy;
 
     template <typename SYM_T>
     SYM_T get_sym(std::string sym_name);
