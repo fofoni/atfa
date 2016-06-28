@@ -11,3 +11,4 @@ doc/latex/*
 !doc/latex/refman.pdf
 RIRs
 src/autogen
+CMakeLists.txt.user
