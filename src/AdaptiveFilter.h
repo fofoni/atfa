@@ -29,11 +29,12 @@ class AdaptiveFilter
 
 public:
 
-    // adaptive filter {init, close, run, restart}
+    // adaptive filter {init, close, run, restart, get w}
     typedef void *(*afi_t)(void);
     typedef int (*afc_t)(void *);
     typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T);
     typedef void *(*aft_t)(void *);
+    typedef void (*afw_t)(void *, SAMPLE_T **, unsigned *);
 
     AdaptiveFilter(std::string dso_path);
     AdaptiveFilter();
@@ -47,6 +48,9 @@ public:
     SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y) {
         return (*run)(data, x, y);
     }
+    void get_impresp(SAMPLE_T **begin, unsigned *n) {
+        (*getw)(data, begin, n);
+    }
 
     bool is_dummy() {
         return dummy;
@@ -55,6 +59,8 @@ public:
     std::string get_path() {
         return path;
     }
+
+    static SAMPLE_T placeholder;
 
 private:
 
@@ -74,6 +80,7 @@ private:
     afc_t close;
     afr_t run;
     aft_t restart;
+    afw_t getw;
 
     void *data;
 

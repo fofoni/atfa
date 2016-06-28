@@ -28,6 +28,9 @@ extern "C" {
 #include "AdaptiveFilter.h"
 
 template <typename SAMPLE_T>
+SAMPLE_T AdaptiveFilter<SAMPLE_T>::placeholder = 0;
+
+template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
   : dummy(false), path(dso_path), data(nullptr)
 {
@@ -42,6 +45,7 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
     close = get_sym<afc_t>("close");
     run = get_sym<afr_t>("run");
     restart = get_sym<aft_t>("restart");
+    getw = get_sym<afw_t>("getw");
 
     test();
 
@@ -121,6 +125,17 @@ int dummy_close(void *) { return 1; }
 void *dummy_restart(void *) { return nullptr; }
 template <typename SAMPLE_T>
 SAMPLE_T dummy_run(void *, SAMPLE_T, SAMPLE_T y) { return y; }
+template <typename SAMPLE_T>
+void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
+    // *begin will be used as source in a call to std::memcpy.
+    // Apparently, memcpy invokes undefined behaviour when it gets
+    // called with invalid pointer (e.g. nullptr) arguments, EVEN
+    // if n==0.
+    // This means that *begin should point to somewhere ok -- it
+    // just doesn't matter where.
+    *begin = &AdaptiveFilter<SAMPLE_T>::placeholder;
+    *n = 0;
+}
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
@@ -133,6 +148,7 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
     close = &dummy_close;
     run = &dummy_run<SAMPLE_T>;
     restart = &dummy_restart;
+    getw = &dummy_getw<SAMPLE_T>;
 
 }
 

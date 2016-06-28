@@ -24,6 +24,9 @@ extern "C" {
 #   include <dlfcn.h>
 }
 
+// TODO: DEBUG
+#include <cstring>
+
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -158,6 +161,10 @@ public:
         while (read_ptr != read_end_ptr) {
             *out_buf = scene.volume *
                        adapf->get_sample(*adapf_ptr, *read_ptr);
+            {sample_t *it; unsigned n;
+            adapf->get_impresp(&it, &n);
+            std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
+            ++w_ptr;} // TODO: DEBUG
             ++read_ptr, ++adapf_ptr, ++out_buf;
             if (read_ptr == data_out.end())
                 read_ptr = data_out.begin();
@@ -190,7 +197,7 @@ public:
       * \see Scenario
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
-        : scene(s), adapf(new AdaptiveFilter<sample_t>()),
+        : w_ptr(0), scene(s), adapf(new AdaptiveFilter<sample_t>()),
           is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
@@ -203,6 +210,10 @@ public:
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
     }
+
+    // TODO: DEBUG
+    static sample_t wvec[blks_in_buf*blk_size][128];
+    int w_ptr;
 
     /// Runs the stream with predefined scenario parameters.
     PaStream *echo();

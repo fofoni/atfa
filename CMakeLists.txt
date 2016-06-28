@@ -34,6 +34,22 @@ if(PortAudio_INCLUDE_DIRS)
     include_directories( "${PortAudio_INCLUDE_DIRS}" )
 endif(PortAudio_INCLUDE_DIRS)
 
+### ### ### Setup MATLAB
+# http://www.mathworks.com/help/matlab/matlab_external/ ...
+# ... mat-file-library-and-include-files.html
+set( LINK_MATLAB YES )
+set( MATLAB_ROOT "/usr/local/MATLAB/MATLAB_Production_Server/R2015a" )
+set( MATLAB_ARCH "glnxa64" )
+set( MATLAB_INCLUDE_DIRS "${MATLAB_ROOT}/extern/include" )
+set( MATLAB_LINK_DIRS "${MATLAB_ROOT}/bin/${MATLAB_ARCH}" )
+if(LINK_MATLAB)
+    include_directories( "${MATLAB_INCLUDE_DIRS}" )
+    link_directories( "${MATLAB_LINK_DIRS}" )
+    set( MATLAB_LIBS "-lmat" )
+else(LINK_MATLAB)
+    set( MATLAB_LIBS "" )
+endif(LINK_MATLAB)
+
 ### ### ### Setup ATFA
 execute_process( COMMAND git describe
                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -70,6 +86,7 @@ target_link_libraries( atfa
     ${PortAudio_LIBS}
     ${LIBSNDFILE_LIBRARIES}
     ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES}
+    ${MATLAB_LIBS}
     -ldl
 )
 

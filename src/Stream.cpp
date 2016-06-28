@@ -42,11 +42,17 @@ extern "C" {
 #include <algorithm>
 #endif
 
+// TODO: DEBUG
+#include <mat.h>
+
 #include "Stream.h"
 #include "Signal.h"
 #include "VAD.h"
 #include "AdaptiveFilter.h"
 #include "utils.h"
+
+// TODO: DEBUG
+Stream::sample_t Stream::wvec[Stream::blks_in_buf*Stream::blk_size][128];
 
 /// Callback function for dealing with PortAudio
 static int stream_callback(
@@ -346,6 +352,29 @@ void Stream::stop(PaStream *s) {
     delete rir_thread;
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
+
+    std::ofstream sampss;
+    sampss.open("sampss_jun16.m");
+    sampss << "sampss_in = [\n";
+    for (auto x : data_in)
+        sampss << x << "\n";
+    sampss << "];\n\n";
+    sampss << "sampss_out = [\n";
+    for (auto x : data_out)
+        sampss << x << "\n";
+    sampss << "];\n\n";
+//    sampss << "cpp_w = [\n";
+//    for (auto& w : wvec) {
+//        for (auto& x : w)
+//           sampss << x << " ";
+//        sampss << "\n";
+//    }
+//    sampss << "];\n\n";
+    sampss << "cpp_vad = [\n";
+    for (auto x : vad)
+        sampss << int(x) << "\n";
+    sampss << "];" << std::endl;
+    sampss.close();
 
     adapf->destroy_data_structures();
 
