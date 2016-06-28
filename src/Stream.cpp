@@ -22,6 +22,12 @@
  * dialog, ao invés de crashar o programa.
  */
 
+/*
+ * TODO: trocar todos os do{...}while(0) por if(1){...}else(void)0 .
+ * Rationale:
+ * https://isocpp.org/wiki/faq/misc-technical-issues#macros-with-multi-stmts
+ */
+
 extern "C" {
 #   include <portaudio.h>
 }
