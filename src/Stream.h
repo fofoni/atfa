@@ -209,6 +209,9 @@ public:
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
+        {for (auto& w : wvec)
+            for (auto& x : w)
+               x = 0;} // TODO: DEBUG
     }
 
     // TODO: DEBUG
