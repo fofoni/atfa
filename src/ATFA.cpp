@@ -226,7 +226,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMinimumWidth(200);
             delay_slider->setMinimum(0);
             delay_slider->setMaximum(500);
-            delay_slider->setValue(100);
+            delay_slider->setValue(30);
             // TODO: if playback lags during sliding, disable tracking
             delay_layout->addWidget(delay_slider);
             stream.set_delay(delay_slider->value());
@@ -235,7 +235,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_spin->setMinimum(0);
             delay_spin->setMaximum(500);
             delay_spin->setFixedWidth(60);
-            delay_spin->setValue(100);
+            delay_spin->setValue(30);
             delay_layout->addWidget(delay_spin);
 
             delay_units = new QLabel("ms", delay_widget);

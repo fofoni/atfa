@@ -118,7 +118,7 @@ public:
         Scenario(
             const container_t& ir = container_t(1,1),
             OOV flearn = VAD, OOV fout = VAD,
-            unsigned d = 100, float vol = .5, bool p = false
+            unsigned d = 30, float vol = .5, bool p = false
         )
           : filter_learning(flearn), filter_output(fout),
             delay(d), volume(vol), paused(p), imp_resp(ir)
