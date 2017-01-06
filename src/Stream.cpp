@@ -357,75 +357,59 @@ void Stream::stop(PaStream *s) {
 #define ATFA_DEBUG
 #ifdef ATFA_DEBUG
 #undef ATFA_DEBUG
+#define ADBG_PASTE(x,y) x##y
+#define MXVAR(NOME) ADBG_PASTE(mx_,NOME)
+#define ADBG_STRINGIFY2(x) #x
+#define ADBG_STRINGIFY(x) ADBG_STRINGIFY2(x)
+#define STRMXVAR(NOME) ADBG_STRINGIFY(MXVAR(NOME))
+#define MKMXVAR(NOME, NOME_MX, III, JJJ, VAL_IJ) do { \
+    std::cout << "Criando " STRMXVAR(NOME) "..." << std::endl; \
+    unsigned long iii=(III), jjj=(JJJ); \
+    mxArray *MXVAR(NOME) = mxCreateDoubleMatrix(iii, jjj, mxREAL); \
+    if (MXVAR(NOME) == NULL) \
+        std::cout << "Erro ao criar " STRMXVAR(NOME) " ." << std::endl; \
+    std::cout << "Populando buffer..." << std::endl; \
+    for (unsigned int j=0; j<jjj; ++j) \
+        for (unsigned int i=0; i<iii; ++i) \
+            buffer[iii*j+i] = (VAL_IJ); \
+    std::cout << "Transferindo buffer -> " STRMXVAR(NOME) " ..." << std::endl; \
+    std::memcpy((void *)(mxGetPr(MXVAR(NOME))), \
+                         (void *)buffer, \
+                         iii*jjj*sizeof(double)); \
+    std::cout << "Escrevendo " STRMXVAR(NOME) " no pmat ..." << std::endl; \
+    if (matPutVariable(pmat, (NOME_MX), MXVAR(NOME)) != 0) \
+        std::cout << "Erro ao gravar " STRMXVAR(NOME) " ." << std::endl; \
+    std::cout << "Liberando memória..." << std::endl; \
+    mxDestroyArray(MXVAR(NOME)); \
+} while (0)
+    //////////////////
     std::cout << "Abrindo arquivo..." << std::endl;
-    MATFile *pmat = matOpen("sampss_out14.mat", "w");
+    MATFile *pmat = matOpen("sampss_jan02.mat", "w");
     if (pmat == NULL)
         std::cout << "Erro ao abrir .mat ." << std::endl;
     constexpr unsigned long SAMPLES_IN_PMAT = 192000;
     static double buffer[128*SAMPLES_IN_PMAT];
-    // /// IN
-    unsigned long sz = std::min(SAMPLES_IN_PMAT, data_in.size());
-    std::cout << "Criando mx_in..." << std::endl;
-    mxArray *mx_in = mxCreateDoubleMatrix(1, sz, mxREAL);
-    if (mx_in == NULL)
-        std::cout << "Erro ao criar mx_in ." << std::endl;
-    std::cout << "Populando buffer..." << std::endl;
-    for (unsigned int i=0; i < sz; ++i)
-        buffer[i] = data_in[i];
-    std::cout << "Transferindo buffer -> mx_in ..." << std::endl;
-    std::memcpy((void *)(mxGetPr(mx_in)), (void *)buffer, sz*sizeof(double));
-    std::cout << "Escrevendo mx_in no pmat ..." << std::endl;
-    if (matPutVariable(pmat, "data_in", mx_in) != 0)
-        std::cout << "Erro ao gravar mx_in ." << std::endl;
-    // /// OUT
-    sz = std::min(SAMPLES_IN_PMAT, data_out.size());
-    std::cout << "Criando mx_out..." << std::endl;
-    mxArray *mx_out = mxCreateDoubleMatrix(1, sz, mxREAL);
-    if (mx_out == NULL)
-        std::cout << "Erro ao criar mx_out ." << std::endl;
-    std::cout << "Populando buffer..." << std::endl;
-    for (unsigned int i=0; i < sz; ++i)
-        buffer[i] = data_out[i];
-    std::cout << "Transferindo buffer -> mx_out ..." << std::endl;
-    std::memcpy((void *)(mxGetPr(mx_out)), (void *)buffer, sz*sizeof(double));
-    std::cout << "Escrevendo mx_out no pmat ..." << std::endl;
-    if (matPutVariable(pmat, "data_out", mx_out) != 0)
-        std::cout << "Erro ao gravar mx_out ." << std::endl;
-    // /// VAD
-    sz = std::min(SAMPLES_IN_PMAT, vad.size());
-    std::cout << "Criando mx_vad..." << std::endl;
-    mxArray *mx_vad = mxCreateDoubleMatrix(1, sz, mxREAL);
-    if (mx_vad == NULL)
-        std::cout << "Erro ao criar mx_vad ." << std::endl;
-    std::cout << "Populando buffer..." << std::endl;
-    for (unsigned int i=0; i < sz; ++i)
-        buffer[i] = vad[i];
-    std::cout << "Transferindo buffer -> mx_vad ..." << std::endl;
-    std::memcpy((void *)(mxGetPr(mx_vad)), (void *)buffer, sz*sizeof(double));
-    std::cout << "Escrevendo mx_vad no pmat ..." << std::endl;
-    if (matPutVariable(pmat, "cpp_vad", mx_vad) != 0)
-        std::cout << "Erro ao gravar mx_vad ." << std::endl;
-    // /// W
-    sz = std::min(SAMPLES_IN_PMAT, blks_in_buf*blk_size);
-    std::cout << "Criando mx_w..." << std::endl;
-    mxArray *mx_w = mxCreateDoubleMatrix(128, sz, mxREAL);
-    if (mx_w == NULL)
-        std::cout << "Erro ao criar mx_w ." << std::endl;
-    std::cout << "Populando buffer..." << std::endl;
-    for (unsigned int i=0; i<sz; ++i)
-        for (unsigned int j=0; j<128; ++j)
-            buffer[128*i+j] = wvec[i][j];
-    std::cout << "Transferindo buffer -> mx_w ..." << std::endl;
-    std::memcpy((void *)(mxGetPr(mx_w)), (void *)buffer, 128*sz*sizeof(double));
-    std::cout << "Escrevendo mx_w no pmat ..." << std::endl;
-    if (matPutVariable(pmat, "wvec", mx_w) != 0)
-        std::cout << "Erro ao gravar mx_w ." << std::endl;
-    // /// /////////////////
-    std::cout << "Liberando memória..." << std::endl;
-    mxDestroyArray(mx_in);
-    mxDestroyArray(mx_out);
-    mxDestroyArray(mx_vad);
-    mxDestroyArray(mx_w);
+    MKMXVAR(in, "data_in",
+            1, std::min(SAMPLES_IN_PMAT, data_in.size()),
+            data_in[j]);
+    MKMXVAR(out, "data_out",
+            1, std::min(SAMPLES_IN_PMAT, data_out.size()),
+            data_out[j]);
+    MKMXVAR(vad, "cpp_vad",
+            1, std::min(SAMPLES_IN_PMAT, vad.size()),
+            vad[j]);
+    MKMXVAR(w, "wvec",
+            128, std::min(SAMPLES_IN_PMAT, blks_in_buf*blk_size),
+            wvec[j][i]);
+    MKMXVAR(Fs, "Fs",
+            1, 1,
+            samplerate);
+    MKMXVAR(delay, "delay_samples",
+            1, 1,
+            delay_samples);
+    MKMXVAR(rir, "cpp_rir",
+            1, std::min(SAMPLES_IN_PMAT, scene.imp_resp.size()),
+            scene.imp_resp[j]);
     std::cout << "Fechando o arquivo..." << std::endl;
     if (matClose(pmat) != 0)
         std::cout << "Erro ao fechar .mat ." << std::endl;

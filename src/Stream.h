@@ -222,7 +222,8 @@ public:
     PaStream *echo();
 
     /// Stops the stream that is running
-    void stop(PaStream *s);
+    // TODO: DEBUG
+    void stop(PaStream *s) __attribute__((optimize("-O0")));
 
     /// Sets the delay parameter, given in miliseconds
     /**

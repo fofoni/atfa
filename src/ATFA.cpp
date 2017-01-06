@@ -21,6 +21,9 @@
  *       permitida, nome, valor default, etc, etc
  */
 
+// TODO: quando a RIR selecionada for o "None", o botão de "show rir
+//       coefficients" tem que estar HABILITADO, e mostrar "rir = [ 1 ]".
+
 extern "C" {
 # include <portaudio.h>
 }
