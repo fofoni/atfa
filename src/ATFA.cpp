@@ -230,7 +230,6 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMinimum(0);
             delay_slider->setMaximum(500);
             delay_slider->setValue(30);
-            // TODO: if playback lags during sliding, disable tracking
             delay_layout->addWidget(delay_slider);
             stream.set_delay(delay_slider->value());
 
@@ -262,7 +261,6 @@ ATFA::ATFA(QWidget *parent) :
             vol_slider->setMinimum(0);
             vol_slider->setMaximum(100);
             vol_slider->setValue(50);
-            // TODO: if playback lags during sliding, disable tracking
             vol_layout->addWidget(vol_slider);
 
             vol_spin = new QSpinBox(vol_widget);

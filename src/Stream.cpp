@@ -34,15 +34,11 @@ extern "C" {
 
 #include <exception>
 
-/// TODO: DEBUG
-#define ATFA_DEBUG
-#ifdef ATFA_DEBUG
-#undef ATFA_DEBUG
-
-#include <iostream>
-#include <algorithm>
-#include <fstream>
-#include <mat.h>
+#ifdef ATFA_LOG_MATLAB
+# include <iostream>
+# include <algorithm>
+# include <fstream>
+# include <mat.h>
 #endif
 
 #include "Stream.h"
@@ -51,8 +47,9 @@ extern "C" {
 #include "AdaptiveFilter.h"
 #include "utils.h"
 
-// TODO: DEBUG
+#ifdef ATFA_LOG_MATLAB
 Stream::sample_t Stream::wvec[Stream::blks_in_buf*Stream::blk_size][128];
+#endif
 
 /// Callback function for dealing with PortAudio
 static int stream_callback(
@@ -353,16 +350,13 @@ void Stream::stop(PaStream *s) {
     SCOUT("rir_thread deleted");
     rir_thread = nullptr;
 
-/// TODO: DEBUG
-#define ATFA_DEBUG
-#ifdef ATFA_DEBUG
-#undef ATFA_DEBUG
-#define ADBG_PASTE(x,y) x##y
-#define MXVAR(NOME) ADBG_PASTE(mx_,NOME)
-#define ADBG_STRINGIFY2(x) #x
-#define ADBG_STRINGIFY(x) ADBG_STRINGIFY2(x)
-#define STRMXVAR(NOME) ADBG_STRINGIFY(MXVAR(NOME))
-#define MKMXVAR(NOME, NOME_MX, III, JJJ, VAL_IJ) do { \
+#ifdef ATFA_LOG_MATLAB
+# define ADBG_PASTE(x,y) x##y
+# define MXVAR(NOME) ADBG_PASTE(mx_,NOME)
+# define ADBG_STRINGIFY2(x) #x
+# define ADBG_STRINGIFY(x) ADBG_STRINGIFY2(x)
+# define STRMXVAR(NOME) ADBG_STRINGIFY(MXVAR(NOME))
+# define MKMXVAR(NOME, NOME_MX, III, JJJ, VAL_IJ) do { \
     std::cout << "Criando " STRMXVAR(NOME) "..." << std::endl; \
     unsigned long iii=(III), jjj=(JJJ); \
     mxArray *MXVAR(NOME) = mxCreateDoubleMatrix(iii, jjj, mxREAL); \
@@ -383,7 +377,7 @@ void Stream::stop(PaStream *s) {
     mxDestroyArray(MXVAR(NOME)); \
 } while (0)
     std::cout << "Abrindo arquivo..." << std::endl;
-    MATFile *pmat = matOpen("sampss_jan02.mat", "w");
+    MATFile *pmat = matOpen("ATFA_LOG_MATLAB.mat", "w");
     if (pmat == NULL)
         std::cout << "Erro ao abrir .mat ." << std::endl;
     constexpr unsigned long SAMPLES_IN_PMAT = 192000;

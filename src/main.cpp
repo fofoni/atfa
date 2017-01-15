@@ -25,7 +25,6 @@ extern "C" {
 }
 
 #include "utils.h"
-#include "Stream.h" // TODO: deletar isso
 
 #include "ATFA.h"
 

@@ -59,6 +59,7 @@ execute_process( COMMAND git describe
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
+#add_definitions( "-DATFA_LOG_MATLAB" )
 
 set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 -Wall -Wextra -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )

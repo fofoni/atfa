@@ -24,8 +24,9 @@ extern "C" {
 #   include <dlfcn.h>
 }
 
-// TODO: DEBUG
-#include <cstring>
+#ifdef ATFA_LOG_MATLAB
+# include <cstring>
+#endif
 
 #include <vector>
 #include <stdexcept>
@@ -161,10 +162,14 @@ public:
         while (read_ptr != read_end_ptr) {
             *out_buf = scene.volume *
                        adapf->get_sample(*adapf_ptr, *read_ptr);
-            {sample_t *it; unsigned n;
-            adapf->get_impresp(&it, &n);
-            std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
-            ++w_ptr;} // TODO: DEBUG
+#ifdef ATFA_LOG_MATLAB
+            {
+                sample_t *it; unsigned n;
+                adapf->get_impresp(&it, &n);
+                std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
+                ++w_ptr;
+            }
+#endif
             ++read_ptr, ++adapf_ptr, ++out_buf;
             if (read_ptr == data_out.end())
                 read_ptr = data_out.begin();
@@ -190,6 +195,12 @@ public:
         blk_offset = current_offset % blk_size;
     }
 
+
+#ifdef ATFA_LOG_MATLAB
+# define ATFA_STREAM_INIT_WPTR w_ptr(0),
+#else
+# define ATFA_STREAM_INIT_WPTR
+#endif
     /// Contructs from a `Scenario` object
     /**
       * Constructs a Stream object from `Scenario` parameters.
@@ -197,7 +208,8 @@ public:
       * \see Scenario
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
-        : w_ptr(0), scene(s), adapf(new AdaptiveFilter<sample_t>()),
+        : ATFA_STREAM_INIT_WPTR
+          scene(s), adapf(new AdaptiveFilter<sample_t>()),
           is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
@@ -209,21 +221,30 @@ public:
         set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
-        {for (auto& w : wvec)
-            for (auto& x : w)
-               x = 0;} // TODO: DEBUG
+#ifdef ATFA_LOG_MATLAB
+        {
+            for (auto& w : wvec)
+                for (auto& x : w)
+                    x = 0;
+        }
+#endif
     }
 
-    // TODO: DEBUG
+#ifdef ATFA_LOG_MATLAB
     static sample_t wvec[blks_in_buf*blk_size][128];
     int w_ptr;
+#endif
 
     /// Runs the stream with predefined scenario parameters.
     PaStream *echo();
 
+#ifdef ATFA_LOG_MATLAB
+# define ATFA_STREAM_STOP_ATTR __attribute__((optimize("-O0")))
+#else
+# define ATFA_STREAM_STOP_ATTR
+#endif
     /// Stops the stream that is running
-    // TODO: DEBUG
-    void stop(PaStream *s) __attribute__((optimize("-O0")));
+    void stop(PaStream *s) ATFA_STREAM_STOP_ATTR;
 
     /// Sets the delay parameter, given in miliseconds
     /**
