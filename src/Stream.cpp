@@ -382,7 +382,6 @@ void Stream::stop(PaStream *s) {
     std::cout << "Liberando memória..." << std::endl; \
     mxDestroyArray(MXVAR(NOME)); \
 } while (0)
-    //////////////////
     std::cout << "Abrindo arquivo..." << std::endl;
     MATFile *pmat = matOpen("sampss_jan02.mat", "w");
     if (pmat == NULL)
