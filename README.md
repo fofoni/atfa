@@ -16,7 +16,3 @@ O executável será colocado no diretório `build/release`.
 
 Para gerar um executável do _Debug Build_, basta substituir o `cd release` por
 `cd debug`. O novo diretório do executável será `build/debug`.
-
-Manual em PDF [aqui][1].
-
-[1]: https://github.com/fofoni/pf/raw/master/doc/latex/refman.pdf

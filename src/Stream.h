@@ -134,7 +134,7 @@ public:
 
     static constexpr unsigned blks_in_buf = 1500;
 
-    static constexpr unsigned blks_in_fft = 8;
+    static constexpr unsigned blks_in_fft = 64;
 
     static constexpr size_t fft_size = blks_in_fft * blk_size;
 
@@ -168,6 +168,8 @@ public:
                 adapf->get_impresp(&it, &n);
                 std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
                 ++w_ptr;
+                // TODO: esse bloco todo tem que ser rodado somente se
+                //       a gente ainda não estourou o buffer do wvec.
             }
 #endif
             ++read_ptr, ++adapf_ptr, ++out_buf;
