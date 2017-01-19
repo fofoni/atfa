@@ -285,6 +285,11 @@ public:
     /// Sets the room impulse response
     void set_filter(const container_t &h, bool substitute = true);
 
+    template<class InputIt>
+    void set_filter(InputIt first, InputIt last, bool substitute = true) {
+        set_filter(container_t(first, last), substitute);
+    }
+
     /// Used for debugging, together with `simulate`
     void dump_state(const container_t speaker_buf) const;
 

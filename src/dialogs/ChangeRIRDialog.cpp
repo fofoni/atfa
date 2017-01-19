@@ -249,7 +249,7 @@ bool ChangeRIRDialog::run() {
                         std::to_string(Stream::fft_size - Stream::blk_size) +
                         std::string(" samples.")).c_str()
                     );
-                atfa->stream.scene.imp_resp.assign(
+                atfa->stream.set_filter(
                             s.array(), s.array() + s.samples());
             }
             atfa->rir_filetype = filetype;
