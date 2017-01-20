@@ -7,7 +7,9 @@ if( NOT CMAKE_BUILD_TYPE )
     set( CMAKE_BUILD_TYPE "Release" )
 endif()
 
+# Configurações
 # set( CMAKE_VERBOSE_MAKEFILE ON )
+set( ATFA_LOG_MATLAB NO )
 
 message(STATUS "=============================================================")
 message(STATUS "${PROJ} -- ${CMAKE_BUILD_TYPE} build")
@@ -37,20 +39,18 @@ if(PortAudio_INCLUDE_DIRS)
 endif(PortAudio_INCLUDE_DIRS)
 
 ### ### ### Setup MATLAB
-# http://www.mathworks.com/help/matlab/matlab_external/ ...
-# ... mat-file-library-and-include-files.html
-set( LINK_MATLAB YES )
+# http://www.mathworks.com/help/matlab/matlab_external/mat-file-library-and-include-files.html
 set( MATLAB_ROOT "/usr/local/MATLAB/MATLAB_Production_Server/R2015a" )
 set( MATLAB_ARCH "glnxa64" )
 set( MATLAB_INCLUDE_DIRS "${MATLAB_ROOT}/extern/include" )
 set( MATLAB_LINK_DIRS "${MATLAB_ROOT}/bin/${MATLAB_ARCH}" )
-if(LINK_MATLAB)
+if(ATFA_LOG_MATLAB)
     include_directories( "${MATLAB_INCLUDE_DIRS}" )
     link_directories( "${MATLAB_LINK_DIRS}" )
     set( MATLAB_LIBS "-lmat -lmx" )
-else(LINK_MATLAB)
+else(ATFA_LOG_MATLAB)
     set( MATLAB_LIBS "" )
-endif(LINK_MATLAB)
+endif(ATFA_LOG_MATLAB)
 
 ### ### ### Setup ATFA
 execute_process( COMMAND git describe
@@ -59,7 +59,9 @@ execute_process( COMMAND git describe
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
-#add_definitions( "-DATFA_LOG_MATLAB" )
+if(ATFA_LOG_MATLAB)
+    add_definitions( "-DATFA_LOG_MATLAB" )
+endif(ATFA_LOG_MATLAB)
 
 set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 -Wall -Wextra -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )
