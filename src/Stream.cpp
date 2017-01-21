@@ -28,6 +28,8 @@
  * https://isocpp.org/wiki/faq/misc-technical-issues#macros-with-multi-stmts
  */
 
+// TODO: rever todos os comentários de documentação
+
 extern "C" {
 #   include <portaudio.h>
 }

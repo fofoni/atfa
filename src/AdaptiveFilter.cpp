@@ -44,10 +44,15 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
     init = get_sym<afi_t>("init");
     close = get_sym<afc_t>("close");
     run = get_sym<afr_t>("run");
-    restart = get_sym<aft_t>("restart");
+    restart = get_sym<afz_t>("restart");
     getw = get_sym<afw_t>("getw");
+    title = get_sym<aft_t>("title");
+    listing = get_sym<afl_t>("listing");
 
     test();
+
+    title_str = (*title)();
+    listing_str = (*listing)();
 
 }
 

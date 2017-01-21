@@ -609,13 +609,7 @@ void ATFA::change_adapf() {
         adapf_show_button->setDisabled(true);
     }
     else {
-        QString small_filename;
-        QRegExp rx("^.*/([^/]*)$");
-        if (rx.indexIn(adapf_file) > -1)
-            small_filename = rx.cap(1);
-        else
-            small_filename = adapf_file;
-        adapf_file_label->setText(small_filename);
+        adapf_file_label->setText(stream.get_adapf_title());
         adapf_show_button->setDisabled(false);
     }
 

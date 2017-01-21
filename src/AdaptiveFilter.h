@@ -29,12 +29,15 @@ class AdaptiveFilter
 
 public:
 
-    // adaptive filter {init, close, run, restart, get w}
+    // adaptive filter {init, close, run, restart,
+    //                  get w, get title, get listing}
     typedef void *(*afi_t)(void);
     typedef int (*afc_t)(void *);
     typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T);
-    typedef void *(*aft_t)(void *);
+    typedef void *(*afz_t)(void *);
     typedef void (*afw_t)(void *, SAMPLE_T **, unsigned *);
+    typedef const char *(*aft_t)(void);
+    typedef const char *(*afl_t)(void);
 
     AdaptiveFilter(std::string dso_path);
     AdaptiveFilter();
@@ -60,6 +63,14 @@ public:
         return path;
     }
 
+    const char *get_title() {
+        return title_str.c_str();
+    }
+
+    const char *get_listing() {
+        return listing_str.c_str();
+    }
+
     static SAMPLE_T placeholder;
 
 private:
@@ -73,14 +84,18 @@ private:
     // no AdapfException (com opção p não mostrar dlerror)
 
     std::string path;
+    std::string title_str;
+    std::string listing_str;
 
     void *lib;
 
     afi_t init;
     afc_t close;
     afr_t run;
-    aft_t restart;
+    afz_t restart;
     afw_t getw;
+    aft_t title;
+    afl_t listing;
 
     void *data;
 
@@ -98,6 +113,15 @@ public:
         what_msg(
             std::string(runtime_error::what()) + ". DSO: " + path
             + " . DL error: " + dlerror
+        )
+    {
+    }
+
+    AdapfException(const std::string& desc,
+                   const std::string& dso_path)
+      : runtime_error(desc), description(desc), dlerror(""), path(dso_path),
+        what_msg(
+            std::string(runtime_error::what()) + ". DSO: " + path + " ."
         )
     {
     }

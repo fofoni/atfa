@@ -319,6 +319,14 @@ public:
         adapf = adapf_new;
     }
 
+    const char *get_adapf_title() {
+        return adapf->get_title();
+    }
+
+    const char *get_adapf_listing() {
+        return adapf->get_listing();
+    }
+
 private:
 
     AdaptiveFilter<sample_t> *adapf;
