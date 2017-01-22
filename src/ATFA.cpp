@@ -589,7 +589,11 @@ void ATFA::show_adapf() {
 
     std::stringstream adapf_html;
     adapf_html << "<span style='font-family: monospace'>";
-    adapf_html << "NOT IMPLEMENTED YET";
+    QString listing = stream.get_adapf_listing();
+    QStringList ll = listing.split(" ");
+    listing = ll.join(QString("&nbsp;"));
+    ll = listing.split("\n");
+    adapf_html << ll.join(QString("<br />")).toUtf8().constData();
     adapf_html << "</span>";
     ShowTextDialog *showrir_dialog = new ShowTextDialog(
                 "Adaptative filtering code", adapf_html.str().c_str(), this);
