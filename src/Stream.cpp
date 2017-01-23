@@ -88,17 +88,14 @@ static float teste2[1024];
   *                             a pointer to the Stream object.
   *
   * \see Stream::echo
-  *
-  * \todo Instead of calling Stream::get_filtered_sample() for each sample, we
-  *       should use the Signal::filter mechanism, which uses the more efficient
-  *       overlap-and-add algorithm. Perhaps we will need to force the
-  *       _frames per buffer_ PortAudio parameter to be of a specific value.
   */
 static int stream_callback(
     const void *in_buf, void *out_buf, unsigned long frames_per_buf,
     const PaStreamCallbackTimeInfo* time_info,
     PaStreamCallbackFlags status_flags, void *user_data
 ) {
+
+    if (frames_per_buf/4 == 0) return paContinue;
 
     Stream * const data = static_cast<Stream *>(user_data);
 
@@ -116,9 +113,7 @@ static int stream_callback(
                      static_cast<Stream::sample_t *>(teste2),
                      frames_per_buf/4);
 
-    if (frames_per_buf/4 == 0) return paContinue;
-
-    ob[0] = teste2[0];
+    ob[0] = teste2[0]; // TODO: interpolar isso aqui direito
     ob[1] = teste2[0];
     ob[2] = teste2[0];
     ob[3] = teste2[0];

@@ -159,18 +159,36 @@ public:
         auto read_end_ptr = (overflow < 0) ?
                     (read_ptr + pa_frames) :
                     (data_out.begin() + overflow);
+        /* Nesse loop, a gente calcula a cada iteração o índice do VAD
+         * correspondente àquela amostra. Tem dois jeitos de otimizar isso:
+         *  "Sem perda": sabendo que o tamanho do bloco do VAD é maior ou igual
+         *               a `pa_frames' (verificar), calcular de antemão onde
+         *               tem VAD e onde não tem, e dividir o loop abaixo em
+         *               dois.
+         *  "Com perda": Calcular um valor único de índice do VAD para a
+         *               primeira das `pa_frames' amostras, e usar esse valor
+         *               pra todas as amostras subsequentes. Ao invés de usar
+         *               a primeira amostra, pode usar a amostra média.
+         */
         while (read_ptr != read_end_ptr) {
+            auto vad_idx = (adapf_ptr-data_in.begin())/blk_size;
             *out_buf = scene.volume *
-                       adapf->get_sample(*adapf_ptr, *read_ptr);
+                       adapf->get_sample(
+                           *adapf_ptr, *read_ptr,
+                           scene.filter_learning==Scenario::On || (
+                               scene.filter_learning==Scenario::VAD &&
+                               vad[vad_idx]
+                           )
+                       );
 #ifdef ATFA_LOG_MATLAB
+            // TODO: esse bloco todo tem que ser rodado somente se
+            //       a gente ainda não estourou o buffer do wvec.
             {
                 sample_t *it; unsigned n;
                 adapf->get_impresp(&it, &n);
                 std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
-                ++w_ptr;
-                // TODO: esse bloco todo tem que ser rodado somente se
-                //       a gente ainda não estourou o buffer do wvec.
             }
+            ++w_ptr;
 #endif
             ++read_ptr, ++adapf_ptr, ++out_buf;
             if (read_ptr == data_out.end())

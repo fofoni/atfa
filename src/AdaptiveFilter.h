@@ -33,7 +33,7 @@ public:
     //                  get w, get title, get listing}
     typedef void *(*afi_t)(void);
     typedef int (*afc_t)(void *);
-    typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T);
+    typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T, int);
     typedef void *(*afz_t)(void *);
 #ifdef ATFA_LOG_MATLAB
     typedef void (*afw_t)(void *, SAMPLE_T **, unsigned *);
@@ -50,8 +50,8 @@ public:
     void initialize_data_structures();
     void destroy_data_structures();
 
-    SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y) {
-        return (*run)(data, x, y);
+    SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y, int learn) {
+        return (*run)(data, x, y, learn);
     }
 
 #ifdef ATFA_LOG_MATLAB
