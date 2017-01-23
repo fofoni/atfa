@@ -64,7 +64,7 @@ public:
         return dummy;
     }
 
-    std::string get_path() {
+    std::string get_path() const {
         return path;
     }
 

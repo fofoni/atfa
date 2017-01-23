@@ -114,13 +114,18 @@ public:
 
         container_t imp_resp;
 
+        std::string rir_file;
+        std::string adapf_file;
+
         Scenario(
-            const container_t& ir = container_t(1,1),
             OOV flearn = On, OOV fout = On,
-            unsigned d = 30, float vol = .5
+            unsigned d = 30, float vol = .5,
+            const container_t& ir = container_t(1,1),
+            const AdaptiveFilter<sample_t>& adapf = AdaptiveFilter<sample_t>()
         )
           : filter_learning(flearn), filter_output(fout),
-            delay(d), volume(vol), imp_resp(ir)
+            delay(d), volume(vol), imp_resp(ir), rir_file(""),
+            adapf_file(adapf.get_path())
         {}
 
     };

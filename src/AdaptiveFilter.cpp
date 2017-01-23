@@ -150,7 +150,7 @@ void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
-  : dummy(true), data(nullptr)
+  : dummy(true), path(""), data(nullptr)
 {
 
     lib = nullptr;
