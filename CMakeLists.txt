@@ -96,5 +96,3 @@ target_link_libraries( atfa
 )
 
 # TODO: write a CPack file for creating .rpms, and etc?
-
-# TODO: Doxygen

@@ -24,6 +24,8 @@
 // TODO: quando a RIR selecionada for o "None", o botão de "show rir
 //       coefficients" tem que estar HABILITADO, e mostrar "rir = [ 1 ]".
 
+// TODO: remover toda as coisas relacionadas a DATABASE rs
+
 extern "C" {
 # include <portaudio.h>
 }
@@ -165,7 +167,7 @@ ATFA::ATFA(QWidget *parent) :
                 "&Disabled (always)", flearn_group);
             flearn_vad_radio = new QRadioButton(
                 "Enabled when &VAD detects action", flearn_group);
-            flearn_vad_radio->setChecked(true);
+            flearn_on_radio->setChecked(true);
             flearn_layout->addWidget(flearn_on_radio);
             flearn_layout->addWidget(flearn_off_radio);
             flearn_layout->addWidget(flearn_vad_radio);
@@ -174,6 +176,7 @@ ATFA::ATFA(QWidget *parent) :
         left_layout->addWidget(flearn_group);
 
         zero_button = new QPushButton("&Reset filter state", main_widget);
+        zero_button->setDisabled(true);
         left_layout->addWidget(zero_button);
 
         fout_group = new QGroupBox("Filter ou&tput", main_widget);
@@ -182,7 +185,7 @@ ATFA::ATFA(QWidget *parent) :
             fout_off_radio = new QRadioButton("Disabled (alwa&ys)", fout_group);
             fout_vad_radio = new QRadioButton(
                 "Enabled w&hen VAD detects action", fout_group);
-            fout_vad_radio->setChecked(true);
+            fout_on_radio->setChecked(true);
             fout_layout->addWidget(fout_on_radio);
             fout_layout->addWidget(fout_off_radio);
             fout_layout->addWidget(fout_vad_radio);
@@ -381,7 +384,50 @@ ATFA::ATFA(QWidget *parent) :
 
 void ATFA::newscene() {
 
+    if (stream.running()) {
+        QMessageBox msg_box;
+        msg_box.setText("Can't change scenario while simulation is running.");
+        msg_box.setWindowTitle("ATFA [info]");
+        msg_box.setIcon(QMessageBox::Information);
+        msg_box.exec();
+        return;
+    }
 
+    stream.scene = Stream::Scenario();
+
+    switch (stream.scene.filter_learning) {
+    case Stream::Scenario::On:
+        flearn_on_radio->setChecked(true);
+        break;
+    case Stream::Scenario::Off:
+        flearn_off_radio->setChecked(true);
+        break;
+    case Stream::Scenario::VAD:
+        flearn_vad_radio->setChecked(true);
+        break;
+    default:
+        throw std::runtime_error(
+                    "stream.scene.filter_learning has wrong value");
+    }
+
+    delay_slider->setValue(stream.scene.delay);
+    stream.set_delay(stream.scene.delay);
+
+    vol_slider->setValue(100*stream.scene.volume);
+
+    stream.set_filter(stream.scene.imp_resp);
+    rir_source = NoRIR;
+    rir_filetype = ATFA::None;
+    rir_file = "";
+    database_index = -1;
+    rir_type_label->setText("None");
+    rir_show_button->setDisabled(true);
+
+    stream.setAdapfAlgorithm(new AdaptiveFilter<Stream::sample_t>());
+    adapf_is_dummy = true;
+    adapf_file = "";
+    adapf_file_label->setText("None");
+    adapf_show_button->setDisabled(true);
 
 }
 
@@ -481,6 +527,8 @@ void ATFA::play_clicked() {
 
         rir_change_button->setDisabled(false);
         adapf_change_button->setDisabled(false);
+        zero_button->setDisabled(true);
+        newscene_act->setDisabled(false);
 
         vad_indicator_led->setLEDStatus(false);
 
@@ -489,6 +537,8 @@ void ATFA::play_clicked() {
 
         rir_change_button->setDisabled(true);
         adapf_change_button->setDisabled(true);
+        zero_button->setDisabled(false);
+        newscene_act->setDisabled(true);
 
         pastream = stream.echo();
 

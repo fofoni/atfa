@@ -112,17 +112,15 @@ public:
 
         float volume; // 0 -- 1
 
-        bool paused;
-
         container_t imp_resp;
 
         Scenario(
             const container_t& ir = container_t(1,1),
-            OOV flearn = VAD, OOV fout = VAD,
-            unsigned d = 30, float vol = .5, bool p = false
+            OOV flearn = On, OOV fout = On,
+            unsigned d = 30, float vol = .5
         )
           : filter_learning(flearn), filter_output(fout),
-            delay(d), volume(vol), paused(p), imp_resp(ir)
+            delay(d), volume(vol), imp_resp(ir)
         {}
 
     };
