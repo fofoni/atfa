@@ -78,6 +78,10 @@ public:
 
     static SAMPLE_T placeholder;
 
+    void reset_state() {
+        data = (*restart)(data);
+    }
+
 private:
 
     bool dummy;

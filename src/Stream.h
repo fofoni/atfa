@@ -345,6 +345,10 @@ public:
         return adapf->get_listing();
     }
 
+    void reset_adapf_state() {
+        adapf->reset_state();
+    }
+
 private:
 
     AdaptiveFilter<sample_t> *adapf;

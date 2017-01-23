@@ -450,6 +450,7 @@ void ATFA::flearn_vad_toggled(bool t) {
 }
 
 void ATFA::zero_filter_clicked() {
+    stream.reset_adapf_state();
     statusBar()->showMessage("Adaptive filter memory zeroed.");
 }
 
