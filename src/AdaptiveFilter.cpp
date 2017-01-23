@@ -27,8 +27,10 @@ extern "C" {
 
 #include "AdaptiveFilter.h"
 
+#ifdef ATFA_LOG_MATLAB
 template <typename SAMPLE_T>
 SAMPLE_T AdaptiveFilter<SAMPLE_T>::placeholder = 0;
+#endif
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
@@ -45,7 +47,9 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
     close = get_sym<afc_t>("close");
     run = get_sym<afr_t>("run");
     restart = get_sym<afz_t>("restart");
+#ifdef ATFA_LOG_MATLAB
     getw = get_sym<afw_t>("getw");
+#endif
     title = get_sym<aft_t>("title");
     listing = get_sym<afl_t>("listing");
 
@@ -130,6 +134,7 @@ int dummy_close(void *) { return 1; }
 void *dummy_restart(void *) { return nullptr; }
 template <typename SAMPLE_T>
 SAMPLE_T dummy_run(void *, SAMPLE_T, SAMPLE_T y) { return y; }
+#ifdef ATFA_LOG_MATLAB
 template <typename SAMPLE_T>
 void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
     // *begin will be used as source in a call to std::memcpy.
@@ -141,6 +146,7 @@ void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
     *begin = &AdaptiveFilter<SAMPLE_T>::placeholder;
     *n = 0;
 }
+#endif
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
@@ -153,7 +159,9 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
     close = &dummy_close;
     run = &dummy_run<SAMPLE_T>;
     restart = &dummy_restart;
+#ifdef ATFA_LOG_MATLAB
     getw = &dummy_getw<SAMPLE_T>;
+#endif
 
 }
 

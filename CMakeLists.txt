@@ -8,8 +8,8 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # Configurações
-# set( CMAKE_VERBOSE_MAKEFILE ON )
-set( ATFA_LOG_MATLAB NO )
+#set( CMAKE_VERBOSE_MAKEFILE ON )
+#set( ATFA_LOG_MATLAB ON )
 
 message(STATUS "=============================================================")
 message(STATUS "${PROJ} -- ${CMAKE_BUILD_TYPE} build")

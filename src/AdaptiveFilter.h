@@ -35,7 +35,9 @@ public:
     typedef int (*afc_t)(void *);
     typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T);
     typedef void *(*afz_t)(void *);
+#ifdef ATFA_LOG_MATLAB
     typedef void (*afw_t)(void *, SAMPLE_T **, unsigned *);
+#endif
     typedef const char *(*aft_t)(void);
     typedef const char *(*afl_t)(void);
 
@@ -51,9 +53,12 @@ public:
     SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y) {
         return (*run)(data, x, y);
     }
+
+#ifdef ATFA_LOG_MATLAB
     void get_impresp(SAMPLE_T **begin, unsigned *n) {
         (*getw)(data, begin, n);
     }
+#endif
 
     bool is_dummy() {
         return dummy;
@@ -93,7 +98,9 @@ private:
     afc_t close;
     afr_t run;
     afz_t restart;
+#ifdef ATFA_LOG_MATLAB
     afw_t getw;
+#endif
     aft_t title;
     afl_t listing;
 
