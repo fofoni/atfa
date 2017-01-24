@@ -18,6 +18,7 @@
 
 #include "../ATFA.h"
 #include "../widgets/FileSelectWidget.h"
+#include "../Signal.h"
 
 class ChangeRIRDialog : public QDialog
 {
@@ -29,9 +30,15 @@ public:
 
     bool validate_everything();
 
-private:
-    ATFA *atfa;
+    static Stream::container_t parse_txt(const QString &txt);
 
+    static void err_dialog(const QString &err_msg, QWidget *p = 0);
+
+    ATFA::RIR_source_t get_source() { return final_source; }
+    QString get_filename() { return final_filename; }
+    QString get_literal() { return final_literal; }
+
+private:
     QComboBox *choose_combo;
 
     QLabel *none_label;
@@ -47,7 +54,9 @@ private:
 
     QDialogButtonBox *button_box;
 
-    void err_dialog(const QString &err_msg);
+    ATFA::RIR_source_t final_source;
+    QString final_filename;
+    QString final_literal;
 
 private slots:
     void set_rir_source(int n);

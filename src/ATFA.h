@@ -14,6 +14,7 @@
 #include <QtWidgets>
 #include <QMainWindow>
 
+#include "Signal.h"
 #include "Stream.h"
 #include "widgets/LEDIndicatorWidget.h"
 #include "dialogs/ChangeAlgorithmDialog.h"
@@ -33,7 +34,7 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    enum RIR_source_t {NoRIR, Literal, Database, File};
+    enum RIR_source_t {NoRIR=0, Literal, Database, File};
     enum RIR_filetype_t {None, MAT, WAV};
 
     RIR_source_t rir_source;
@@ -139,8 +140,36 @@ private:
         QPushButton *adapf_show_button;
         QPushButton *adapf_change_button;
 
+    void set_stream_rir(const Stream::container_t &h);
+    void set_stream_rir(Signal h);
+    void set_new_rir(RIR_source_t source, QString txt, QString filename);
+
     friend class ChangeAlgorithmDialog;
 
+};
+
+class RIRException: public std::runtime_error {
+public:
+    RIRException(const std::string& desc)
+        : runtime_error(std::string("RIR error: ") + desc) {}
+};
+
+class RIRParseException: public RIRException {
+public:
+    RIRParseException(const std::string& desc)
+        : RIRException(std::string("Parse error: ") + desc) {}
+};
+
+class RIRSizeException: public RIRException {
+public:
+    RIRSizeException(const std::string& desc)
+        : RIRException(std::string("Size error: ") + desc) {}
+};
+
+class RIRInvalidException: public RIRException {
+public:
+    RIRInvalidException(const std::string& desc)
+        : RIRException(std::string("Invalid data: ") + desc) {}
 };
 
 #endif // ATFA_H

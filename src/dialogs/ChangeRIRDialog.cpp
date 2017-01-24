@@ -17,11 +17,10 @@
 
 #include "ChangeRIRDialog.h"
 #include "../widgets/FileSelectWidget.h"
-#include "../Signal.h"
 #include "../Stream.h"
 
 ChangeRIRDialog::ChangeRIRDialog(ATFA *parent) :
-    QDialog(parent), atfa(parent)
+    QDialog(parent)
 {
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -137,131 +136,35 @@ ChangeRIRDialog::ChangeRIRDialog(ATFA *parent) :
 
 }
 
-void ChangeRIRDialog::err_dialog(const QString& err_msg) {
-    QMessageBox msg_box(parentWidget());
+void ChangeRIRDialog::err_dialog(const QString& err_msg, QWidget *p) {
+    QMessageBox msg_box(p);
     msg_box.setText(err_msg);
     msg_box.setWindowTitle("ATFA - Change RIR [info]");
     msg_box.setIcon(QMessageBox::Critical);
     msg_box.exec();
 }
 
+Stream::container_t ChangeRIRDialog::parse_txt(const QString& txt) {
+    FloatStream fs = new std::istringstream(txt.toUtf8().constData());
+    Stream::container_t h;
+    while (fs.err_flag == 0)
+        h.push_back(fs.get());
+    if (fs.err_flag == 1)
+        throw RIRParseException("Non-conforming input data.");
+    h.pop_back(); // remove trailing zero
+    return h;
+}
+
 bool ChangeRIRDialog::run() {
-    /// TODO: fazer um backup do atfa->stream.scene antes de sair modificando
-    /// tudo, pq várias vezes a gente tá modificando pra depois parar no meio
-    /// dizendo que deu erro, e deixando o estado sujo.
     if (exec() == QDialog::Rejected)
         return false;
-    switch (choose_combo->currentIndex()) {
-    case 0: // Nothing chosen
+    int ccci = choose_combo->currentIndex();
+    if (ccci == 0)
         return false;
-    case 1: // No RIR
-        atfa->stream.set_filter(std::vector<Stream::sample_t>(1,1));
-        atfa->rir_source = ATFA::NoRIR;
-        atfa->rir_filetype = ATFA::None;
-        atfa->rir_file = "";
-        atfa->database_index = -1;
-        return true;
-    case 2: // Literal
-        {
-            FloatStream fs = new std::istringstream(
-                literal_edit->toPlainText().toUtf8().constData());
-            Stream::container_t h;
-            while (fs.err_flag == 0)
-                h.push_back(fs.get());
-            if (fs.err_flag == 1) {
-                err_dialog("Error parsing vector input. Please try again.");
-                return false;
-            }
-            h.pop_back(); // remove trailing zero
-            if (h.size() >= Stream::fft_size - Stream::blk_size)
-                err_dialog(
-                    (std::string("RIR deve ter no máximo ") +
-                    std::to_string(Stream::fft_size - Stream::blk_size) +
-                    std::string(" samples.")).c_str()
-                );
-            atfa->stream.set_filter(h);
-        }
-        atfa->rir_source = ATFA::Literal;
-        atfa->rir_filetype = ATFA::None;
-        atfa->rir_file = "";
-        atfa->database_index = -1;
-        return true;
-    case 3: // database
-        return false;
-    case 4: // file
-        {
-            /// TODO: a libsndfile aceita outros tipos, além de WAV.
-            /// (olhar documentação do Signal::Signal(const std::string&)
-            /// TODO: deixar as err_dialog's mais descritivas.
-            ATFA::RIR_filetype_t filetype;
-            QString filename = file_select->text();
-
-            QRegExp rx_m  ("*.m",   Qt::CaseInsensitive, QRegExp::Wildcard);
-            QRegExp rx_wav("*.wav", Qt::CaseInsensitive, QRegExp::Wildcard);
-            if (rx_m.exactMatch(filename))
-                filetype = ATFA::MAT;
-            else if (rx_wav.exactMatch(filename))
-                filetype = ATFA::WAV;
-            else {
-                err_dialog("Please, choose a *.m or *.wav file.");
-                return false;
-            }
-
-            if (filetype == ATFA::MAT) {
-                QFile file(filename);
-                if (!file.open(QIODevice::ReadOnly)) {
-                    err_dialog("Error opening file.");
-                    return false;
-                }
-                FloatStream fs = new std::istringstream(
-                            file.readAll().constData());
-                Stream::container_t h;
-                while (fs.err_flag == 0)
-                    h.push_back(fs.get());
-                if (fs.err_flag == 1) {
-                    err_dialog("Error parsing file contents."
-                               " Please try again.");
-                    return false;
-                }
-                h.pop_back(); // remove trailing zero
-                if (h.size() >= Stream::fft_size - Stream::blk_size)
-                    err_dialog(
-                        (std::string("RIR deve ter no máximo ") +
-                        std::to_string(Stream::fft_size - Stream::blk_size) +
-                        std::string(" samples.")).c_str()
-                    );
-                atfa->stream.set_filter(h);
-            }
-            else {
-                Signal s;
-                try {
-                    Signal sig_from_file(filename.toUtf8().constData());
-                    s = sig_from_file;
-                }
-                catch (const FileError&) {
-                    err_dialog("Error opening file.");
-                    return false;
-                }
-                s.set_samplerate(atfa->stream.samplerate);
-                if (s.samples() >= Stream::fft_size - Stream::blk_size)
-                    err_dialog(
-                        (std::string("RIR deve ter no máximo ") +
-                        std::to_string(Stream::fft_size - Stream::blk_size) +
-                        std::string(" samples.")).c_str()
-                    );
-                atfa->stream.set_filter(
-                            s.array(), s.array() + s.samples());
-            }
-            atfa->rir_filetype = filetype;
-            atfa->rir_source = ATFA::File;
-            atfa->rir_file = filename;
-            atfa->database_index = -1;
-        }
-        return true;
-    }
-    // should never be reached
-    /// TODO: if DEGUB, stderr << "deu ruim";
-    return false;
+    final_source = ATFA::RIR_source_t(ccci - 1);
+    final_filename = file_select->text();
+    final_literal = literal_edit->toPlainText();
+    return true;
 }
 
 void ChangeRIRDialog::set_rir_source(int n) {

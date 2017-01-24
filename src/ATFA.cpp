@@ -599,11 +599,94 @@ void ATFA::show_rir() {
 
 }
 
+void ATFA::set_stream_rir(const Stream::container_t &h) {
+    try {
+        stream.set_filter(h);
+    }
+    catch (const std::length_error& e) {
+        throw RIRSizeException(e.what());
+    }
+}
+
+void ATFA::set_stream_rir(Signal h) {
+    h.set_samplerate(stream.samplerate);
+    try {
+        stream.set_filter(h.array(), h.array() + h.samples());
+    }
+    catch (const std::length_error& e) {
+        throw RIRSizeException(e.what());
+    }
+}
+
+void ATFA::set_new_rir(RIR_source_t source, QString txt, QString filename) {
+    switch (source) {
+    case ATFA::NoRIR:
+        set_stream_rir(Stream::container_t(1,1));
+        rir_source = ATFA::NoRIR;
+        rir_filetype = ATFA::None;
+        rir_file = "";
+        database_index = -1;
+        break;
+    case ATFA::Literal:
+        set_stream_rir(ChangeRIRDialog::parse_txt(txt));
+        rir_source = ATFA::Literal;
+        rir_filetype = ATFA::None;
+        rir_file = "";
+        database_index = -1;
+        break;
+    case ATFA::Database:
+        throw RIRInvalidException("Not implemented.");
+    case ATFA::File:
+        {
+            /// TODO: a libsndfile aceita outros tipos, além de WAV.
+            /// (olhar documentação do Signal::Signal(const std::string&)
+            /// TODO: deixar as err_dialog's mais descritivas.
+            ATFA::RIR_filetype_t filetype;
+            QRegExp rx_m  ("*.m",   Qt::CaseInsensitive, QRegExp::Wildcard);
+            QRegExp rx_wav("*.wav", Qt::CaseInsensitive, QRegExp::Wildcard);
+            if (rx_m.exactMatch(filename))
+                filetype = ATFA::MAT;
+            else if (rx_wav.exactMatch(filename))
+                filetype = ATFA::WAV;
+            else
+                throw RIRInvalidException("RIR file must be *.m or *.wav.");
+            if (filetype == ATFA::MAT) {
+                QFile file(filename);
+                if (!file.open(QIODevice::ReadOnly))
+                    throw RIRInvalidException("Error opening RIR file.");
+                set_stream_rir(ChangeRIRDialog::parse_txt(
+                                   file.readAll().constData()));
+            }
+            else {
+                Signal s;
+                try {
+                    Signal sig_from_file(filename.toUtf8().constData());
+                    s = sig_from_file;
+                }
+                catch (const FileError&) {
+                    throw RIRInvalidException("Error opening file.");
+                }
+                set_stream_rir(s);
+            }
+            rir_filetype = filetype;
+            rir_source = ATFA::File; // TODO: ORGANIZAR ISSO AQUI (PASSAR P DENTRO DO SCENE)
+            rir_file = filename;
+            database_index = -1;
+        }
+        break;
+    default:
+        throw std::runtime_error("Invalid source.");
+    }
+}
+
 void ATFA::change_rir() {
 
     ChangeRIRDialog *chrir_dialog = new ChangeRIRDialog(this);
     if (!chrir_dialog->run())
         return;
+
+    set_new_rir(chrir_dialog->get_source(), chrir_dialog->get_literal(),
+                chrir_dialog->get_filename());
 
     switch (rir_source) {
     case NoRIR:
