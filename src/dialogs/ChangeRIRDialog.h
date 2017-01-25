@@ -45,8 +45,6 @@ private:
     QWidget *literal_widget;
         QLabel *literal_label;
         QTextEdit *literal_edit;
-    QWidget *database_widget;
-        QLabel *database_label;
     QWidget *file_widget;
         QLabel *file_directions_label;
         QLabel *file_label;

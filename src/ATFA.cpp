@@ -24,8 +24,6 @@
 // TODO: quando a RIR selecionada for o "None", o botão de "show rir
 //       coefficients" tem que estar HABILITADO, e mostrar "rir = [ 1 ]".
 
-// TODO: remover toda as coisas relacionadas a DATABASE rs
-
 extern "C" {
 # include <portaudio.h>
 }
@@ -41,7 +39,7 @@ extern "C" {
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    rir_source(NoRIR), rir_filetype(None), rir_file(""), database_index(-1),
+    rir_source(NoRIR), rir_filetype(None), rir_file(""),
     adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
@@ -419,7 +417,6 @@ void ATFA::newscene() {
     rir_source = NoRIR;
     rir_filetype = ATFA::None;
     rir_file = "";
-    database_index = -1;
     rir_type_label->setText("None");
     rir_show_button->setDisabled(true);
 
@@ -625,17 +622,13 @@ void ATFA::set_new_rir(RIR_source_t source, QString txt, QString filename) {
         rir_source = ATFA::NoRIR;
         rir_filetype = ATFA::None;
         rir_file = "";
-        database_index = -1;
         break;
     case ATFA::Literal:
         set_stream_rir(ChangeRIRDialog::parse_txt(txt));
         rir_source = ATFA::Literal;
         rir_filetype = ATFA::None;
         rir_file = "";
-        database_index = -1;
         break;
-    case ATFA::Database:
-        throw RIRInvalidException("Not implemented.");
     case ATFA::File:
         {
             /// TODO: a libsndfile aceita outros tipos, além de WAV.
@@ -671,7 +664,6 @@ void ATFA::set_new_rir(RIR_source_t source, QString txt, QString filename) {
             rir_filetype = filetype;
             rir_source = ATFA::File; // TODO: ORGANIZAR ISSO AQUI (PASSAR P DENTRO DO SCENE)
             rir_file = filename;
-            database_index = -1;
         }
         break;
     default:
@@ -696,11 +688,6 @@ void ATFA::change_rir() {
     case Literal:
         rir_type_label->setText("Literal");
         rir_show_button->setDisabled(false);
-        break;
-    case Database:
-        // rir_type_label->setText( database file-name and database index );
-        rir_type_label->setText("NOT IMPLEMENTED YET");
-        rir_show_button->setDisabled(true);
         break;
     case File:
         {

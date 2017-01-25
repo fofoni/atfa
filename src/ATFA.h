@@ -34,13 +34,12 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    enum RIR_source_t {NoRIR=0, Literal, Database, File};
+    enum RIR_source_t {NoRIR=0, Literal, File};
     enum RIR_filetype_t {None, MAT, WAV};
 
     RIR_source_t rir_source;
     RIR_filetype_t rir_filetype;
     QString rir_file;
-    int database_index;
 
     bool adapf_is_dummy;
     QString adapf_file;

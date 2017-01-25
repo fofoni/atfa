@@ -34,7 +34,6 @@ ChangeRIRDialog::ChangeRIRDialog(ATFA *parent) :
         choose_combo->addItem("");
         choose_combo->addItem("None");
         choose_combo->addItem("Literal");
-        choose_combo->addItem("Database file");
         choose_combo->addItem("RIR file");
         choose_layout->addWidget(choose_combo);
 
@@ -67,21 +66,6 @@ ChangeRIRDialog::ChangeRIRDialog(ATFA *parent) :
     literal_widget->setLayout(literal_layout);
     layout->addWidget(literal_widget);
     literal_widget->hide();
-
-    database_widget = new QWidget(this);
-    QHBoxLayout *database_layout = new QHBoxLayout(database_widget);
-
-        database_label = new QLabel("Choose a RIR-database file:",
-                                    database_widget);
-        database_layout->addWidget(database_label);
-
-        QLabel *database_button_placeholder = new QLabel("NOT IMPLEMENTED YET",
-                                                         database_widget);
-        database_layout->addWidget(database_button_placeholder);
-
-    database_widget->setLayout(database_layout);
-    layout->addWidget(database_widget);
-    database_widget->hide();
 
     file_widget = new QWidget(this);
     QVBoxLayout *file_layout = new QVBoxLayout(file_widget);
@@ -172,31 +156,21 @@ void ChangeRIRDialog::set_rir_source(int n) {
     case 0:
         none_label->hide();
         literal_widget->hide();
-        database_widget->hide();
         file_widget->hide();
         break;
     case 1:
         literal_widget->hide();
-        database_widget->hide();
         file_widget->hide();
         none_label->show();
         break;
     case 2:
         none_label->hide();
-        database_widget->hide();
         file_widget->hide();
         literal_widget->show();
         break;
     case 3:
         none_label->hide();
         literal_widget->hide();
-        file_widget->hide();
-        database_widget->show();
-        break;
-    case 4:
-        none_label->hide();
-        literal_widget->hide();
-        database_widget->hide();
         file_widget->show();
         break;
     }
@@ -284,9 +258,7 @@ bool ChangeRIRDialog::validate_everything() {
             fs.get();
         return (fs.err_flag != 1);
     }
-    case 3: // database
-        return false;
-    case 4: // file
+    case 3: // file
         return !file_select->text().isEmpty();
     }
     // should never be reached
