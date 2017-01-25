@@ -46,6 +46,9 @@ public:
 
     bool muted;
 
+    constexpr static int delay_min = 10;
+    constexpr static int delay_max = 500;
+
 private slots:
     // file
     void newscene();

@@ -228,15 +228,15 @@ ATFA::ATFA(QWidget *parent) :
 
             delay_slider = new QSlider(Qt::Horizontal, delay_widget);
             delay_slider->setMinimumWidth(200);
-            delay_slider->setMinimum(0);
-            delay_slider->setMaximum(500);
+            delay_slider->setMinimum(delay_min);
+            delay_slider->setMaximum(delay_max);
             delay_slider->setValue(30);
             delay_layout->addWidget(delay_slider);
             stream.set_delay(delay_slider->value());
 
             delay_spin = new QSpinBox(delay_widget);
-            delay_spin->setMinimum(0);
-            delay_spin->setMaximum(500);
+            delay_spin->setMinimum(delay_min);
+            delay_spin->setMaximum(delay_max);
             delay_spin->setFixedWidth(60);
             delay_spin->setValue(30);
             delay_layout->addWidget(delay_spin);
