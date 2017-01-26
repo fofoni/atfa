@@ -34,10 +34,8 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    enum RIR_filetype_t {None, MAT, WAV};
-
     Scene::RIR_source_t rir_source;
-    RIR_filetype_t rir_filetype;
+    Scene::RIR_filetype_t rir_filetype;
     QString rir_file;
 
     bool adapf_is_dummy;

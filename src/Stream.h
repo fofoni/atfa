@@ -106,6 +106,11 @@ public:
         };
 
         enum RIR_source_t {NoRIR, Literal, File};
+        enum RIR_filetype_t {None, MAT, WAV};
+        // TODO: esse "MAT" deveria se chamar "MFile", pq na verdade ele é
+        //       uma M-file (*.m) e não um arquivo *.mat (arquivo MAT é
+        //       outra coisa);
+        // TODO: fazer ele aceitar, além de {None,MFile,WAV}, arquivos .mat
 
         OOV filter_learning;
         OOV filter_output;

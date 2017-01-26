@@ -39,7 +39,7 @@ extern "C" {
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    rir_source(Scene::NoRIR), rir_filetype(None), rir_file(""),
+    rir_source(Scene::NoRIR), rir_filetype(Scene::None), rir_file(""),
     adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
@@ -415,7 +415,7 @@ void ATFA::newscene() {
 
     stream.set_filter(stream.scene.imp_resp);
     rir_source = Scene::NoRIR;
-    rir_filetype = ATFA::None;
+    rir_filetype = Scene::None;
     rir_file = "";
     rir_type_label->setText("None");
     rir_show_button->setDisabled(true);
@@ -621,13 +621,13 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
     case Scene::NoRIR:
         set_stream_rir(Stream::container_t(1,1));
         rir_source = Scene::NoRIR;
-        rir_filetype = ATFA::None;
+        rir_filetype = Scene::None;
         rir_file = "";
         break;
     case Scene::Literal:
         set_stream_rir(ChangeRIRDialog::parse_txt(txt));
         rir_source = Scene::Literal;
-        rir_filetype = ATFA::None;
+        rir_filetype = Scene::None;
         rir_file = "";
         break;
     case Scene::File:
@@ -635,16 +635,16 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
             /// TODO: a libsndfile aceita outros tipos, além de WAV.
             /// (olhar documentação do Signal::Signal(const std::string&)
             /// TODO: deixar as err_dialog's mais descritivas.
-            ATFA::RIR_filetype_t filetype;
+            Scene::RIR_filetype_t filetype;
             QRegExp rx_m  ("*.m",   Qt::CaseInsensitive, QRegExp::Wildcard);
             QRegExp rx_wav("*.wav", Qt::CaseInsensitive, QRegExp::Wildcard);
             if (rx_m.exactMatch(filename))
-                filetype = ATFA::MAT;
+                filetype = Scene::MAT;
             else if (rx_wav.exactMatch(filename))
-                filetype = ATFA::WAV;
+                filetype = Scene::WAV;
             else
                 throw RIRInvalidException("RIR file must be *.m or *.wav.");
-            if (filetype == ATFA::MAT) {
+            if (filetype == Scene::MAT) {
                 QFile file(filename);
                 if (!file.open(QIODevice::ReadOnly))
                     throw RIRInvalidException("Error opening RIR file.");
