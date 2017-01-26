@@ -105,6 +105,8 @@ public:
             VAD  ///< enabled when VAD detects voice
         };
 
+        enum RIR_source_t {NoRIR, Literal, File};
+
         OOV filter_learning;
         OOV filter_output;
 
@@ -440,5 +442,7 @@ private:
     LEDIndicatorWidget *led_widget;
 
 };
+
+using Scene = Stream::Scenario;
 
 #endif // STREAM_H

@@ -145,7 +145,7 @@ bool ChangeRIRDialog::run() {
     int ccci = choose_combo->currentIndex();
     if (ccci == 0)
         return false;
-    final_source = ATFA::RIR_source_t(ccci - 1);
+    final_source = Scene::RIR_source_t(ccci - 1);
     final_filename = file_select->text();
     final_literal = literal_edit->toPlainText();
     return true;

@@ -39,7 +39,7 @@ extern "C" {
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    rir_source(NoRIR), rir_filetype(None), rir_file(""),
+    rir_source(Scene::NoRIR), rir_filetype(None), rir_file(""),
     adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
@@ -414,7 +414,7 @@ void ATFA::newscene() {
     vol_slider->setValue(100*stream.scene.volume);
 
     stream.set_filter(stream.scene.imp_resp);
-    rir_source = NoRIR;
+    rir_source = Scene::NoRIR;
     rir_filetype = ATFA::None;
     rir_file = "";
     rir_type_label->setText("None");
@@ -615,21 +615,22 @@ void ATFA::set_stream_rir(Signal h) {
     }
 }
 
-void ATFA::set_new_rir(RIR_source_t source, QString txt, QString filename) {
+void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
+                       QString filename) {
     switch (source) {
-    case ATFA::NoRIR:
+    case Scene::NoRIR:
         set_stream_rir(Stream::container_t(1,1));
-        rir_source = ATFA::NoRIR;
+        rir_source = Scene::NoRIR;
         rir_filetype = ATFA::None;
         rir_file = "";
         break;
-    case ATFA::Literal:
+    case Scene::Literal:
         set_stream_rir(ChangeRIRDialog::parse_txt(txt));
-        rir_source = ATFA::Literal;
+        rir_source = Scene::Literal;
         rir_filetype = ATFA::None;
         rir_file = "";
         break;
-    case ATFA::File:
+    case Scene::File:
         {
             /// TODO: a libsndfile aceita outros tipos, além de WAV.
             /// (olhar documentação do Signal::Signal(const std::string&)
@@ -662,7 +663,7 @@ void ATFA::set_new_rir(RIR_source_t source, QString txt, QString filename) {
                 set_stream_rir(s);
             }
             rir_filetype = filetype;
-            rir_source = ATFA::File; // TODO: ORGANIZAR ISSO AQUI (PASSAR P DENTRO DO SCENE)
+            rir_source = Scene::File; // TODO: ORGANIZAR ISSO AQUI (PASSAR P DENTRO DO SCENE)
             rir_file = filename;
         }
         break;
@@ -681,15 +682,15 @@ void ATFA::change_rir() {
                 chrir_dialog->get_filename());
 
     switch (rir_source) {
-    case NoRIR:
+    case Scene::NoRIR:
         rir_type_label->setText("None");
         rir_show_button->setDisabled(true);
         break;
-    case Literal:
+    case Scene::Literal:
         rir_type_label->setText("Literal");
         rir_show_button->setDisabled(false);
         break;
-    case File:
+    case Scene::File:
         {
             QString small_filename;
             QRegExp rx("^.*/([^/]*)$");

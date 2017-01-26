@@ -34,7 +34,7 @@ public:
 
     static void err_dialog(const QString &err_msg, QWidget *p = 0);
 
-    ATFA::RIR_source_t get_source() { return final_source; }
+    Scene::RIR_source_t get_source() { return final_source; }
     QString get_filename() { return final_filename; }
     QString get_literal() { return final_literal; }
 
@@ -52,7 +52,7 @@ private:
 
     QDialogButtonBox *button_box;
 
-    ATFA::RIR_source_t final_source;
+    Scene::RIR_source_t final_source;
     QString final_filename;
     QString final_literal;
 

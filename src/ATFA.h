@@ -34,10 +34,9 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    enum RIR_source_t {NoRIR=0, Literal, File};
     enum RIR_filetype_t {None, MAT, WAV};
 
-    RIR_source_t rir_source;
+    Scene::RIR_source_t rir_source;
     RIR_filetype_t rir_filetype;
     QString rir_file;
 
@@ -144,7 +143,7 @@ private:
 
     void set_stream_rir(const Stream::container_t &h);
     void set_stream_rir(Signal h);
-    void set_new_rir(RIR_source_t source, QString txt, QString filename);
+    void set_new_rir(Scene::RIR_source_t source, QString txt, QString filename);
 
     friend class ChangeAlgorithmDialog;
 
