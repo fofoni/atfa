@@ -39,7 +39,6 @@ extern "C" {
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    rir_source(Scene::NoRIR), rir_filetype(Scene::None), rir_file(""),
     adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
@@ -414,9 +413,7 @@ void ATFA::newscene() {
     vol_slider->setValue(100*stream.scene.volume);
 
     stream.set_filter(stream.scene.imp_resp);
-    rir_source = Scene::NoRIR;
-    rir_filetype = Scene::None;
-    rir_file = "";
+    stream.scene.set_rir<Scene::NoRIR>();
     rir_type_label->setText("None");
     rir_show_button->setDisabled(true);
 
@@ -619,16 +616,12 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
                        QString filename) {
     switch (source) {
     case Scene::NoRIR:
-        set_stream_rir(Stream::container_t(1,1));
-        rir_source = Scene::NoRIR;
-        rir_filetype = Scene::None;
-        rir_file = "";
+        set_stream_rir(Stream::container_t(1,1)); // set RIR samples
+        stream.scene.set_rir<Scene::NoRIR>(); // set RIR metadata
         break;
     case Scene::Literal:
-        set_stream_rir(ChangeRIRDialog::parse_txt(txt));
-        rir_source = Scene::Literal;
-        rir_filetype = Scene::None;
-        rir_file = "";
+        set_stream_rir(ChangeRIRDialog::parse_txt(txt)); // set RIR samples
+        stream.scene.set_rir<Scene::Literal>(); // set RIR metadata
         break;
     case Scene::File:
         {
@@ -648,7 +641,7 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
                 QFile file(filename);
                 if (!file.open(QIODevice::ReadOnly))
                     throw RIRInvalidException("Error opening RIR file.");
-                set_stream_rir(ChangeRIRDialog::parse_txt(
+                set_stream_rir(ChangeRIRDialog::parse_txt( // set RIR samples
                                    file.readAll().constData()));
             }
             else {
@@ -660,11 +653,9 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
                 catch (const FileError&) {
                     throw RIRInvalidException("Error opening file.");
                 }
-                set_stream_rir(s);
+                set_stream_rir(s); // set RIR samples
             }
-            rir_filetype = filetype;
-            rir_source = Scene::File; // TODO: ORGANIZAR ISSO AQUI (PASSAR P DENTRO DO SCENE)
-            rir_file = filename;
+            stream.scene.set_rir<Scene::File>(filetype, filename);
         }
         break;
     default:
@@ -681,7 +672,7 @@ void ATFA::change_rir() {
     set_new_rir(chrir_dialog->get_source(), chrir_dialog->get_literal(),
                 chrir_dialog->get_filename());
 
-    switch (rir_source) {
+    switch (stream.scene.rir_source) {
     case Scene::NoRIR:
         rir_type_label->setText("None");
         rir_show_button->setDisabled(true);
@@ -694,10 +685,10 @@ void ATFA::change_rir() {
         {
             QString small_filename;
             QRegExp rx("^.*/([^/]*)$");
-            if (rx.indexIn(rir_file) > -1)
+            if (rx.indexIn(stream.scene.rir_file) > -1)
                 small_filename = rx.cap(1);
             else
-                small_filename = rir_file;
+                small_filename = stream.scene.rir_file;
             rir_type_label->setText(small_filename);
         }
         rir_show_button->setDisabled(false);

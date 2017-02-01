@@ -115,23 +115,32 @@ public:
         OOV filter_learning;
         OOV filter_output;
 
+        RIR_filetype_t rir_filetype;
+        RIR_source_t rir_source;
+        QString rir_file;
+
+        template<RIR_source_t SOURCE>
+        void set_rir(RIR_filetype_t filetype = None, const QString& file="");
+
         unsigned delay; // in miliseconds
 
         float volume; // 0 -- 1
 
         container_t imp_resp;
 
-        std::string rir_file;
         std::string adapf_file;
 
         Scenario(
             OOV flearn = On, OOV fout = On,
             unsigned d = 30, float vol = .5,
+            RIR_filetype_t filetype = None, RIR_source_t source = NoRIR,
+            QString file="",
             const container_t& ir = container_t(1,1),
             const AdaptiveFilter<sample_t>& adapf = AdaptiveFilter<sample_t>()
         )
           : filter_learning(flearn), filter_output(fout),
-            delay(d), volume(vol), imp_resp(ir), rir_file(""),
+            rir_filetype(filetype), rir_source(source), rir_file(file),
+            delay(d), volume(vol), imp_resp(ir),
             adapf_file(adapf.get_path())
         {}
 
@@ -449,5 +458,17 @@ private:
 };
 
 using Scene = Stream::Scenario;
+
+template<>
+void Scene::set_rir<Scene::NoRIR>(
+        Scene::RIR_filetype_t filetype, const QString& file);
+
+template<>
+void Scene::set_rir<Scene::Literal>(
+        Scene::RIR_filetype_t filetype, const QString& file);
+
+template<>
+void Scene::set_rir<Scene::File>(
+        Scene::RIR_filetype_t filetype, const QString& file);
 
 #endif // STREAM_H

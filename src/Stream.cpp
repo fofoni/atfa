@@ -113,7 +113,7 @@ static int stream_callback(
                      static_cast<Stream::sample_t *>(teste2),
                      frames_per_buf/4);
 
-    ob[0] = teste2[0]; // TODO: interpolar isso aqui direito
+    ob[0] = teste2[0];
     ob[1] = teste2[0];
     ob[2] = teste2[0];
     ob[3] = teste2[0];
@@ -127,6 +127,48 @@ static int stream_callback(
 
     return paContinue;
 
+}
+
+template<>
+void Scene::set_rir<Scene::NoRIR>(
+    RIR_filetype_t filetype, const QString& file
+) {
+    if (filetype != None  ||  file.length() != 0) // should never happen
+        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::NoRIR>"
+                                 " called with more than zero arguments."
+                                 " Scene::NoRIR impulse responses should not"
+                                 " specify a file or filetype.");
+    rir_source = NoRIR;
+    rir_filetype = None;
+    rir_file = "";
+}
+
+template<>
+void Scene::set_rir<Scene::Literal>(
+    RIR_filetype_t filetype, const QString& file
+) {
+    if (filetype != None  ||  file.length() != 0) // should never happen
+        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::Literal>"
+                                 " called with more than zero arguments."
+                                 " Scene::Literal impulse responses should not"
+                                 " specify a file or filetype.");
+    rir_source = Literal;
+    rir_filetype = None;
+    rir_file = "";
+}
+
+template<>
+void Scene::set_rir<Scene::File>(
+    RIR_filetype_t filetype, const QString& file
+) {
+    if (filetype == None  ||  file.length() == 0) // should never happen
+        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::File>"
+                                 " called with no arguments."
+                                 " Scene::File impulse responses should"
+                                 " specify a file and a filetype.");
+    rir_source = File;
+    rir_filetype = filetype;
+    rir_file = file;
 }
 
 /**
