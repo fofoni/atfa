@@ -35,7 +35,7 @@ bool vad_hard(std::vector<float>::const_iterator first,
     unsigned num_samples = 1;
     for (; first != last; ++first) {
         sample = *first;
-        if (sample * float(state) < 0) {
+        if (sample * state < 0) {
             state *= -1;
             ++zero_crossing;
         }
@@ -59,7 +59,7 @@ bool vad_soft(std::vector<float>::const_iterator first,
     unsigned num_samples = 1;
     for (; first != last; ++first) {
         sample = *first;
-        if (sample * float(state) < 0) {
+        if (sample * state < 0) {
             state *= -1;
             ++zero_crossing;
         }

@@ -108,7 +108,7 @@ void Signal::delay(delay_t t, unsigned long d) {
                      " without specifying the sample rate." << std::endl <<
                      "  This has no effect." << std::endl;
     if (t == MS)
-        d *= static_cast<unsigned long>(double(srate)/1000.0);
+        d *= double(srate)/1000;
     // now, `d' is number of samples
     if (d == 0) return;
     set_size(samples() + d);
@@ -219,7 +219,7 @@ void Signal::play(bool sleep) {
 
     // sleep
     if (sleep)
-        Pa_Sleep(static_cast<long>(1000 * double(samples()) / srate));
+        Pa_Sleep(1000 * double(samples()) / srate);
 
     // "rewind" signal
     counter = 0;
@@ -249,15 +249,12 @@ void Signal::set_samplerate(int sr) {
         srate = sr;
         return;
     }
-    index_t N = static_cast<index_t>(floor(double(sr * samples()) /
-                                           double(srate)));
+    index_t N = floor((sr * sample_t(samples())) / srate);
     container_t new_data(N);
     for (index_t i = 0; i < N; i++) {
-        double x = double(i*(samples()-1))/double(N-1);
-        new_data[i] = static_cast<container_t::value_type>(
-                          (floor(x+1)-x) * data[(index_t)floor(x)] +
-                          (x-floor(x))   * data[(index_t)ceil(x)]
-                      );
+        double x = i*double(samples()-1)/(N-1);
+        new_data[i] = (floor(x+1)-x) * data[(index_t)floor(x)] +
+                      (x-floor(x))   * data[(index_t)ceil(x)];
     }
     data = new_data;
     srate = sr;
@@ -288,7 +285,7 @@ Signal& Signal::operator +=(Signal other) {
 void Signal::gain(double g) {
     for (container_t::iterator it = data.begin();
          it != data.end(); ++it)
-        *it *= static_cast<container_t::value_type>(g);
+        *it *= g;
 }
 
 /**
@@ -370,10 +367,10 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
         if (i >= j) continue;
         double temp = re[i];
         re[i] = re[j];
-        re[j] = static_cast<container_t::value_type>(temp);
+        re[j] = temp;
         temp = im[i];
         im[i] = im[j];
-        im[j] = static_cast<container_t::value_type>(temp);
+        im[j] = temp;
     }
 
     for (unsigned size = 1; size != L; size *= 2) {
@@ -388,8 +385,7 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
                 unsigned i1 = 2*size*k + l;
                 unsigned i2 = i1 + size;
 
-                unsigned frac = static_cast<unsigned>(
-                                    L - L/2/size*l); // integer division
+                unsigned frac = L - L/2/size*l; // integer division in 2nd term
                 double cossine = Wre(frac);
                 double sine = direction==DIRECT ? Wim(frac) : -Wim(frac);
 
@@ -398,14 +394,10 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
                 double tmp_re2 = re[i2] * cossine - im[i2] * sine;
                 double tmp_im2 = re[i2] * sine    + im[i2] * cossine;
 
-                re[i1] = static_cast<container_t::value_type>(
-                            tmp_re1 + tmp_re2);
-                im[i1] = static_cast<container_t::value_type>(
-                            tmp_im1 + tmp_im2);
-                re[i2] = static_cast<container_t::value_type>(
-                            tmp_re1 - tmp_re2);
-                im[i2] = static_cast<container_t::value_type>(
-                            tmp_im1 - tmp_im2);
+                re[i1] = tmp_re1 + tmp_re2;
+                im[i1] = tmp_im1 + tmp_im2;
+                re[i2] = tmp_re1 - tmp_re2;
+                im[i2] = tmp_im1 - tmp_im2;
 
             }
         }
@@ -413,7 +405,6 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
 
     if (direction==INVERSE)
         for (unsigned i = 0; i != L; ++i)
-            re[i] /= static_cast<container_t::value_type>(L),
-            im[i] /= static_cast<container_t::value_type>(L);
+            re[i] /= L, im[i] /= L;
 
 }
