@@ -132,7 +132,7 @@ Stream::container_t ChangeRIRDialog::parse_txt(const QString& txt) {
     FloatStream fs = new std::istringstream(txt.toUtf8().constData());
     Stream::container_t h;
     while (fs.err_flag == 0)
-        h.push_back(fs.get());
+        h.push_back(float(fs.get()));
     if (fs.err_flag == 1)
         throw RIRParseException("Non-conforming input data.");
     h.pop_back(); // remove trailing zero

@@ -119,10 +119,10 @@ static int stream_callback(
     ob[3] = teste2[0];
 
     for (unsigned i=1; i<frames_per_buf/4; ++i) {
-        ob[4*i]   = teste2[i-1]*0.75 + teste2[i]*0.25;
-        ob[4*i+1] = teste2[i-1]*0.50 + teste2[i]*0.50;
-        ob[4*i+2] = teste2[i-1]*0.25 + teste2[i]*0.75;
-        ob[4*i+3] =                    teste2[i]*1.00;
+        ob[4*i]   = teste2[i-1]*0.75f + teste2[i]*0.25f;
+        ob[4*i+1] = teste2[i-1]*0.50f + teste2[i]*0.50f;
+        ob[4*i+2] = teste2[i-1]*0.25f + teste2[i]*0.75f;
+        ob[4*i+3] =                     teste2[i]*1.00f;
     }
 
     return paContinue;
@@ -206,7 +206,7 @@ PaStream *Stream::echo() {
     write_ptr = data_in.begin();
     read_ptr  = data_out.begin();
     rir_ptr   = data_in.begin();
-    set_delay(scene.delay);
+    set_delay(scene.delay - scene.system_latency);
 
 #ifndef ATFA_DEBUG
     PaStream *stream;
@@ -244,7 +244,7 @@ PaStream *Stream::echo() {
 
 #define SCOUT(COE) do {} while(0)
 #define SDUMP(N) do {} while(0)
-#else
+#else // ATFA_DEBUG
 #define SCOUT(COE) do { \
     std::lock_guard<std::mutex> lk(io_mutex); \
     std::cout << "[main] " << COE << std::endl; \
