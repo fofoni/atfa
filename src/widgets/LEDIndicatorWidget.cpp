@@ -32,7 +32,7 @@ void LEDIndicatorWidget::paintEvent(QPaintEvent *event) {
     (void) event;
     QPainter painter(this);
     QPen pen(Qt::black);
-    pen.setWidth(1.5);
+    pen.setWidth(1);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.translate(width()-LEDRADIUS-1, height()/2);
     painter.setPen(pen);
