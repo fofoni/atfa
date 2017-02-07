@@ -28,7 +28,7 @@ message(STATUS "=============================================================")
 
 # Caso o build-type seja DEBUG, compilar os objetos com ou sem as flags
 # "-march=native -mtune=native" (o modo RELEASE sempre é compilado com estas
-# flags
+# flags)
 set( ATFA_TUNE_DEBUGREL YES )
 
 ###########
