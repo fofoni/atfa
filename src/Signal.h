@@ -212,7 +212,7 @@ public:
           * \returns the unsigned integer \a x, bit-reversed.
           */
         template <typename T>
-        static T br(T x, int bits) {
+        static T br(T x, unsigned bits) {
 
             static const unsigned char BitReverseTable256[] = {
 
@@ -270,9 +270,9 @@ public:
 
             // reverse inside each byte, and then reverse order of bytes
             for (unsigned i = 0; i < sizeof(T); ++i)
-                result |= BitReverseTable256[
+                result |= static_cast<T>(BitReverseTable256[
                               ( x >> (8*(sizeof(T)-1-i)) ) & 0xFF
-                          ] << (8*i);
+                          ]) << (8*i);
 
             return result >> ( 8*sizeof(T) - bits );
 
@@ -294,7 +294,7 @@ public:
           * \see Wim
           */
         double Wre(unsigned k)
-            { return costbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
+            { return costbl[(k & ((1u<<bits)-1u)) << (tblbits - bits)]; }
 
         /// Easy access to the table of sines.
         /**
@@ -306,7 +306,7 @@ public:
           * \see Wre
           */
         double Wim(unsigned k)
-            { return sintbl[(k & ((1<<bits)-1)) << (tblbits - bits)]; }
+            { return sintbl[(k & ((1u<<bits)-1u)) << (tblbits - bits)]; }
 
     public:
         /// Number of bits for the index of the table of sines and cosines

@@ -71,24 +71,24 @@ Signal::Signal(const std::string &filename)
         throw FileError(filename);
 
     // check number of channels
-    unsigned chans = info.channels;
+    long chans = info.channels;
     if (chans > 1)
         std::cerr << "Warning: file " << filename << " has more than one" <<
                      " channel." << std::endl << "  We will use just the" <<
                      " first (which is the left channel on stereo WAV files).";
 
     // set properties
-    set_size(info.frames);
+    set_size(static_cast<index_t>(info.frames));
     srate = info.samplerate;
 
     // read file
-    index_t wav_samples = samples() * chans;
-    container_t buf(wav_samples);
-    index_t items_read = sf_read_float(file, &buf[0], wav_samples);
+    long wav_samples = static_cast<long>(samples()) * chans;
+    container_t buf(static_cast<long unsigned>(wav_samples));
+    long items_read = sf_read_float(file, &buf[0], wav_samples);
     if (items_read != wav_samples)
         throw FileError(filename);
     for (index_t i = 0; i < samples(); ++i)
-        data[i] = buf[i*chans];
+        data[i] = buf[i*static_cast<long unsigned>(chans)];
 
 }
 
@@ -109,12 +109,16 @@ void Signal::delay(delay_t t, unsigned long d) {
                      " without specifying the sample rate." << std::endl <<
                      "  This has no effect." << std::endl;
     if (t == MS)
-        d *= double(srate)/1000;
+        d *= static_cast<long unsigned>(std::lround(srate/1000.0f));
     // now, `d' is number of samples
     if (d == 0) return;
     set_size(samples() + d);
     // shift the samples
-    std::copy_backward(data.begin(), data.end()-d, data.end());
+    std::copy_backward(
+        data.begin(),
+        data.end() - static_cast<long>(d),
+        data.end()
+    );
     for (index_t i = 0; i < d; i++)
         data[i] = 0;
 }
@@ -250,12 +254,12 @@ void Signal::set_samplerate(int sr) {
         srate = sr;
         return;
     }
-    index_t N = floor((sr * sample_t(samples())) / srate);
+    index_t N = std::floor(double(sr) * samples() / srate);
     container_t new_data(N);
     for (index_t i = 0; i < N; i++) {
-        double x = i*double(samples()-1)/(N-1);
-        new_data[i] = (floor(x+1)-x) * data[(index_t)floor(x)] +
-                      (x-floor(x))   * data[(index_t)ceil(x)];
+        double x = double(i) * (samples()-1) / (N-1);
+        new_data[i] = (std::floor(x+1) - x) * data[(index_t)std::floor(x)] +
+                      (x - std::floor(x))   * data[(index_t)std::ceil(x)];
     }
     data = new_data;
     srate = sr;
@@ -284,8 +288,7 @@ Signal& Signal::operator +=(Signal other) {
   * \param[in]  g       The signal gain to be applied.
   */
 void Signal::gain(double g) {
-    for (container_t::iterator it = data.begin();
-         it != data.end(); ++it)
+    for (auto it = data.begin(); it != data.end(); ++it)
         *it *= g;
 }
 
@@ -366,7 +369,7 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
     for (unsigned i = 1; i != L-1; ++i) {
         unsigned j = br(i, bits);
         if (i >= j) continue;
-        double temp = re[i];
+        auto temp = re[i];
         re[i] = re[j];
         re[j] = temp;
         temp = im[i];

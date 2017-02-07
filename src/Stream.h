@@ -186,10 +186,11 @@ public:
       */
     template<class InputIt, class OutputIt>
     void read_write(InputIt in_buf, OutputIt out_buf, pa_fperbuf_t pa_frames) {
-        pa_fperbuf_t remaining = data_out.end() - read_ptr;
+        pa_fperbuf_t remaining =
+                static_cast<pa_fperbuf_t>(data_out.end() - read_ptr);
         long overflow = (long)pa_frames - (long)remaining;
         auto read_end_ptr = (overflow < 0) ?
-                    (read_ptr + pa_frames) :
+                    (read_ptr + (long)pa_frames) :
                     (data_out.begin() + overflow);
         /* Nesse loop, a gente calcula a cada iteração o índice do VAD
          * correspondente àquela amostra. Tem dois jeitos de otimizar isso:
@@ -203,7 +204,9 @@ public:
          *               a primeira amostra, pode usar a amostra média.
          */
         while (read_ptr != read_end_ptr) {
-            auto vad_idx = (adapf_ptr-data_in.begin())/blk_size;
+            auto vad_idx =
+                    static_cast<unsigned long>(adapf_ptr-data_in.begin()) /
+                    blk_size;
             *out_buf = scene.volume *
                        adapf->get_sample(
                            *adapf_ptr, *read_ptr,
@@ -237,7 +240,7 @@ public:
                     data_in.begin());
         }
         size_t current_offset = blk_offset + pa_frames;
-        unsigned blk_count_inc = current_offset / blk_size;
+        auto blk_count_inc = static_cast<int>(current_offset / blk_size);
         // if (blk_count_inc)
         {
             std::lock_guard<std::mutex> lk(blk_mutex);
@@ -276,7 +279,6 @@ public:
                                     " block.");
         // sets delay_samples and filter_ptr
         set_delay(static_cast<unsigned>(stream_delay));
-
         // sets h_freq_re and h_freq_im
         set_filter(scene.imp_resp, false);
 
@@ -323,20 +325,23 @@ public:
       * \see read_ptr
       */
     void set_delay(unsigned msec) {
-        delay_samples = static_cast<int>(samplerate * double(msec)/1000);
-        size_t remaining = data_out.end() - read_ptr;
+        delay_samples = static_cast<index_t>(double(samplerate) * msec / 1000);
+        size_t remaining = static_cast<size_t>(data_out.end() - read_ptr);
         if (delay_samples < remaining)
-            filter_ptr = read_ptr + delay_samples;
+            filter_ptr = read_ptr + static_cast<long>(delay_samples);
         else
             // We won't ckeck, for performance, that delay_samples <= buf_size
             // The application must enforce this.
-            filter_ptr = data_out.begin() + (delay_samples - remaining);
+            filter_ptr = data_out.begin() +
+                    static_cast<long>(delay_samples - remaining);
         // ---
-        size_t passed = write_ptr - data_in.begin();
+        size_t passed = static_cast<unsigned long>(write_ptr - data_in.begin());
         if (passed >= delay_samples)
-            adapf_ptr = write_ptr - delay_samples;
+            adapf_ptr = write_ptr -
+                        static_cast<long>(delay_samples);
         else
-            adapf_ptr = data_in.end() - (delay_samples - passed);
+            adapf_ptr = data_in.end() -
+                        static_cast<long>(delay_samples - passed);
         // ---
         scene.delay = scene.system_latency + static_cast<int>(msec);
     }

@@ -119,10 +119,10 @@ static int stream_callback(
     ob[3] = teste2[0];
 
     for (unsigned i=1; i<frames_per_buf/4; ++i) {
-        ob[4*i]   = teste2[i-1]*0.75 + teste2[i]*0.25;
-        ob[4*i+1] = teste2[i-1]*0.50 + teste2[i]*0.50;
-        ob[4*i+2] = teste2[i-1]*0.25 + teste2[i]*0.75;
-        ob[4*i+3] =                    teste2[i]*1.00;
+        ob[4*i]   = teste2[i-1]*0.75f + teste2[i]*0.25f;
+        ob[4*i+1] = teste2[i-1]*0.50f + teste2[i]*0.50f;
+        ob[4*i+2] = teste2[i-1]*0.25f + teste2[i]*0.75f;
+        ob[4*i+3] =                     teste2[i]*1.00f;
     }
 
     return paContinue;
@@ -488,14 +488,18 @@ void Stream::rir_fft() {
         if (count < 0) return;
         RCOUT("gonna process " << count << " block(s).");
         for (int i=0; i<count; ++i) {
-            RCOUT("-> Block #" << i);
             // process a single block.
             // TODO: com o truque da parte imaginária (ver Signal::filter),
             // talvez dê  pra aceitar RIRs com até o dobro do tamanho (a gente
             // dividiria a RIR em duas, e colocaria a primeira metade na parte
             // real e a segunda metade na parte imaginária, e convoluiria o
             // bloco com essa RIR complexa)
-            pa_fperbuf_t remaining = data_out.end() - filter_ptr;
+            RCOUT("-> Block #" << i);
+            // For performance, we won't test that filter_ptr <= data_out.end();
+            // We assume that the rest of the code enforces it. TODO: if DEBUG,
+            //                            testar se filter_ptr <= data_out.end()
+            pa_fperbuf_t remaining =
+                    static_cast<pa_fperbuf_t>(data_out.end() - filter_ptr);
             RCOUT("remaining = " << remaining);
             long overflow = (long)fft_size - (long)remaining;
             RCOUT("overflow = " << overflow);
@@ -568,7 +572,8 @@ void Stream::rir_fft() {
                     *f_ptr += *y_first;
                 for (; y_first != y_re.end();   ++y_first, ++f_ptr)
                     *f_ptr = *y_first;
-                filter_ptr = data_out.begin() + (blk_size - remaining);
+                filter_ptr = data_out.begin() +
+                             static_cast<long>(blk_size - remaining);
             }
             if (rir_end_ptr == data_in.end())
                 rir_ptr = data_in.begin();

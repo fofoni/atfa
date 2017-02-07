@@ -232,7 +232,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMaximum(delay_max);
             delay_slider->setValue(DEFAULT_DELAY);
             delay_layout->addWidget(delay_slider);
-            stream.set_delay(delay_slider->value());
+            stream.set_delay(static_cast<unsigned>(delay_slider->value()));
 
             delay_spin = new QSpinBox(delay_widget);
             delay_spin->setMinimum(delay_min);
@@ -416,7 +416,7 @@ void ATFA::newscene() {
                                 " block.");
     stream.set_delay(static_cast<unsigned>(stream_delay));}
 
-    vol_slider->setValue(100*stream.scene.volume);
+    vol_slider->setValue(std::round(100*stream.scene.volume));
 
     stream.set_filter(stream.scene.imp_resp);
     stream.scene.set_rir<Scene::NoRIR>();
@@ -549,7 +549,7 @@ void ATFA::play_clicked() {
 }
 
 void ATFA::delay_changed(int v) {
-    stream.set_delay(v);
+    stream.set_delay(static_cast<unsigned>(v));
 }
 
 void ATFA::vol_mute_toggled(bool t) {
@@ -563,13 +563,13 @@ void ATFA::vol_mute_toggled(bool t) {
     }
     else {
         muted = false;
-        stream.scene.volume = float(vol_slider->value())/100.0;
+        stream.scene.volume = vol_slider->value()/100.0f;
         statusBar()->showMessage("Local speaker unmuted.");
     }
 }
 void ATFA::vol_changed(int v) {
     if (muted) return;
-    stream.scene.volume = float(v)/100.0;
+    stream.scene.volume = v/100.0f;
 }
 
 void ATFA::show_rir() {

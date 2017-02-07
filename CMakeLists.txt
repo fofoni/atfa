@@ -89,7 +89,8 @@ endif(ATFA_LOG_MATLAB)
 ###########
 ########### Setup compiler
 ###########
-set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 -Wall -Wextra -pedantic" )
+set( WARN_FLAGS "${WARN_FLAGS} -Wall -Wextra -Wsign-conversion" )
+set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 ${WARN_FLAGS} -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )
 if(ATFA_TUNE_DEBUGREL)
     set( DBG_FLAGS "${DBG_FLAGS} -march=native -mtune=native" )
