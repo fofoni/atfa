@@ -8,6 +8,7 @@
  */
 
 #include <sstream>
+#include <cmath>
 
 // TODO: fazer alguma coisa a respeito das imagens de play/pause/etc.
 //       (quando a gente roda o atfa de outro lugar que não seja o
@@ -229,7 +230,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMinimumWidth(200);
             delay_slider->setMinimum(delay_min);
             delay_slider->setMaximum(delay_max);
-            delay_slider->setValue(30);
+            delay_slider->setValue(DEFAULT_DELAY);
             delay_layout->addWidget(delay_slider);
             stream.set_delay(delay_slider->value());
 
@@ -237,7 +238,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_spin->setMinimum(delay_min);
             delay_spin->setMaximum(delay_max);
             delay_spin->setFixedWidth(60);
-            delay_spin->setValue(30);
+            delay_spin->setValue(DEFAULT_DELAY);
             delay_layout->addWidget(delay_spin);
 
             delay_units = new QLabel("ms", delay_widget);
@@ -408,7 +409,12 @@ void ATFA::newscene() {
     }
 
     delay_slider->setValue(stream.scene.delay);
-    stream.set_delay(stream.scene.delay);
+    {auto stream_delay = stream.scene.delay - stream.scene.system_latency;
+    if (stream_delay < stream.min_delay)
+        throw std::out_of_range("Stream delay (delay minus system latency)"
+                                " cannot be less than the duration of one"
+                                " block.");
+    stream.set_delay(static_cast<unsigned>(stream_delay));}
 
     vol_slider->setValue(100*stream.scene.volume);
 

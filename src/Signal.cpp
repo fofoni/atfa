@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 
 extern "C" {
 #   include <portaudio.h>

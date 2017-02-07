@@ -206,7 +206,13 @@ PaStream *Stream::echo() {
     write_ptr = data_in.begin();
     read_ptr  = data_out.begin();
     rir_ptr   = data_in.begin();
-    set_delay(scene.delay);
+    unsigned stream_delay =
+            static_cast<unsigned>(scene.delay - scene.system_latency);
+    if (stream_delay < min_delay)
+        throw std::out_of_range("Stream delay (delay minus system latency)"
+                                " cannot be less than the duration of one"
+                                " block.");
+    set_delay(stream_delay);
 
 #ifndef ATFA_DEBUG
     PaStream *stream;
@@ -244,7 +250,7 @@ PaStream *Stream::echo() {
 
 #define SCOUT(COE) do {} while(0)
 #define SDUMP(N) do {} while(0)
-#else
+#else // ATFA_DEBUG
 #define SCOUT(COE) do { \
     std::lock_guard<std::mutex> lk(io_mutex); \
     std::cout << "[main] " << COE << std::endl; \

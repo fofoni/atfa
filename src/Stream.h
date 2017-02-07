@@ -28,6 +28,8 @@ extern "C" {
 # include <cstring>
 #endif
 
+#include <cmath>
+
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -41,6 +43,12 @@ extern "C" {
 #include "widgets/LEDIndicatorWidget.h"
 
 typedef unsigned long pa_fperbuf_t;
+
+// TODO: transformar todos os "numeros magicos" em todos os arquivos
+//       em constantes como essas.
+static constexpr int DEFAULT_DELAY = 30; // miliseconds
+static constexpr int DEFAULT_SYSLATENCY = 0; // miliseconds
+static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
 
 /// Represents an input/output stream of audio samples
 /**
@@ -122,7 +130,8 @@ public:
         template<RIR_source_t SOURCE>
         void set_rir(RIR_filetype_t filetype = None, const QString& file="");
 
-        unsigned delay; // in miliseconds
+        int delay; // in miliseconds
+        int system_latency; // also in ms
 
         float volume; // 0 -- 1
 
@@ -132,7 +141,8 @@ public:
 
         Scenario(
             OOV flearn = On, OOV fout = On,
-            unsigned d = 30, float vol = .5,
+            int d = DEFAULT_DELAY, int sl = DEFAULT_SYSLATENCY,
+            float vol = DEFAULT_VOLUME,
             RIR_filetype_t filetype = None, RIR_source_t source = NoRIR,
             QString file="",
             const container_t& ir = container_t(1,1),
@@ -140,7 +150,7 @@ public:
         )
           : filter_learning(flearn), filter_output(fout),
             rir_filetype(filetype), rir_source(source), rir_file(file),
-            delay(d), volume(vol), imp_resp(ir),
+            delay(d), system_latency(sl), volume(vol), imp_resp(ir),
             adapf_file(adapf.get_path())
         {}
 
@@ -159,6 +169,9 @@ public:
 
     /// The number of data samples held internally by the stream structure.
     static constexpr size_t buf_size = blks_in_buf * blk_size;
+
+    // In miliseconds
+    static constexpr int min_delay = std::ceil(1000.0 * blk_size / samplerate);
 
     /// Returns the next audio sample
     /**
@@ -256,8 +269,17 @@ public:
           h_freq_re(fft_size), h_freq_im(fft_size),
           led_widget(ledw)
     {
-        set_delay(scene.delay); // sets delay_samples and filter_ptr
-        set_filter(scene.imp_resp, false); // sets h_freq_re and h_freq_im
+        auto stream_delay = scene.delay - scene.system_latency;
+        if (stream_delay < min_delay)
+            throw std::out_of_range("Stream delay (delay minus system latency)"
+                                    " cannot be less than the duration of one"
+                                    " block.");
+        // sets delay_samples and filter_ptr
+        set_delay(static_cast<unsigned>(stream_delay));
+
+        // sets h_freq_re and h_freq_im
+        set_filter(scene.imp_resp, false);
+
         if (buf_size == 0) throw std::runtime_error("Stream: Bad buf_size");
         if (samplerate == 0) throw std::runtime_error("Stream: Bad srate");
 #ifdef ATFA_LOG_MATLAB
@@ -316,7 +338,7 @@ public:
         else
             adapf_ptr = data_in.end() - (delay_samples - passed);
         // ---
-        scene.delay = msec;
+        scene.delay = scene.system_latency + static_cast<int>(msec);
     }
 
     /// Sets the room impulse response
