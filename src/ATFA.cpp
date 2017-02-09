@@ -43,6 +43,8 @@ ATFA::ATFA(QWidget *parent) :
     adapf_is_dummy(true), adapf_file(""), muted(false)
 {
 
+    delay_min = stream.scene.system_latency + stream.min_delay;
+
     /*
      * ACTIONS
      *

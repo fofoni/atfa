@@ -39,7 +39,7 @@ public:
 
     bool muted;
 
-    constexpr static int delay_min = 10;
+    int delay_min;
     constexpr static int delay_max = 500;
 
 private slots:
