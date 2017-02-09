@@ -46,8 +46,8 @@ typedef unsigned long pa_fperbuf_t;
 
 // TODO: transformar todos os "numeros magicos" em todos os arquivos
 //       em constantes como essas.
-static constexpr int DEFAULT_DELAY = 30; // miliseconds
-static constexpr int DEFAULT_SYSLATENCY = 0; // miliseconds
+static constexpr int DEFAULT_DELAY = 100; // miliseconds
+static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
 static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
 
 /// Represents an input/output stream of audio samples
