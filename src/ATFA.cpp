@@ -413,9 +413,9 @@ void ATFA::newscene() {
     delay_slider->setValue(stream.scene.delay);
     {auto stream_delay = stream.scene.delay - stream.scene.system_latency;
     if (stream_delay < stream.min_delay)
-        throw std::out_of_range("Stream delay (delay minus system latency)"
-                                " cannot be less than the duration of one"
-                                " block.");
+        throw std::out_of_range("[ATFA::newscene] Stream delay (delay minus"
+                                " system latency) cannot be less than the"
+                                " duration of one block.");
     stream.set_delay(static_cast<unsigned>(stream_delay));}
 
     vol_slider->setValue(std::round(100*stream.scene.volume));

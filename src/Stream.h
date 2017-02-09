@@ -274,9 +274,9 @@ public:
     {
         auto stream_delay = scene.delay - scene.system_latency;
         if (stream_delay < min_delay)
-            throw std::out_of_range("Stream delay (delay minus system latency)"
-                                    " cannot be less than the duration of one"
-                                    " block.");
+            throw std::out_of_range("[Stream::Stream] Stream delay (delay minus"
+                                    " system latency) cannot be less than the"
+                                    " duration of one block.");
         // sets delay_samples and filter_ptr
         set_delay(static_cast<unsigned>(stream_delay));
         // sets h_freq_re and h_freq_im
