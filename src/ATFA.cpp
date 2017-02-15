@@ -248,7 +248,12 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMaximum(delay_max);
             delay_slider->setValue(DEFAULT_DELAY);
             delay_layout->addWidget(delay_slider);
-            stream.set_delay(static_cast<unsigned>(delay_slider->value()));
+            { int stream_delay = delay_slider->value() -
+                                 stream.scene.system_latency;
+              if (stream_delay < stream.min_delay)
+                  throw std::out_of_range("[ATFA::ATFA] initial stream delay"
+                                          " too low.");
+              stream.set_delay(static_cast<unsigned>(stream_delay)); }
 
             delay_spin = new QSpinBox(delay_widget);
             delay_spin->setMinimum(delay_min);
