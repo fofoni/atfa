@@ -82,6 +82,10 @@ execute_process( COMMAND git describe
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
+# TODO: fazer página do ATFA
+add_definitions( "-DATFA_URL=\"http://www.smt.ufrj.br/~pedro.fonini/\"" )
+# TODO: fazer bit.ly apontanto para a página do ATFA
+add_definitions( "-DATFA_BITLY=\"bit.ly/fonini\"" )
 if(ATFA_LOG_MATLAB)
     add_definitions( "-DATFA_LOG_MATLAB" )
 endif(ATFA_LOG_MATLAB)
@@ -109,6 +113,7 @@ add_executable( atfa
     src/dialogs/ChangeAlgorithmDialog.cpp
     src/dialogs/ChangeRIRDialog.cpp
     src/dialogs/ShowTextDialog.cpp
+    src/dialogs/ChooseNumberDialog.cpp
     src/widgets/FileSelectWidget.cpp
     src/widgets/LEDIndicatorWidget.cpp
 )

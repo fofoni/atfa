@@ -37,6 +37,7 @@ extern "C" {
 #include "dialogs/ShowTextDialog.h"
 #include "dialogs/ChangeAlgorithmDialog.h"
 #include "dialogs/ChangeRIRDialog.h"
+#include "dialogs/ChooseNumberDialog.h"
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
@@ -86,6 +87,15 @@ ATFA::ATFA(QWidget *parent) :
     quit_act->setShortcuts(QKeySequence::Quit);
     connect(quit_act, SIGNAL(triggered()), this, SLOT(quit()));
 
+    // edit system latency
+    syslatency_act = new QAction("Change system &latency", this);
+    connect(syslatency_act, SIGNAL(triggered()),
+            this, SLOT(change_syslatency()));
+
+    // benchmark DSO times
+    benchmark_act = new QAction("&Benchmark DSO", this);
+    connect(benchmark_act, SIGNAL(triggered()), this, SLOT(benchmark_dso()));
+
     // help
     show_help_act = new QAction(QIcon::fromTheme("help-contents"),
                                 "&Manual", this);
@@ -113,6 +123,10 @@ ATFA::ATFA(QWidget *parent) :
     file_menu->addAction(save_as_act);
     file_menu->addSeparator();
     file_menu->addAction(quit_act);
+
+    tools_menu = menuBar()->addMenu("&Tools");
+    tools_menu->addAction(syslatency_act);
+    tools_menu->addAction(benchmark_act);
 
     help_menu = menuBar()->addMenu("&Help");
     help_menu->addAction(show_help_act);
@@ -382,6 +396,10 @@ ATFA::ATFA(QWidget *parent) :
 
 }
 
+int ATFA::get_delay() {
+    return delay_spin->value();
+}
+
 void ATFA::newscene() {
 
     if (stream.running()) {
@@ -459,6 +477,61 @@ void ATFA::save_as() {
 
 void ATFA::quit() {
     qApp->quit();
+}
+
+
+#define html_link(url) "<a href='" url "'>" url "</a>"
+void ATFA::change_syslatency() {
+
+    ChooseNumberDialog *choose_dialog = new ChooseNumberDialog(this,
+                "The latency of your system is the portion of the round-trip"
+                " delay that's outside of the control of this simulator. The"
+                " delay set in the main window is the real round-trip delay,"
+                " provided the system latency has been configured correctly in"
+                " this dialog. You should measure your system's latency and set"
+                " it accordingly. Please refer to the built-in help system, or"
+                " download a copy of the manual from " html_link(ATFA_BITLY)
+                " for more detailed instructions.",
+//                "The delay introduced"
+//                " in a controlled manner by the simulator (reffered to as the"
+//                " 'stream delay') is the delay set in the main window"
+//                " (reffered to as the 'scenario delay') minus the system latency
+//                " the system latency."
+                "Change System Latency", "New system latency:",
+                0, delay_max - stream.min_delay - 1,
+                stream.scene.system_latency,
+                "", "ms");
+    if (!choose_dialog->run())
+        return;
+
+    stream.scene.system_latency = choose_dialog->chosen_num;
+    int stream_delay = stream.scene.delay - stream.scene.system_latency;
+    if (stream_delay < stream.min_delay) {
+        stream.scene.delay = stream.scene.system_latency + stream.min_delay;
+        stream_delay = stream.min_delay;
+        QMessageBox msg_box(this);
+        msg_box.setText("Impossible to achieve current delay with new system"
+                        " latency value. Resetting delay to " +
+                        QString::number(stream.scene.delay));
+        msg_box.setWindowTitle("ATFA - New system latency [info]");
+        msg_box.setIcon(QMessageBox::Critical);
+        msg_box.exec();
+    }
+
+    delay_min = stream.scene.system_latency + stream.min_delay;
+    delay_slider->setMinimum(delay_min);
+    delay_spin->setMinimum(delay_min);
+
+    statusBar()->showMessage("System latency set.");
+
+}
+
+void ATFA::benchmark_dso() {
+    QMessageBox msg_box;
+    msg_box.setText("Not implemented yet");
+    msg_box.setWindowTitle("ATFA [info]");
+    msg_box.setIcon(QMessageBox::Information);
+    msg_box.exec();
 }
 
 void ATFA::show_help() {
@@ -551,7 +624,7 @@ void ATFA::play_clicked() {
 }
 
 void ATFA::delay_changed(int v) {
-    stream.set_delay(static_cast<unsigned>(v));
+    stream.set_delay(static_cast<unsigned>(v - stream.scene.system_latency));
 }
 
 void ATFA::vol_mute_toggled(bool t) {

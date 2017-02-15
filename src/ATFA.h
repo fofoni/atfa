@@ -37,6 +37,8 @@ public:
     bool adapf_is_dummy;
     QString adapf_file;
 
+    int get_delay();
+
     bool muted;
 
     int delay_min;
@@ -49,6 +51,10 @@ private slots:
     void save();
     void save_as();
     void quit();
+
+    // tools
+    void change_syslatency();
+    void benchmark_dso();
 
     // help
     void show_help();
@@ -87,11 +93,14 @@ private:
     QAction *save_act;
     QAction *save_as_act;
     QAction *quit_act;
+    QAction *syslatency_act;
+    QAction *benchmark_act;
     QAction *show_help_act;
     QAction *about_atfa_act;
     QAction *about_qt_act;
 
     QMenu *file_menu;
+    QMenu *tools_menu;
     QMenu *help_menu;
 
     QToolBar *toolbar;
