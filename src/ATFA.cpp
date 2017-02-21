@@ -433,6 +433,9 @@ void ATFA::newscene() {
                     "stream.scene.filter_learning has wrong value");
     }
 
+    delay_min = stream.scene.system_latency + stream.min_delay;
+    delay_slider->setMinimum(delay_min);
+    delay_spin->setMinimum(delay_min);
     delay_slider->setValue(stream.scene.delay);
     {auto stream_delay = stream.scene.delay - stream.scene.system_latency;
     if (stream_delay < stream.min_delay)
@@ -453,6 +456,8 @@ void ATFA::newscene() {
     adapf_file = "";
     adapf_file_label->setText("None");
     adapf_show_button->setDisabled(true);
+
+    statusBar()->showMessage("New scenario with default parameters set.");
 
 }
 
