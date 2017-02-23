@@ -246,7 +246,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_slider->setMinimumWidth(200);
             delay_slider->setMinimum(delay_min);
             delay_slider->setMaximum(delay_max);
-            delay_slider->setValue(DEFAULT_DELAY);
+            delay_slider->setValue(Scene::DEFAULT_DELAY);
             delay_layout->addWidget(delay_slider);
             { int stream_delay = delay_slider->value() -
                                  stream.scene.system_latency;
@@ -259,7 +259,7 @@ ATFA::ATFA(QWidget *parent) :
             delay_spin->setMinimum(delay_min);
             delay_spin->setMaximum(delay_max);
             delay_spin->setFixedWidth(60);
-            delay_spin->setValue(DEFAULT_DELAY);
+            delay_spin->setValue(Scene::DEFAULT_DELAY);
             delay_layout->addWidget(delay_spin);
 
             delay_units = new QLabel("ms", delay_widget);
@@ -398,6 +398,10 @@ ATFA::ATFA(QWidget *parent) :
      */
 
     setCentralWidget(main_widget);
+
+    // TODO: com a janela já mostrada, fazer um teste de audio pra ver se
+    //       rola 11025Hz, e se não, faz o fallback pra 44100.
+    //       Esse teste deve setar a função de callback accordingly.
 
 }
 

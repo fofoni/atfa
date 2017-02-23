@@ -129,48 +129,6 @@ static int stream_callback(
 
 }
 
-template<>
-void Scene::set_rir<Scene::NoRIR>(
-    RIR_filetype_t filetype, const QString& file
-) {
-    if (filetype != None  ||  file.length() != 0) // should never happen
-        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::NoRIR>"
-                                 " called with more than zero arguments."
-                                 " Scene::NoRIR impulse responses should not"
-                                 " specify a file or filetype.");
-    rir_source = NoRIR;
-    rir_filetype = None;
-    rir_file = "";
-}
-
-template<>
-void Scene::set_rir<Scene::Literal>(
-    RIR_filetype_t filetype, const QString& file
-) {
-    if (filetype != None  ||  file.length() != 0) // should never happen
-        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::Literal>"
-                                 " called with more than zero arguments."
-                                 " Scene::Literal impulse responses should not"
-                                 " specify a file or filetype.");
-    rir_source = Literal;
-    rir_filetype = None;
-    rir_file = "";
-}
-
-template<>
-void Scene::set_rir<Scene::File>(
-    RIR_filetype_t filetype, const QString& file
-) {
-    if (filetype == None  ||  file.length() == 0) // should never happen
-        throw std::runtime_error("Unknown error: Scene::set_rir<Scene::File>"
-                                 " called with no arguments."
-                                 " Scene::File impulse responses should"
-                                 " specify a file and a filetype.");
-    rir_source = File;
-    rir_filetype = filetype;
-    rir_file = file;
-}
-
 /**
   * This is one of the main methods in the Stream class. It runs the stream,
   * simulating a communications environment in which the user listens to echoes

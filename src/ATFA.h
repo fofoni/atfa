@@ -19,6 +19,9 @@
 #include "widgets/LEDIndicatorWidget.h"
 #include "dialogs/ChangeAlgorithmDialog.h"
 
+// TODO: usar std::valarray ao invés de vector. Dá pra fazer produto interno
+// ((v0*v1).sum()) e shift circular.
+
 // TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
 //       dono, e avulsos assim que possível)
 //       alem disso, fechar o portaudio no destrutor do ATFA, caso necessario
@@ -150,30 +153,6 @@ private:
 
     friend class ChangeAlgorithmDialog;
 
-};
-
-class RIRException: public std::runtime_error {
-public:
-    RIRException(const std::string& desc)
-        : runtime_error(std::string("RIR error: ") + desc) {}
-};
-
-class RIRParseException: public RIRException {
-public:
-    RIRParseException(const std::string& desc)
-        : RIRException(std::string("Parse error: ") + desc) {}
-};
-
-class RIRSizeException: public RIRException {
-public:
-    RIRSizeException(const std::string& desc)
-        : RIRException(std::string("Size error: ") + desc) {}
-};
-
-class RIRInvalidException: public RIRException {
-public:
-    RIRInvalidException(const std::string& desc)
-        : RIRException(std::string("Invalid data: ") + desc) {}
 };
 
 #endif // ATFA_H

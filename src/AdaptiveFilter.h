@@ -60,7 +60,7 @@ public:
     }
 #endif
 
-    bool is_dummy() {
+    bool is_dummy() const {
         return dummy;
     }
 
@@ -68,11 +68,11 @@ public:
         return path;
     }
 
-    const char *get_title() {
+    const char *get_title() const {
         return title_str.c_str();
     }
 
-    const char *get_listing() {
+    const char *get_listing() const {
         return listing_str.c_str();
     }
 

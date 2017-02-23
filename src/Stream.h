@@ -31,12 +31,13 @@ extern "C" {
 #include <cmath>
 
 #include <vector>
-#include <stdexcept>
 #include <algorithm>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <functional>
+
+#include <QtCore>
 
 #include "VAD.h"
 #include "AdaptiveFilter.h"
@@ -45,10 +46,7 @@ extern "C" {
 typedef unsigned long pa_fperbuf_t;
 
 // TODO: transformar todos os "numeros magicos" em todos os arquivos
-//       em constantes como essas.
-static constexpr int DEFAULT_DELAY = 100; // miliseconds
-static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
-static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
+//       em constantes como as Scenario::DEFAULT_*
 
 /// Represents an input/output stream of audio samples
 /**
@@ -120,6 +118,14 @@ public:
         //       outra coisa);
         // TODO: fazer ele aceitar, além de {None,MFile,WAV}, arquivos .mat
 
+        static constexpr int DEFAULT_DELAY = 100; // miliseconds
+        static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
+        static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
+        static constexpr RIR_filetype_t DEFAULT_FILETYPE = None;
+        static constexpr RIR_source_t DEFAULT_SOURCE = NoRIR;
+        static constexpr OOV DEFAULT_FLEARN = On;
+        static constexpr OOV DEFAULT_FOUTPUT = On;
+
         OOV filter_learning;
         OOV filter_output;
 
@@ -139,20 +145,29 @@ public:
 
         std::string adapf_file;
 
+        QString filename;
+
         Scenario(
-            OOV flearn = On, OOV fout = On,
+            OOV flearn = DEFAULT_FLEARN, OOV fout = DEFAULT_FOUTPUT,
             int d = DEFAULT_DELAY, int sl = DEFAULT_SYSLATENCY,
             float vol = DEFAULT_VOLUME,
-            RIR_filetype_t filetype = None, RIR_source_t source = NoRIR,
-            QString file="",
+            RIR_filetype_t filetype = DEFAULT_FILETYPE,
+            RIR_source_t source = DEFAULT_SOURCE,
+            QString rir_filename="",
             const container_t& ir = container_t(1,1),
             const AdaptiveFilter<sample_t>& adapf = AdaptiveFilter<sample_t>()
         )
           : filter_learning(flearn), filter_output(fout),
-            rir_filetype(filetype), rir_source(source), rir_file(file),
+            rir_filetype(filetype), rir_source(source), rir_file(rir_filename),
             delay(d), system_latency(sl), volume(vol), imp_resp(ir),
             adapf_file(adapf.get_path())
         {}
+
+        Scenario(const QString &fn);
+        void save_to_file() const;
+
+        Scenario(const QJsonObject &json, int delay_max);
+        void write_to_json(QJsonObject &json);
 
     };
 
@@ -484,6 +499,38 @@ private:
 
 };
 
+/*****************************************/
+/***** RIRException and its children *****/
+/*****************************************/
+
+class RIRException: public std::runtime_error {
+public:
+    RIRException(const std::string& desc)
+        : runtime_error(std::string("RIR error: ") + desc) {}
+};
+
+class RIRParseException: public RIRException {
+public:
+    RIRParseException(const std::string& desc)
+        : RIRException(std::string("Parse error: ") + desc) {}
+};
+
+class RIRSizeException: public RIRException {
+public:
+    RIRSizeException(const std::string& desc)
+        : RIRException(std::string("Size error: ") + desc) {}
+};
+
+class RIRInvalidException: public RIRException {
+public:
+    RIRInvalidException(const std::string& desc)
+        : RIRException(std::string("Invalid data: ") + desc) {}
+};
+
+/********************/
+/***** Scenario *****/
+/********************/
+
 using Scene = Stream::Scenario;
 
 template<>
@@ -497,5 +544,49 @@ void Scene::set_rir<Scene::Literal>(
 template<>
 void Scene::set_rir<Scene::File>(
         Scene::RIR_filetype_t filetype, const QString& file);
+
+
+/***** Scene JSON Exception *****/
+/*****   and its children   *****/
+
+class SceneJsonException: public std::runtime_error {
+public:
+    SceneJsonException(const std::string& desc)
+        : runtime_error(std::string("Scenario JSON error: ") + desc) {}
+};
+
+// Parse error
+class SceneJsonParseException: public SceneJsonException {
+public:
+    SceneJsonParseException(const std::string& desc)
+        : SceneJsonException(std::string("Parse error: ") + desc) {}
+};
+
+// Invalid token error
+class SceneJsonInvtokenException: public SceneJsonParseException {
+public:
+    SceneJsonInvtokenException(const std::string& desc,
+                               const std::string& expected,
+                               const std::string& found)
+        : SceneJsonParseException(desc + ": expected " + expected +
+                                  " but found " + found + ".") {}
+};
+
+// Out of bounds error
+class SceneJsonOOBException: public SceneJsonException {
+public:
+    SceneJsonOOBException(const std::string& field, int val, int min, int max)
+        : SceneJsonException(std::string(field) + "=" + std::to_string(val) +
+                             " should be in the range [" + std::to_string(min) +
+                             "," + std::to_string(max) + "].") {}
+};
+
+// Invalid field error
+class SceneJsonInvfieldException: public SceneJsonException {
+public:
+    SceneJsonInvfieldException(const std::string& field,
+                               const std::string& desc)
+        : SceneJsonException(std::string(field) + ": " + desc) {}
+};
 
 #endif // STREAM_H

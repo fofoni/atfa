@@ -106,6 +106,7 @@ add_executable( atfa
     src/main.cpp
     src/Signal.cpp
     src/Stream.cpp
+    src/Scene.cpp
     src/VAD.cpp
     src/AdaptiveFilter.cpp
     src/utils.cpp
