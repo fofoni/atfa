@@ -42,6 +42,7 @@ extern "C" {
 #include "VAD.h"
 #include "AdaptiveFilter.h"
 #include "widgets/LEDIndicatorWidget.h"
+#include "utils.h"
 
 typedef unsigned long pa_fperbuf_t;
 
@@ -163,7 +164,8 @@ public:
             adapf_file(adapf.get_path())
         {}
 
-        Scenario(const QString &fn);
+        Scenario(const QString &fn, int delay_max)
+            : Scenario(read_json_file(fn), delay_max) {}
         void save_to_file() const;
 
         Scenario(const QJsonObject &json, int delay_max);
@@ -587,6 +589,13 @@ public:
     SceneJsonInvfieldException(const std::string& field,
                                const std::string& desc)
         : SceneJsonException(std::string(field) + ": " + desc) {}
+};
+
+
+class SceneFileException: public std::runtime_error {
+public:
+    SceneFileException(const std::string& desc)
+        : runtime_error(std::string("Scenario file error: ") + desc) {}
 };
 
 #endif // STREAM_H

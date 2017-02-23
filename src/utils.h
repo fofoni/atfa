@@ -22,6 +22,8 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <QtCore>
+
 #ifndef ATFA_DIR
 #   include <cstring>
     extern "C" {
@@ -128,5 +130,7 @@ inline constexpr T pow(const T base, unsigned const exponent) {
            base * pow(base, (exponent-1)/2) * pow(base, (exponent-1)/2);
 }
 }
+
+QJsonObject read_json_file(const QString& filename);
 
 #endif // UTILS_H

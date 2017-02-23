@@ -9,6 +9,7 @@
 
 #include "dialogs/ChangeRIRDialog.h"
 #include "Stream.h"
+#include "utils.h"
 
 template<>
 void Scene::set_rir<Scene::NoRIR>(
@@ -229,10 +230,6 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
 }
 
 void Scene::save_to_file() const {
-    throw std::runtime_error("Not implemented.");
-}
-
-Scene::Scenario(const QString &fn) {
     throw std::runtime_error("Not implemented.");
 }
 

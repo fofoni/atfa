@@ -25,9 +25,11 @@ extern "C" {
 
 #include "utils.h"
 
-std::ostringstream FileError::msg;
+
 
 using namespace std;
+
+ostringstream FileError::msg;
 
 /**
   * Initializes a PortAudio session. Also prints out a list of available
@@ -88,4 +90,12 @@ void portaudio_end() {
         cerr << "  " << Pa_GetErrorText(err) << endl;
         throw runtime_error("PortAudio error.");
     }
+}
+
+
+QJsonObject read_json_file(const QString& filename) {
+    QFile load_file(filename);
+    if (!load_file.open(QIODevice::ReadOnly))
+        throw FileError(filename.toUtf8().constData());
+    return QJsonDocument::fromJson(load_file.readAll()).object();
 }
