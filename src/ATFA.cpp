@@ -25,6 +25,8 @@
 // TODO: quando a RIR selecionada for o "None", o botão de "show rir
 //       coefficients" tem que estar HABILITADO, e mostrar "rir = [ 1 ]".
 
+// TODO: verificar que não tem nenhum qDebug solto por aí
+
 extern "C" {
 # include <portaudio.h>
 }
@@ -504,11 +506,8 @@ void ATFA::open() {
 }
 
 void ATFA::save() {
-    QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
-    msg_box.setIcon(QMessageBox::Information);
-    msg_box.exec();
+    // TODO
+    stream.scene.to_json();
 }
 
 void ATFA::save_as() {

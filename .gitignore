@@ -12,3 +12,4 @@ doc/latex/*
 RIRs
 src/autogen
 CMakeLists.txt.user
+*.atfascene

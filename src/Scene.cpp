@@ -231,6 +231,81 @@ void Scene::save_to_file() const {
     throw std::runtime_error("Not implemented.");
 }
 
-void Scene::write_to_json(QJsonObject &json) {
-    throw std::runtime_error("Not implemented.");
+QJsonDocument Scene::to_json() const {
+
+    QJsonObject json;
+
+    // filter_learning
+    switch (filter_learning) {
+    case On:
+        json["filter_learning"] = "On";
+        break;
+    case Off:
+        json["filter_learning"] = "Off";
+        break;
+    case VAD:
+        json["filter_learning"] = "VAD";
+        break;
+    default:
+        throw std::runtime_error(
+                    "Unknown error, bad value for filter_learning.");
+    }
+
+    // filter_output
+    switch (filter_output) {
+    case On:
+        json["filter_output"] = "On";
+        break;
+    case Off:
+        json["filter_output"] = "Off";
+        break;
+    case VAD:
+        json["filter_output"] = "VAD";
+        break;
+    default:
+        throw std::runtime_error(
+                    "Unknown error, bad value for filter_output.");
+    }
+
+    // rir_source
+    switch (rir_source) {
+    case NoRIR:
+        json["rir_source"] = "NoRIR";
+        break;
+    case Literal:
+        json["rir_source"] = "Literal";
+        break;
+    case File:
+        json["rir_source"] = "File";
+        break;
+    default:
+        throw std::runtime_error(
+                    "Unknown error, bad value for rir_source.");
+    }
+
+    // rir_file
+    json["rir_file"] = rir_file;
+
+    // system_latency
+    json["system_latency"] = system_latency;
+
+    // delay
+    json["delay"] = delay;
+
+    // volume
+    json["volume"] = static_cast<int>(std::round(100*volume));
+
+    // imp_resp
+    if (rir_source == Literal) {
+        QJsonArray array;
+        for (const auto& x : imp_resp)
+            array.push_back(x);
+        json["imp_resp"] = array;
+    }
+
+    // adapf_file
+    json["adapf_file"] = adapf_file.c_str();
+
+    return QJsonDocument(json);
+
 }

@@ -169,7 +169,7 @@ public:
         void save_to_file() const;
 
         Scenario(const QJsonObject &json, int delay_max);
-        void write_to_json(QJsonObject &json);
+        QJsonDocument to_json() const;
 
     };
 
