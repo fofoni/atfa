@@ -44,7 +44,7 @@ extern "C" {
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    adapf_file(""), muted(false)
+    muted(false), scene_filename("")
 {
 
     delay_min = stream.scene.system_latency + stream.min_delay;
@@ -468,13 +468,12 @@ void ATFA::update_widgets() {
 
     stream.setAdapfAlgorithm(
                 new AdaptiveFilter<Stream::sample_t>(stream.scene.adapf_file));
-    adapf_file = stream.scene.adapf_file.c_str();
     if (stream.adapf_is_dummy()) {
         adapf_file_label->setText("None");
         adapf_show_button->setDisabled(true);
     }
     else {
-        adapf_file_label->setText(adapf_file);
+        adapf_file_label->setText(stream.get_adapf_title());
         adapf_show_button->setDisabled(false);
     }
 
@@ -501,13 +500,38 @@ void ATFA::open() {
     if (filename == "") return;
     stream.set_scene(Scene(filename, delay_max));
     update_widgets();
+    scene_filename = filename;
     // TODO: no utils.h, fazer rotina pra pegar o basename do arquivo
     statusBar()->showMessage("Scenario configuration loaded from file.");
 }
 
 void ATFA::save() {
-    // TODO
-    stream.scene.to_json();
+    if (scene_filename == "") {
+        scene_filename = QFileDialog::getSaveFileName(
+                    this, "Save File", QDir::currentPath(),
+                    "ATFA scenario files (*.atfascene)");
+    }
+    if (scene_filename == "")
+        return;
+    QFile save_file {scene_filename};
+    if (QFileInfo{save_file}.isDir()) {
+        QMessageBox msg_box;
+        msg_box.setText("You can't choose a directory.");
+        msg_box.setWindowTitle("ATFA [error]");
+        msg_box.setIcon(QMessageBox::Warning);
+        msg_box.exec();
+        return;
+    }
+    if (!save_file.open(QIODevice::WriteOnly)) {
+        QMessageBox msg_box;
+        msg_box.setText(QString{"Error opening file "} + scene_filename + " .");
+        msg_box.setWindowTitle("ATFA [error]");
+        msg_box.setIcon(QMessageBox::Warning);
+        msg_box.exec();
+        return;
+    }
+    save_file.write(stream.scene.to_json().toJson());
+    statusBar()->showMessage("Scenario configuration successfully saved.");
 }
 
 void ATFA::save_as() {
@@ -646,6 +670,9 @@ void ATFA::play_clicked() {
         adapf_change_button->setDisabled(false);
         zero_button->setDisabled(true);
         newscene_act->setDisabled(false);
+        save_act->setDisabled(false);
+        open_act->setDisabled(false);
+        save_as_act->setDisabled(false);
 
         vad_indicator_led->setLEDStatus(false);
 
@@ -656,6 +683,9 @@ void ATFA::play_clicked() {
         adapf_change_button->setDisabled(true);
         zero_button->setDisabled(false);
         newscene_act->setDisabled(true);
+        save_act->setDisabled(true);
+        open_act->setDisabled(true);
+        save_as_act->setDisabled(true);
 
         pastream = stream.echo();
 

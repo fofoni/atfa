@@ -37,8 +37,6 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    QString adapf_file;
-
     int get_delay();
 
     bool muted;
@@ -147,6 +145,8 @@ private:
         QLabel *adapf_file_label;
         QPushButton *adapf_show_button;
         QPushButton *adapf_change_button;
+
+    QString scene_filename;
 
     void set_stream_rir(const Stream::container_t &h);
     void set_stream_rir(Signal h);

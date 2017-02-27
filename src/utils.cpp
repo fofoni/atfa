@@ -99,6 +99,5 @@ QJsonObject read_json_file(const QString& filename) {
         throw FileError(filename.toUtf8().constData());
     QByteArray file_contents = load_file.readAll();
     QJsonObject obj = QJsonDocument::fromJson(file_contents).object();
-    cout << QJsonDocument(obj).toJson().constData() << endl;
     return obj;
 }

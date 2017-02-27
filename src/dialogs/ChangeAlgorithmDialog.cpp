@@ -49,6 +49,8 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(ATFA *parent) :
         QDialogButtonBox::Discard
     );
     button_box->buttons()[0]->setDisabled(true);
+    button_box->buttons()[1]->setToolTip(
+                "Do not change the current configuration.");
     button_box->buttons()[2]->setToolTip(
                 "Go back to a scenario with no adaptive filtering.");
     if (atfa->stream.adapf_is_dummy())
@@ -84,7 +86,7 @@ bool ChangeAlgorithmDialog::run() {
     if (discard) {
 
         atfa->stream.setAdapfAlgorithm(new AdaptiveFilter<Stream::sample_t>());
-        atfa->adapf_file = "";
+        atfa->stream.scene.adapf_file = "";
 
     }
     else {
@@ -100,7 +102,7 @@ bool ChangeAlgorithmDialog::run() {
             new AdaptiveFilter<Stream::sample_t>(filename.toUtf8().constData())
         );
 
-        atfa->adapf_file = filename;
+        atfa->stream.scene.adapf_file = filename.toUtf8().constData();
 
     }
 
