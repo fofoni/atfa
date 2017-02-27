@@ -48,6 +48,8 @@
     ))
 #endif
 
+#define html_link(url) "<a href='" url "'>" url "</a>"
+
 /// Shorthand for the number \f$2\pi\f$.
 /**
   * Useful in the generation of the table of sines and cosines for the
@@ -73,7 +75,7 @@ void portaudio_end();
 ///
 ///     std::string filename;
 ///     std::cin >> filename;
-///     // ...
+///     ...
 ///     if (error ocurred) throw FileError(filename);
 ///
 class FileError : public std::runtime_error {

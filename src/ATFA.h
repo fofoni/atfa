@@ -37,7 +37,6 @@ public:
     Stream stream;
     PaStream *pastream;
 
-    bool adapf_is_dummy;
     QString adapf_file;
 
     int get_delay();
@@ -46,6 +45,8 @@ public:
 
     int delay_min;
     constexpr static int delay_max = 500;
+
+    void update_widgets();
 
 private slots:
     // file

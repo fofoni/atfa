@@ -38,10 +38,11 @@ extern "C" {
 #include "dialogs/ChangeAlgorithmDialog.h"
 #include "dialogs/ChangeRIRDialog.h"
 #include "dialogs/ChooseNumberDialog.h"
+#include "utils.h"
 
 ATFA::ATFA(QWidget *parent) :
     QMainWindow(parent), stream(), pastream(NULL),
-    adapf_is_dummy(true), adapf_file(""), muted(false)
+    adapf_file(""), muted(false)
 {
 
     delay_min = stream.scene.system_latency + stream.min_delay;
@@ -409,18 +410,7 @@ int ATFA::get_delay() {
     return delay_spin->value();
 }
 
-void ATFA::newscene() {
-
-    if (stream.running()) {
-        QMessageBox msg_box;
-        msg_box.setText("Can't change scenario while simulation is running.");
-        msg_box.setWindowTitle("ATFA [info]");
-        msg_box.setIcon(QMessageBox::Information);
-        msg_box.exec();
-        return;
-    }
-
-    stream.scene = Stream::Scenario();
+void ATFA::update_widgets() {
 
     switch (stream.scene.filter_learning) {
     case Stream::Scenario::On:
@@ -437,6 +427,8 @@ void ATFA::newscene() {
                     "stream.scene.filter_learning has wrong value");
     }
 
+    // TODO: o que fazer em relação ao filter_output?
+
     delay_min = stream.scene.system_latency + stream.min_delay;
     delay_slider->setMinimum(delay_min);
     delay_spin->setMinimum(delay_min);
@@ -450,27 +442,65 @@ void ATFA::newscene() {
 
     vol_slider->setValue(std::round(100*stream.scene.volume));
 
-    stream.set_filter(stream.scene.imp_resp);
-    stream.scene.set_rir<Scene::NoRIR>();
-    rir_type_label->setText("None");
-    rir_show_button->setDisabled(true);
+    switch (stream.scene.rir_source) {
+    case Scene::NoRIR:
+        rir_type_label->setText("None");
+        rir_show_button->setDisabled(true);
+        break;
+    case Scene::Literal:
+        rir_type_label->setText("Literal");
+        rir_show_button->setDisabled(false);
+        break;
+    case Scene::File:
+        {
+            QString small_filename;
+            QRegExp rx("^.*/([^/]*)$");
+            if (rx.indexIn(stream.scene.rir_file) > -1)
+                small_filename = rx.cap(1);
+            else
+                small_filename = stream.scene.rir_file;
+            rir_type_label->setText(small_filename);
+        }
+        rir_show_button->setDisabled(false);
+    }
 
-    stream.setAdapfAlgorithm(new AdaptiveFilter<Stream::sample_t>());
-    adapf_is_dummy = true;
-    adapf_file = "";
-    adapf_file_label->setText("None");
-    adapf_show_button->setDisabled(true);
-
-    statusBar()->showMessage("New scenario with default parameters set.");
+    stream.setAdapfAlgorithm(
+                new AdaptiveFilter<Stream::sample_t>(stream.scene.adapf_file));
+    adapf_file = stream.scene.adapf_file.c_str();
+    if (stream.adapf_is_dummy()) {
+        adapf_file_label->setText("None");
+        adapf_show_button->setDisabled(true);
+    }
+    else {
+        adapf_file_label->setText(adapf_file);
+        adapf_show_button->setDisabled(false);
+    }
 
 }
 
+void ATFA::newscene() {
+    if (stream.running()) {
+        QMessageBox msg_box;
+        msg_box.setText("Can't change scenario while simulation is running.");
+        msg_box.setWindowTitle("ATFA [info]");
+        msg_box.setIcon(QMessageBox::Information);
+        msg_box.exec();
+        return;
+    }
+    stream.set_scene(Stream::Scenario());
+    update_widgets();
+    statusBar()->showMessage("New scenario with default parameters set.");
+}
+
 void ATFA::open() {
-    QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
-    msg_box.setIcon(QMessageBox::Information);
-    msg_box.exec();
+    QString filename = QFileDialog::getOpenFileName(
+                this, "Open scenario file", QDir::currentPath(),
+                "ATFA scenario files (*.atfascene)");
+    if (filename == "") return;
+    stream.set_scene(Scene(filename, delay_max));
+    update_widgets();
+    // TODO: no utils.h, fazer rotina pra pegar o basename do arquivo
+    statusBar()->showMessage("Scenario configuration loaded from file.");
 }
 
 void ATFA::save() {
@@ -494,7 +524,6 @@ void ATFA::quit() {
 }
 
 
-#define html_link(url) "<a href='" url "'>" url "</a>"
 void ATFA::change_syslatency() {
 
     ChooseNumberDialog *choose_dialog = new ChooseNumberDialog(this,
@@ -507,10 +536,10 @@ void ATFA::change_syslatency() {
                 " download a copy of the manual from " html_link(ATFA_BITLY)
                 " for more detailed instructions.",
 //                "The delay introduced"
-//                " in a controlled manner by the simulator (reffered to as the"
+//                " in a controlled manner by the simulator (refered to as the"
 //                " 'stream delay') is the delay set in the main window"
-//                " (reffered to as the 'scenario delay') minus the system latency
-//                " the system latency."
+//                " (reffered to as the 'scenario delay') minus the system"
+//                " latency."
                 "Change System Latency", "New system latency:",
                 0, delay_max - stream.min_delay - 1,
                 stream.scene.system_latency,
@@ -816,7 +845,7 @@ void ATFA::change_adapf() {
     if (!chapf_dialog->run())
         return;
 
-    if (adapf_is_dummy) {
+    if (stream.adapf_is_dummy()) {
         adapf_file_label->setText("None");
         adapf_show_button->setDisabled(true);
     }

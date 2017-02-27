@@ -34,8 +34,15 @@ SAMPLE_T AdaptiveFilter<SAMPLE_T>::placeholder = 0;
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
-  : dummy(false), path(dso_path), data(nullptr)
+  : path(dso_path), data(nullptr)
 {
+
+    dummy = dso_path.length() == 0;
+
+    if (dummy) {
+        make_dummy();
+        return;
+    }
 
     lib = dlopen(path.c_str(), RTLD_NOW);
     if (!lib)
@@ -149,12 +156,8 @@ void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
 #endif
 
 template <typename SAMPLE_T>
-AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
-  : dummy(true), path(""), data(nullptr)
-{
-
+void AdaptiveFilter<SAMPLE_T>::make_dummy() {
     lib = nullptr;
-
     init = &dummy_init;
     close = &dummy_close;
     run = &dummy_run<SAMPLE_T>;
@@ -162,7 +165,13 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
 #ifdef ATFA_LOG_MATLAB
     getw = &dummy_getw<SAMPLE_T>;
 #endif
+}
 
+template <typename SAMPLE_T>
+AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
+  : dummy(true), path(""), data(nullptr)
+{
+    make_dummy();
 }
 
 /* Explicit template instantiation for use with `Stream` */

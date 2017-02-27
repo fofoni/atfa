@@ -173,6 +173,8 @@ public:
 
     };
 
+    void set_scene(const Scenario& new_scene);
+
     /// The stream's rate in samples per second.
     static constexpr unsigned samplerate = 11025;
 
@@ -410,6 +412,10 @@ public:
 
     void reset_adapf_state() {
         adapf->reset_state();
+    }
+
+    bool adapf_is_dummy() const {
+        return adapf->is_dummy();
     }
 
 private:

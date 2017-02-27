@@ -97,5 +97,8 @@ QJsonObject read_json_file(const QString& filename) {
     QFile load_file(filename);
     if (!load_file.open(QIODevice::ReadOnly))
         throw FileError(filename.toUtf8().constData());
-    return QJsonDocument::fromJson(load_file.readAll()).object();
+    QByteArray file_contents = load_file.readAll();
+    QJsonObject obj = QJsonDocument::fromJson(file_contents).object();
+    cout << QJsonDocument(obj).toJson().constData() << endl;
+    return obj;
 }

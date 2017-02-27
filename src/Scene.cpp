@@ -128,24 +128,22 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
         system_latency = DEFAULT_SYSLATENCY;
 
     // delay
-    if (json.contains(QStringLiteral("delay"))) {
-        int json_delay = json["delay"].toInt();
-        int delay_min = system_latency + min_delay;
-        if (json_delay < delay_min || json_delay > delay_max)
-            throw SceneJsonOOBException("delay", json_delay,
-                                        delay_min, delay_max);
-        delay = json_delay;
-    }
+    if (json.contains(QStringLiteral("delay")))
+        delay = json["delay"].toInt();
     else
         delay = DEFAULT_DELAY;
+    {
+        int delay_min = system_latency + min_delay;
+        if (delay < delay_min || delay > delay_max)
+            throw SceneJsonOOBException("delay", delay, delay_min, delay_max);
+    }
 
     // volume
     if (json.contains(QStringLiteral("volume"))) {
         int json_vol = json["volume"].toInt();
         if (json_vol < 0 || json_vol > 100)
-            throw SceneJsonOOBException("volume", json_vol,
-                                        0, 100);
-        volume = json_vol;
+            throw SceneJsonOOBException("volume", json_vol, 0, 100);
+        volume = json_vol/100.0;
     }
     else
         volume = DEFAULT_VOLUME;

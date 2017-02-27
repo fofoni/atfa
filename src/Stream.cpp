@@ -129,6 +129,13 @@ static int stream_callback(
 
 }
 
+void Stream::set_scene(const Scenario& new_scene) {
+    scene = new_scene;
+    set_delay(static_cast<unsigned>(scene.delay - scene.system_latency));
+    set_filter(scene.imp_resp);
+    setAdapfAlgorithm(new AdaptiveFilter<sample_t>(scene.adapf_file));
+}
+
 /**
   * This is one of the main methods in the Stream class. It runs the stream,
   * simulating a communications environment in which the user listens to echoes

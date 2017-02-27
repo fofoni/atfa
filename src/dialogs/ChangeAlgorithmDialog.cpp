@@ -38,7 +38,7 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(ATFA *parent) :
     file_select = new FileSelectWidget(
                 "Open DSO file", QDir::currentPath(),
                 "Dynamic Shared Object files (*.so)",
-                this);
+                this, this);
     file_choose_layout->addWidget(file_select);
 
     layout->addLayout(file_choose_layout);
@@ -51,7 +51,7 @@ ChangeAlgorithmDialog::ChangeAlgorithmDialog(ATFA *parent) :
     button_box->buttons()[0]->setDisabled(true);
     button_box->buttons()[2]->setToolTip(
                 "Go back to a scenario with no adaptive filtering.");
-    if (atfa->adapf_is_dummy)
+    if (atfa->stream.adapf_is_dummy())
         button_box->buttons()[2]->setDisabled(true);
     layout->addWidget(button_box);
     connect(file_select, SIGNAL(textChanged(const QString&)),
@@ -84,7 +84,6 @@ bool ChangeAlgorithmDialog::run() {
     if (discard) {
 
         atfa->stream.setAdapfAlgorithm(new AdaptiveFilter<Stream::sample_t>());
-        atfa->adapf_is_dummy = true;
         atfa->adapf_file = "";
 
     }
@@ -101,7 +100,6 @@ bool ChangeAlgorithmDialog::run() {
             new AdaptiveFilter<Stream::sample_t>(filename.toUtf8().constData())
         );
 
-        atfa->adapf_is_dummy = false;
         atfa->adapf_file = filename;
 
     }

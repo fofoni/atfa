@@ -110,6 +110,8 @@ private:
 
     void *data;
 
+    void make_dummy();
+
 };
 
 
