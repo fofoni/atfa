@@ -154,6 +154,8 @@ private:
 
     friend class ChangeAlgorithmDialog;
 
+    void save_to_file(QString filename);
+
 };
 
 #endif // ATFA_H

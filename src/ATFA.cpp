@@ -489,6 +489,7 @@ void ATFA::newscene() {
         return;
     }
     stream.set_scene(Stream::Scenario());
+    scene_filename = "";
     update_widgets();
     statusBar()->showMessage("New scenario with default parameters set.");
 }
@@ -506,14 +507,33 @@ void ATFA::open() {
 }
 
 void ATFA::save() {
-    if (scene_filename == "") {
-        scene_filename = QFileDialog::getSaveFileName(
+    QString filename = scene_filename;
+    if (filename == "") {
+        filename = QFileDialog::getSaveFileName(
                     this, "Save File", QDir::currentPath(),
                     "ATFA scenario files (*.atfascene)");
     }
-    if (scene_filename == "")
+    if (filename == "")
         return;
-    QFile save_file {scene_filename};
+    save_to_file(filename);
+    statusBar()->showMessage("Scenario configuration successfully saved.");
+}
+
+void ATFA::save_as() {
+    QString filename = QFileDialog::getSaveFileName(
+                this, "Save File", QDir::currentPath(),
+                "ATFA scenario files (*.atfascene)");
+    if (filename == "")
+        return;
+    save_to_file(filename);
+    statusBar()->showMessage("Scenario configuration successfully saved"
+                             " to new file.");
+}
+
+void ATFA::save_to_file(QString filename) {
+    if (filename == "")
+        return;
+    QFile save_file {filename};
     if (QFileInfo{save_file}.isDir()) {
         QMessageBox msg_box;
         msg_box.setText("You can't choose a directory.");
@@ -524,22 +544,14 @@ void ATFA::save() {
     }
     if (!save_file.open(QIODevice::WriteOnly)) {
         QMessageBox msg_box;
-        msg_box.setText(QString{"Error opening file "} + scene_filename + " .");
+        msg_box.setText(QString{"Error opening file "} + filename + " .");
         msg_box.setWindowTitle("ATFA [error]");
         msg_box.setIcon(QMessageBox::Warning);
         msg_box.exec();
         return;
     }
     save_file.write(stream.scene.to_json().toJson());
-    statusBar()->showMessage("Scenario configuration successfully saved.");
-}
-
-void ATFA::save_as() {
-    QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
-    msg_box.setIcon(QMessageBox::Information);
-    msg_box.exec();
+    scene_filename = filename;
 }
 
 void ATFA::quit() {
@@ -601,11 +613,75 @@ void ATFA::benchmark_dso() {
 }
 
 void ATFA::show_help() {
-    QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
-    msg_box.setIcon(QMessageBox::Information);
-    msg_box.exec();
+    QDialog *help_dialog = new QDialog{this};
+    QVBoxLayout *layout = new QVBoxLayout{help_dialog};
+                // TODO: filter_output ???
+    QLabel *txt = new QLabel{
+               "<h1>ATFA - Help</h1>\
+                <p>This is a very short introduction to ATFA. For a more\
+                detailed manual, please visit " html_link(ATFA_BITLY) ".</p> \
+                <p>ATFA is the Ambiente para Testes de Filtros Adaptativos\
+                (Testing environment for adaptive filters). To use it, adjust\
+                the settings in the main window to setup your simulation, and\
+                then click the \"play\" button.</p>\
+                <p>The many settings and buttons presented in the main window\
+                are briefly explained below.</p>\
+                <ul>\
+                    <li><b>Filter learning:</b> this box controls the learning\
+                        of the adaptive filter. When set to 'Enabled', the\
+                        adaptive filter will update its coefficients at every\
+                        input sample. When set to 'Disabled', the coefficients\
+                        will never be updated. When set to 'VAD', the\
+                        coefficients will be updated only on the frames for\
+                        which the Voice Activity Detector triggers. This\
+                        setting can be changed online (while the simulation is\
+                        running), and its effect is instantaneous.</li>\
+                    <li><b>Reset filter state:</b> While the simulation is\
+                        running, you can click this button to reset all filter\
+                        coefficients back to their initial value (usually\
+                        zero).</li>\
+                    <li><b>Voice activity:</b> during simulation, this will\
+                        glow in green when a voice signal has been detected in\
+                        the input. You can choose between the <i>Soft</i> and\
+                        the <i>Hard</i> detectors (the <i>Hard</i> detector is\
+                        suggested if you're working in a noisy\
+                        environment).</li>\
+                    <li><b>Play button:</b> Click to start the simulation.</li>\
+                    <li><b>Round trip delay:</b> The delay introduced by the\
+                        simulated communications network. This includes all\
+                        layers of the communications system, from the\
+                        sound-capture hardware, all the way to the remote\
+                        simulated echoing room, and back to the sound\
+                        reproducing hardware. This value, given in miliseconds,\
+                        depends on the latency of your audio system, over which\
+                        the simulator has no control. For this value to be\
+                        accurate, the system latency must be calibrated in\
+                        Tools &gt; Change system latency.</li>\
+                    <li><b>Volume:</b> The playback volume. You can use the\
+                        \"Mute\" button to temporarily stop playback without\
+                        stopping the simulation.</li>\
+                    <li><b>Room impulse response:</b> When you start the\
+                        simulator, the RIR is set to a kronecker delta (as\
+                        if the audio output and input in the remote room\
+                        were short-circuited). You can click the \"Change\"\
+                        button to set a custom RIR. You can: 1) write down\
+                        the exact coefficients you want; 2) choose a WAV file;\
+                        or 3) go back to the default kronecker delta.</li>\
+                    <li><b>Adaptive filtering algorithm:</b> When ATFA starts,\
+                        no adaptive filter is loaded, and if you proceed to\
+                        run the simulation without loading one, you will hear\
+                        the convolution of the RIR with the sound activity in\
+                        your room (e.g. your voice). Click \"Choose\" to load a\
+                        custom adaptive filter.</li>\
+                </ul>", help_dialog};
+    txt->setWordWrap(true);
+    QScrollArea *scroll = new QScrollArea;
+    scroll->setMinimumWidth(600);
+    scroll->setWidget(txt);
+    layout->addWidget(scroll);
+    help_dialog->setLayout(layout);
+    help_dialog->setWindowTitle("ATFA - help");
+    help_dialog->exec();
 }
 
 void ATFA::about_atfa() {
