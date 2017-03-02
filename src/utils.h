@@ -49,6 +49,7 @@
 #endif
 
 #define html_link(url) "<a href='" url "'>" url "</a>"
+#define html_email(address) "<a href='mailto:" address "'>" address "</a>"
 
 /// Shorthand for the number \f$2\pi\f$.
 /**

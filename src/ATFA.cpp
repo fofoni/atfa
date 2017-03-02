@@ -686,8 +686,33 @@ void ATFA::show_help() {
 
 void ATFA::about_atfa() {
     QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
+    msg_box.setText(
+                "<h1>Ambiente para Testes de Filtros Adaptativos</h1>\
+                <p>You are using\
+                <center><b>ATFA " ATFA_VERSION "</b></center><br />\
+                You can find this software, along with a detailed manual,\
+                in<br />\
+                <center>" html_link(ATFA_URL) "</center><br />\
+                Please, send comments and suggestions to the author<br />\
+                <center>Pedro Angelo Medeiros Fonini ("
+                html_email("pedro.fonini@smt.ufrj.br") ")</center><br />\
+                This software was developed as part of the requirements for\
+                obtaining the degree of electronics and computer engineer at\
+                Universidade Federal do Rio de Janeiro (UFRJ). I am immensely\
+                grateful to the help of my advisors Markus Lima and Paulo\
+                Diniz, and of the Signals, Multimedia and Telecommunications\
+                group (SMT/COPPE/UFRJ).</p>\
+                <p>ATFA is a software to aid the testing, teaching and\
+                development of different types of adaptive filtering algorithms\
+                for echo suppression. The software simulates, in real-time, an\
+                L.E.M. (loudspeaker-enclosure-microphone) system, to which the\
+                user's voice is subject, and then applies a given adaptive\
+                filtering algorithm. You will know that your algorithm is\
+                working as desired when you speak while the simulation is\
+                running and do not hear the echo of your voices. You are free\
+                to write your algorithms in C or C++ and feed it, compiled, to\
+                the testing environment.</p>");
+    msg_box.setWindowTitle("ATFA - about");
     msg_box.setIcon(QMessageBox::Information);
     msg_box.exec();
 }
