@@ -40,6 +40,7 @@ extern "C" {
 #include "dialogs/ChangeAlgorithmDialog.h"
 #include "dialogs/ChangeRIRDialog.h"
 #include "dialogs/ChooseNumberDialog.h"
+#include "dialogs/BenchmarkAdapfDialog.h"
 #include "utils.h"
 
 ATFA::ATFA(QWidget *parent) :
@@ -605,11 +606,8 @@ void ATFA::change_syslatency() {
 }
 
 void ATFA::benchmark_dso() {
-    QMessageBox msg_box;
-    msg_box.setText("Not implemented yet");
-    msg_box.setWindowTitle("ATFA [info]");
-    msg_box.setIcon(QMessageBox::Information);
-    msg_box.exec();
+    auto *bm_dialog = new BenchmarkAdapfDialog{this};
+    bm_dialog->exec();
 }
 
 void ATFA::show_help() {
@@ -774,6 +772,8 @@ void ATFA::play_clicked() {
         save_act->setDisabled(false);
         open_act->setDisabled(false);
         save_as_act->setDisabled(false);
+        benchmark_act->setDisabled(false);
+        syslatency_act->setDisabled(false);
 
         vad_indicator_led->setLEDStatus(false);
 
@@ -787,6 +787,8 @@ void ATFA::play_clicked() {
         save_act->setDisabled(true);
         open_act->setDisabled(true);
         save_as_act->setDisabled(true);
+        benchmark_act->setDisabled(true);
+        syslatency_act->setDisabled(true);
 
         pastream = stream.echo();
 

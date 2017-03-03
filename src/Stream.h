@@ -505,6 +505,8 @@ private:
 
     LEDIndicatorWidget *led_widget;
 
+    friend class BenchmarkAdapfDialog;
+
 };
 
 /*****************************************/

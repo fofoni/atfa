@@ -19,6 +19,10 @@
 #ifndef ADAPTIVEFILTER_H
 #define ADAPTIVEFILTER_H
 
+extern "C" {
+# include <dlfcn.h>
+}
+
 #include <string>
 #include <sstream>
 #include <stdexcept>

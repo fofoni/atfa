@@ -50,6 +50,11 @@
 
 #define html_link(url) "<a href='" url "'>" url "</a>"
 #define html_email(address) "<a href='mailto:" address "'>" address "</a>"
+#define html_tt(text) "<span style='font-family: monospace'>" text "</span>"
+inline QString qt_html_tt(QString text) {
+    return QStringLiteral("<span style='font-family: monospace'>") +
+            text + QStringLiteral("</span>");
+}
 
 /// Shorthand for the number \f$2\pi\f$.
 /**

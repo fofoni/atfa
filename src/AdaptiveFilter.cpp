@@ -18,10 +18,6 @@
  * \author Pedro Angelo Medeiros Fonini
  */
 
-extern "C" {
-# include <dlfcn.h>
-}
-
 #include <stdexcept>
 #include <iostream>
 
