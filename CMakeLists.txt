@@ -111,7 +111,6 @@ add_executable( atfa
     src/AdaptiveFilter.cpp
     src/utils.cpp
     src/ATFA.cpp
-    src/AdapfBenchmarker.cpp
     src/dialogs/BenchmarkAdapfDialog.cpp
     src/dialogs/ChangeAlgorithmDialog.cpp
     src/dialogs/ChangeRIRDialog.cpp
