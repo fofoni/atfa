@@ -19,8 +19,24 @@
 #include "widgets/LEDIndicatorWidget.h"
 #include "dialogs/ChangeAlgorithmDialog.h"
 
-// TODO: usar std::valarray ao invés de vector. Dá pra fazer produto interno
-// ((v0*v1).sum()) e shift circular.
+/*
+
+    TODO: refatorar o código, obedecendo:
+    (1) adhere strictly à regra de que "cada classe representa uma e somente uma
+        abstração"; em particular, as classes de implementação devem estar
+        completamente separadas das classes de GUI.
+    (2) As classes de implementação devem ter muito bem especificadas as suas
+        invariantes, e documentar se essas invariantes são enforced pelo código
+        ou pelo usuário da classe.
+    (3) As classes de implementação devem estar todas cobertas por Unit Tests,
+        e.g. para a Stream devemos ter pares in/out de WAVs gerados pelo MATLAB.
+    (4) A Stream deve ser conectável tanto ao PortAudio quanto a um
+        produtor/consumidor externo.
+    (5) Usar C++14, e verificar se compila no Clang, além do GCC.
+    (6) Usar valarray pra tudo.
+    (7) Usar enum classes ao invés de enums.
+
+*/
 
 // TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
 //       dono, e avulsos assim que possível)

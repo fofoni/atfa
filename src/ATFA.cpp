@@ -698,17 +698,18 @@ void ATFA::about_atfa() {
                 obtaining the degree of electronics and computer engineer at\
                 Universidade Federal do Rio de Janeiro (UFRJ). I am immensely\
                 grateful to the help of my advisors Markus Lima and Paulo\
-                Diniz, and of the Signals, Multimedia and Telecommunications\
+                Diniz, and to the Signals, Multimedia and Telecommunications\
                 group (SMT/COPPE/UFRJ).</p>\
-                <p>ATFA is a software to aid the testing, teaching and\
+                <p>ATFA (in english, testing environment for adaptive filters)\
+                is a software to aid the testing, teaching and\
                 development of different types of adaptive filtering algorithms\
                 for echo suppression. The software simulates, in real-time, an\
                 L.E.M. (loudspeaker-enclosure-microphone) system, to which the\
                 user's voice is subject, and then applies a given adaptive\
                 filtering algorithm. You will know that your algorithm is\
                 working as desired when you speak while the simulation is\
-                running and do not hear the echo of your voices. You are free\
-                to write your algorithms in C or C++ and feed it, compiled, to\
+                running and do not hear the echo of your voices. You can\
+                write your algorithms in C or C++ and feed them, compiled, to\
                 the testing environment.</p>");
     msg_box.setWindowTitle("ATFA - about");
     msg_box.setIcon(QMessageBox::Information);
