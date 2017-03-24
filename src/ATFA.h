@@ -25,23 +25,29 @@
     (1) adhere strictly à regra de que "cada classe representa uma e somente uma
         abstração"; em particular, as classes de implementação devem estar
         completamente separadas das classes de GUI.
-    (2) As classes de implementação devem ter muito bem especificadas as suas
+    (2) Evita naked-new/delete (usa unique_ptr, shared_ptr, etc)
+    (3) As classes de implementação devem ter muito bem especificadas as suas
         invariantes, e documentar se essas invariantes são enforced pelo código
         ou pelo usuário da classe.
-    (3) As classes de implementação devem estar todas cobertas por Unit Tests,
+    (4) Pensar, para todas as classes, se elas devem ter ou não
+        (e se não tiver, garantir que não tem): default constructor, copy
+        constructor, copy assignment, move constructor, move assignment,
+        destructor
+    (5) Garantir const-correctness de todos os métodos de todas as classes. Se
+        um método parece que deveria ser const mas não pode ser por motivos
+        de implementação então dos dois um: ou ele tem uma explicação muito boa
+        pra constness dele ser anti-intuitiva, ou então a gente tem que mudar
+        a implementação pra que seja const.
+    (6) As classes de implementação devem estar todas cobertas por Unit Tests,
         e.g. para a Stream devemos ter pares in/out de WAVs gerados pelo MATLAB.
-    (4) A Stream deve ser conectável tanto ao PortAudio quanto a um
+    (7) A Stream deve ser conectável tanto ao PortAudio quanto a um
         produtor/consumidor externo.
-    (5) Usar C++14, e verificar se compila no Clang, além do GCC.
-    (6) Usar valarray pra tudo.
-    (7) Usar enum classes ao invés de enums.
+    (8) Usar C++14, e verificar se compila no Clang, além do GCC.
+    (9) Usar valarray pra tudo.
+   (10) Usar enum classes ao invés de enums.
 
 */
 
-// TODO: limpar todos os new's (destruir todo mundo; membros no destrutor do
-//       dono, e avulsos assim que possível)
-//       alem disso, fechar o portaudio no destrutor do ATFA, caso necessario
-//       Dica: substituir a maioria dos pointers por unique_ptr
 
 class ATFA : public QMainWindow {
 

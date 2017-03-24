@@ -10,6 +10,12 @@
 #include "BenchmarkAdapfDialog.h"
 #include "../AdapfBenchmarker.h"
 
+/* TODO: devemos mostrar como "taxa máxima" a taxa atingida quando o período
+ *       é o *dobro* da duração da DSO. Fala que "assuming 50% of CPU
+ *       time lost to scheduling jitter, processing overhead, and other
+ *       processes in the system..."
+ */
+
 BenchmarkAdapfDialog::BenchmarkAdapfDialog(ATFA *parent)
     : QDialog(parent), atfa(parent)
 {

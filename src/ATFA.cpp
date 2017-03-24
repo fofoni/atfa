@@ -22,6 +22,15 @@
  *       permitida, nome, valor default, etc, etc
  */
 
+/* TODO: fazer uma interface p mostrar informações disponibilizadas pelas
+ *       funções de querying do PorAudio, sobre os devices disponíveis, etc.
+ */
+
+/* TODO: detectar quando o filtro explodiu, e parar a simulação imediatamente
+ *       (usar a função de "abort stream" do portaudio, ao invés da função de
+ *       "stop stream")
+ */
+
 // TODO: quando a RIR selecionada for o "None", o botão de "show rir
 //       coefficients" tem que estar HABILITADO, e mostrar "rir = [ 1 ]".
 
@@ -568,7 +577,7 @@ void ATFA::change_syslatency() {
                 " delay set in the main window is the real round-trip delay,"
                 " provided the system latency has been configured correctly in"
                 " this dialog. You should measure your system's latency and set"
-                " it accordingly. Please refer to the built-in help system, or"
+                " it accordingly. Please"
                 " download a copy of the manual from " html_link(ATFA_BITLY)
                 " for more detailed instructions.",
 //                "The delay introduced"

@@ -82,7 +82,7 @@ execute_process( COMMAND git describe
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
-# TODO: fazer página do ATFA
+# TODO: fazer página do ATFA (com botões! https://buttons.github.io/ star&downl)
 add_definitions( "-DATFA_URL=\"http://www.smt.ufrj.br/~pedro.fonini/\"" )
 # TODO: fazer bit.ly apontanto para a página do ATFA
 add_definitions( "-DATFA_BITLY=\"bit.ly/fonini\"" )
