@@ -45,6 +45,8 @@
     (8) Usar C++14, e verificar se compila no Clang, além do GCC.
     (9) Usar valarray pra tudo.
    (10) Usar enum classes ao invés de enums.
+   (11) Especificar premissas/assumptions do código em termos de
+        static_assert's etc.
 
 */
 
