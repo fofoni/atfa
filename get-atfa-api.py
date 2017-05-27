@@ -15,7 +15,7 @@ import pathlib
 import urllib.request
 from urllib.parse import urlparse
 
-default_header_filename = 'build-all.sh'
+default_header_filename = 'atfa_api.h'
 default_header_dir = pathlib.Path('src/')
 default_url = 'https://github.com/fofoni/atfa-examples/raw/master/{}'.format(
     default_header_filename)
