@@ -93,13 +93,14 @@ endif(ATFA_LOG_MATLAB)
 ###########
 ########### Setup compiler
 ###########
-set( WARN_FLAGS "${WARN_FLAGS} -Wall -Wextra -Wsign-conversion" )
+set( WARN_FLAGS "${WARN_FLAGS} -Werror -Wall -Wextra -Wsign-conversion" )
 set( USUAL_FLAGS "${USUAL_FLAGS} -std=c++11 ${WARN_FLAGS} -pedantic" )
 set( DBG_FLAGS "${USUAL_FLAGS} -DATFA_DEBUG -O0 -g3 -fno-inline" )
+set( TUNE_FLAGS "-march=native -mtune=native" )
 if(ATFA_TUNE_DEBUGREL)
-    set( DBG_FLAGS "${DBG_FLAGS} -march=native -mtune=native" )
+    set( DBG_FLAGS "${DBG_FLAGS} ${TUNE_FLAGS}" )
 endif(ATFA_TUNE_DEBUGREL)
-set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -O3 -march=native -mtune=native" )
+set( RLS_FLAGS "${USUAL_FLAGS} -DATFA_RELEASE -DNDEBUG -O3 ${TUNE_FLAGS}" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG}   ${DBG_FLAGS}" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RLS_FLAGS}" )
 add_executable( atfa
