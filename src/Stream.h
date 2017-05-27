@@ -345,6 +345,14 @@ public:
       */
     void set_delay(unsigned msec) {
         delay_samples = static_cast<index_t>(double(samplerate) * msec / 1000);
+        // TODO: ERRO!!! filter_ptr é para ser:
+        //     rir_ptr  + delay
+        // ao invés de:
+        //     read_ptr + delay
+        // O problema é que rir_ptr tá num buffer (datain) e filter_ptr
+        // tá no outro (dataout); precisamos de uma "cópia" do rir_ptr no
+        // dataout :(  ->  ou então usa pointer arithmetic mesmo pra
+        // gerar o filter como sendo "rir"+delay
         size_t remaining = static_cast<size_t>(data_out.end() - read_ptr);
         if (delay_samples < remaining)
             filter_ptr = read_ptr + static_cast<long>(delay_samples);

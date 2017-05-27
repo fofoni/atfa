@@ -24,15 +24,24 @@
     TODO: refatorar o código, obedecendo:
     (1) adhere strictly à regra de que "cada classe representa uma e somente uma
         abstração"; em particular, as classes de implementação devem estar
-        completamente separadas das classes de GUI.
-    (2) Evita naked-new/delete (usa unique_ptr, shared_ptr, etc)
+        completamente separadas das classes de GUI. (e.g., nada de classe
+        Stream tendo pointer pra LED)
+    (2) Evita naked-new/delete (usa unique_ptr, shared_ptr, etc) -> dá inclusive
+        pra usar os smart pointers pra QObjects, mesmo que as funções do Qt
+        recebam em geral raw pointers pros QObjects, pq a gente pode
+        simplesmente usar o unique_pointer::get(), que dá acesso ao raw pointer
+        subjacente ao unique_ptr. (Obs: http://doc.qt.io/qt-5/objecttrees.html
+        ou seja, na verdade não é pra usar smart pointer pra QObjects,
+        pq eles são deletados automaticamente de acordo com a hierarquia de
+        pais/filhos dos QObjects; basta apenas deletar o paizão)
     (3) As classes de implementação devem ter muito bem especificadas as suas
         invariantes, e documentar se essas invariantes são enforced pelo código
         ou pelo usuário da classe.
     (4) Pensar, para todas as classes, se elas devem ter ou não
-        (e se não tiver, garantir que não tem): default constructor, copy
-        constructor, copy assignment, move constructor, move assignment,
-        destructor
+        (e se não tiver, garantir que não tem usando =delete):
+        default constructor, copy constructor, copy assignment,
+        move constructor, move assignment, destructor;
+        se quiser garantir método default, usa =default .
     (5) Garantir const-correctness de todos os métodos de todas as classes. Se
         um método parece que deveria ser const mas não pode ser por motivos
         de implementação então dos dois um: ou ele tem uma explicação muito boa
@@ -42,11 +51,41 @@
         e.g. para a Stream devemos ter pares in/out de WAVs gerados pelo MATLAB.
     (7) A Stream deve ser conectável tanto ao PortAudio quanto a um
         produtor/consumidor externo.
-    (8) Usar C++14, e verificar se compila no Clang, além do GCC.
+    (8) Usar C++14(17?), e verificar se compila no Clang, além do GCC.
     (9) Usar valarray pra tudo.
    (10) Usar enum classes ao invés de enums.
    (11) Especificar premissas/assumptions do código em termos de
-        static_assert's etc.
+        static_assert's etc. (estas especificações devem estar documentadas
+        de acordo com o item (3) acima)
+   (12) Usa {}-initializers em TUDO (cuidado com ctors que aceitam
+        initializer_list)
+   (13) Usa tipos com tamanho explícito em tudo (int_64_t, etc), especialmente
+        nas interfaces de DSO
+   (14) Usa somente QString, nada de std::string
+   (15) Usa noexcept e virtual+override SEMPRE que for o caso (obs, dar uma
+        olhada no Q_DECL_OVERRIDE---qual a diferença dele pro override?)
+   (16) constexpr pow (CTUtils), no c++14, não precisa daquela recursão feiosa,
+        pode implementar usando loop mesmo
+   (17) Quanto às pequenas variáveis que são acessadas thread-unsafely na
+        implementação atual: faz uma flag de compilação que indica se elas
+        devem ser safe (std::atomic) ou se deve ser unsafe mesmo
+   (18) Evita unsigned; lembra que, mesmo que a taxa fosse 100kHz,
+        o tipo 'int_32_t' seria o suficiente pra endereçar approx 6 horas de
+        amostras, ou seja, não tem necessidade de usar mais de 32 bits pra
+        índice de amostra (que é o que o size_t faz)
+   (19) Keep functions short
+   (20) Don't Repeat Yourself
+   (21) Usa o I18n do Qt: http://doc.qt.io/qt-5/i18n-source-translation.html
+   (22) Doxygen! Ou então pesquisa qual outra ferramenta de documentação é
+        melhor.
+   (23) Não abusa do std::endl; '\n' é portável, e não força flush.
+   (24) Usa namespaces anônimos (ao invés de `static') pra forçar linkage
+        interno -> forçar internal linkage ajuda na modularização e na
+        separation of concerns.
+   (25) ctors devem ser 'explicit' a menos que haja uma boa razão para o
+        contrário (principalmente se tiverem um argumento só)
+   (26) métodos inline com corpo grande devem ser definidos fora da definição
+        da classe, de acordo com TC++PL4Ed Sec. 16.2.8 (p. 461)
 
 */
 

@@ -381,13 +381,13 @@ void DefaultDFT::operator ()(container_t& re, container_t& im,
         for (unsigned k = 0; k != L/2/size; ++k) {
             for (unsigned l = 0; l != size; ++l) {
 
-                // apply single butterfly at indexes i1 and i2,
-                // with coefficient exp(j*tau*frac) at i2.
-                // `frac' is an angle expressed in one-`L'ths of tau,
-                // which is 2*pi.
-
                 unsigned i1 = 2*size*k + l;
                 unsigned i2 = i1 + size;
+
+                // apply single butterfly at indexes i1 and i2,
+                // with coefficient exp(j*tau*frac) at i2.
+                // `frac' is an angle expressed in one-`L'ths of tau.
+                // (where tau=2*pi)
 
                 unsigned frac = L - L/2/size*l; // integer division in 2nd term
                 double cossine = Wre(frac);

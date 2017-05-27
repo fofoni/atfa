@@ -498,7 +498,6 @@ void Stream::rir_fft() {
             auto f_ptr = filter_ptr;
             auto y_first = y_re.begin();
             if (overflow < 0) {
-                // there is no overflow
                 RCOUT("No overflow in this block.");
                 for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;

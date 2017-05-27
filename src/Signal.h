@@ -168,6 +168,15 @@ public:
     /// Makes PortAudio playback the audio signal.
     void play(bool sleep=true);
 
+    //       Do jeito que está, a DFT faz transformada de vetores de qualquer
+    //       um dos tamanhos 2^0, 2^1, 2^2, ..., 2^tblbits. Para isso, o código
+    //       é genérico no comprimento do vetor.
+    // TODO: isso não deveria ser assim. O tamanho dos vetores nos quais a
+    //       DFT vai operar é conhecido em tempo de compilação! (a única
+    //       exceção é o Signal::filter, que usar dft de tamanho variável;
+    //       dar um jeito nisso) Na pior das hipóteses, fazemos duas DFTs:
+    //       uma genérica e uma especializada
+
     /// \brief A class for providing discrete Fourier transform capabilities.
     ///
     /// This class implements the radix-2 FFT algorithm used in the
