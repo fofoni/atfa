@@ -2,6 +2,7 @@
 *~
 *.bak
 */[Cc][Mm]ake*
+*.autosave
 # do not ignore CMakeLists.txt
 !CMakeLists.txt
 Makefile
