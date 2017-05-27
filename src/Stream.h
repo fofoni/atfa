@@ -260,7 +260,7 @@ public:
         }
         size_t current_offset = blk_offset + pa_frames;
         auto blk_count_inc = static_cast<int>(current_offset / blk_size);
-        // if (blk_count_inc)
+        if (blk_count_inc)
         {
             std::lock_guard<std::mutex> lk(blk_mutex);
             blk_count += blk_count_inc;
