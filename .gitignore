@@ -13,3 +13,4 @@ RIRs
 src/autogen
 CMakeLists.txt.user
 *.atfascene
+src/atfa_api.h

@@ -20,30 +20,20 @@
 #define ADAPTIVEFILTER_H
 
 extern "C" {
-# include <dlfcn.h>
+#include <dlfcn.h>
 }
 
 #include <string>
 #include <sstream>
 #include <stdexcept>
 
+#include "atfa_api.h"
+
 template <typename SAMPLE_T>
 class AdaptiveFilter
 {
 
 public:
-
-    // adaptive filter {init, close, run, restart,
-    //                  get w, get title, get listing}
-    typedef void *(*afi_t)(void);
-    typedef int (*afc_t)(void *);
-    typedef SAMPLE_T (*afr_t)(void *, SAMPLE_T, SAMPLE_T, int);
-    typedef void *(*afz_t)(void *);
-#ifdef ATFA_LOG_MATLAB
-    typedef void (*afw_t)(void *, SAMPLE_T **, unsigned *);
-#endif
-    typedef const char *(*aft_t)(void);
-    typedef const char *(*afl_t)(void);
 
     AdaptiveFilter(std::string dso_path);
     AdaptiveFilter();
@@ -91,7 +81,7 @@ private:
     bool dummy;
 
     template <typename SYM_T>
-    SYM_T get_sym(std::string sym_name);
+    SYM_T *get_sym(const char *sym_name);
 
     // TODO: fazer função raise(string) para embutir o path e o dlerror
     // no AdapfException (com opção p não mostrar dlerror)
@@ -102,17 +92,17 @@ private:
 
     void *lib;
 
-    afi_t init;
-    afc_t close;
-    afr_t run;
-    afz_t restart;
+    adapf_init_t *init;
+    adapf_restart_t *restart;
+    adapf_close_t *close;
+    adapf_run_t *run;
 #ifdef ATFA_LOG_MATLAB
-    afw_t getw;
+    adapf_getw_t *getw;
 #endif
-    aft_t title;
-    afl_t listing;
+    adapf_title_t *title;
+    adapf_listing_t *listing;
 
-    void *data;
+    AdapfData *data;
 
     void make_dummy();
 
@@ -158,12 +148,12 @@ private:
 
 template <typename SAMPLE_T>
 template <typename SYM_T>
-SYM_T AdaptiveFilter<SAMPLE_T>::get_sym(std::string sym_name) {
-    std::string full_sym_name = std::string("adapf_") + sym_name;
-    SYM_T sym = reinterpret_cast<SYM_T>(dlsym(lib, full_sym_name.c_str()));
+SYM_T *
+AdaptiveFilter<SAMPLE_T>::get_sym(const char *sym_name) {
+    SYM_T *sym = static_cast<SYM_T *>(dlsym(lib, sym_name));
     if (!sym)
         throw AdapfException(
-                std::string("Could not open ") + full_sym_name
+                std::string("Could not open ") + sym_name
                 + " symbol from shared object file",
                 path, dlerror());
     return sym;

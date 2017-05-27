@@ -33,7 +33,7 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
   : path(dso_path), data(nullptr)
 {
 
-    dummy = dso_path.length() == 0;
+    dummy = dso_path.length()==0;
 
     if (dummy) {
         make_dummy();
@@ -46,15 +46,17 @@ AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
                 "Could not open shared object file",
                 path, dlerror());
 
-    init = get_sym<afi_t>("init");
-    close = get_sym<afc_t>("close");
-    run = get_sym<afr_t>("run");
-    restart = get_sym<afz_t>("restart");
+    ATFA_API_table_t *api = get_sym<ATFA_API_table_t>("adapf_api");
+
+    init = api->init;
+    close = api->close;
+    run = api->run;
+    restart = api->restart;
 #ifdef ATFA_LOG_MATLAB
-    getw = get_sym<afw_t>("getw");
+    getw = api->getw;
 #endif
-    title = get_sym<aft_t>("title");
-    listing = get_sym<afl_t>("listing");
+    title = api->title;
+    listing = api->listing;
 
     test();
 
@@ -107,7 +109,7 @@ template <typename SAMPLE_T>
 void AdaptiveFilter<SAMPLE_T>::test() {
     if (dummy)
         return;
-    void *dat = (*init)();
+    AdapfData *dat = (*init)();
     if (!dat)
         throw AdapfException(
                 "Could not initialize adaptive filter data structures,"
@@ -132,14 +134,15 @@ void AdaptiveFilter<SAMPLE_T>::test() {
 
 /* DUMMY (NO OP) FILTER */
 
-void *dummy_init() { return nullptr; }
-int dummy_close(void *) { return 1; }
-void *dummy_restart(void *) { return nullptr; }
+// TODO: essas funções aqui deveriam ter linkage interno (anonymous namespace)
+AdapfData *dummy_init() { return nullptr; }
+int dummy_close(AdapfData *) { return 1; }
+AdapfData *dummy_restart(AdapfData *) { return nullptr; }
 template <typename SAMPLE_T>
-SAMPLE_T dummy_run(void *, SAMPLE_T, SAMPLE_T y, int) { return y; }
+SAMPLE_T dummy_run(AdapfData *, SAMPLE_T, SAMPLE_T y, int) { return y; }
 #ifdef ATFA_LOG_MATLAB
 template <typename SAMPLE_T>
-void dummy_getw(void *, SAMPLE_T **begin, unsigned *n) {
+void dummy_getw(AdapfData *, SAMPLE_T **begin, unsigned *n) {
     // *begin will be used as source in a call to std::memcpy.
     // Apparently, memcpy invokes undefined behaviour when it gets
     // called with invalid pointer (e.g. nullptr) arguments, EVEN

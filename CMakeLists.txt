@@ -80,6 +80,8 @@ execute_process( COMMAND git describe
                  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
                  OUTPUT_VARIABLE ATFA_VERSION
                  OUTPUT_STRIP_TRAILING_WHITESPACE )
+execute_process( COMMAND python3 get-atfa-api.py
+                 WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} )
 add_definitions( "-DATFA_VERSION=\"${ATFA_VERSION}\"" )
 add_definitions( "-DATFA_DIR=\"${PROJECT_SOURCE_DIR}\"" )
 # TODO: fazer página do ATFA (com botões! https://buttons.github.io/ star&downl)
