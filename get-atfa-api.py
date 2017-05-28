@@ -22,6 +22,8 @@ default_url = 'https://github.com/fofoni/atfa-examples/raw/master/{}'.format(
 
 if __name__ == '__main__':
 
+    # Get URL input and filesystem output files from command line options
+
     import argparse
 
     parser = argparse.ArgumentParser(description='Download ATFA API header')
@@ -64,7 +66,7 @@ if __name__ == '__main__':
         header_dir = header_path.parent
         header_filename = header_path.name
 
-    # Check if file already exists
+    ### Check if output file already exists
 
     if not args.force and header_path.exists():
         # if target file exists but is empty, silently override it
@@ -78,14 +80,20 @@ if __name__ == '__main__':
         raise ValueError("OUTFILE is ‘{}’, which is a"
                             " directory".format(header_path))
 
+    ### Download header file
+
     with urllib.request.urlopen(args.url) as resp:
         if resp.getcode() != 200:
             raise RuntimeError("Could not download ‘{}’ from ‘{}’".format(
                 header_filename, args.url))
         b = resp.read()
 
+    ### Write downloaded data to output file
+
     with header_path.open('wb') as f:
         f.write(b)
+
+    ### End
 
     print("Successfully downloaded ATFA API header file ‘{}’".format(
         header_path))
