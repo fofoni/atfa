@@ -206,19 +206,11 @@ ATFA::ATFA(QWidget *parent) :
         zero_button->setDisabled(true);
         left_layout->addWidget(zero_button);
 
-        fout_group = new QGroupBox("Filter ou&tput", main_widget);
-        QVBoxLayout *fout_layout = new QVBoxLayout;
-            fout_on_radio = new QRadioButton("Enabled (al&ways)", fout_group);
-            fout_off_radio = new QRadioButton("Disabled (alwa&ys)", fout_group);
-            fout_vad_radio = new QRadioButton(
-                "Enabled w&hen VAD detects action", fout_group);
-            fout_on_radio->setChecked(true);
-            fout_layout->addWidget(fout_on_radio);
-            fout_layout->addWidget(fout_off_radio);
-            fout_layout->addWidget(fout_vad_radio);
-            fout_layout->addStretch(1); // TODO: do we need this?
-        fout_group->setLayout(fout_layout);
-        left_layout->addWidget(fout_group);
+        play_button = new QPushButton(main_widget);
+        play_button->setMinimumHeight(80);
+        play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
+        play_button->setIconSize(QSize(58, 58));
+        left_layout->addWidget(play_button);
 
     layout->addLayout(left_layout);
 
@@ -242,12 +234,6 @@ ATFA::ATFA(QWidget *parent) :
 
         vad_indicator_widget->setLayout(vad_indicator_layout);
         right_layout->addWidget(vad_indicator_widget);
-
-        play_button = new QPushButton(main_widget);
-        play_button->setMinimumHeight(80);
-        play_button->setIcon(QIcon(QPixmap("../../imgs/play.png")));
-        play_button->setIconSize(QSize(58, 58));
-        right_layout->addWidget(play_button);
 
         delay_widget = new QWidget(main_widget);
         QHBoxLayout *delay_layout = new QHBoxLayout;
@@ -364,13 +350,6 @@ ATFA::ATFA(QWidget *parent) :
             this, SLOT(flearn_vad_toggled(bool)));
 
     connect(zero_button, SIGNAL(clicked()), this, SLOT(zero_filter_clicked()));
-
-    connect(fout_on_radio, SIGNAL(toggled(bool)),
-            this, SLOT(fout_on_toggled(bool)));
-    connect(fout_off_radio, SIGNAL(toggled(bool)),
-            this, SLOT(fout_off_toggled(bool)));
-    connect(fout_vad_radio, SIGNAL(toggled(bool)),
-            this, SLOT(fout_vad_toggled(bool)));
 
     // Sintaxe nova -> complicada porque QComboBox::currentIndexChanged é
     //                 um sinal com overload, aí a gente tem que especificar
@@ -748,22 +727,6 @@ void ATFA::flearn_vad_toggled(bool t) {
 void ATFA::zero_filter_clicked() {
     stream.reset_adapf_state();
     statusBar()->showMessage("Adaptive filter memory zeroed.");
-}
-
-void ATFA::fout_on_toggled(bool t) {
-    if (!t) return;
-    stream.scene.filter_output = Stream::Scenario::On;
-    statusBar()->showMessage("Filter output always enabled.");
-}
-void ATFA::fout_off_toggled(bool t) {
-    if (!t) return;
-    stream.scene.filter_learning = Stream::Scenario::Off;
-    statusBar()->showMessage("Filter output always disabled.");
-}
-void ATFA::fout_vad_toggled(bool t) {
-    if (!t) return;
-    stream.scene.filter_learning = Stream::Scenario::VAD;
-    statusBar()->showMessage("Filter output is controlled by the VAD.");
 }
 
 void ATFA::play_clicked() {

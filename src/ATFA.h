@@ -133,10 +133,6 @@ private slots:
 
     void zero_filter_clicked();
 
-    void fout_on_toggled(bool t);
-    void fout_off_toggled(bool t);
-    void fout_vad_toggled(bool t);
-
     void play_clicked();
 
     void delay_changed(int v);
