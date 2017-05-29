@@ -48,29 +48,35 @@ if __name__ == '__main__':
     if not args.url:
         raise ValueError("URL must be non-empty")
 
+    # deduce header filename from URL
+    url_path = urlparse(args.url).path
+    if not url_path.endswith('/'):
+        default_header_filename = pathlib.PurePosixPath(url_path).name
+
+    # deduce final header filename and location
     if args.outfile is None:
-        header_dir = default_header_dir
-        url_path = urlparse(args.url).path
-        if url_path.endswith('/'):
-            header_filename = ''
-        else:
-            header_filename = pathlib.PurePosixPath(url_path).name
-        if not header_filename:
-            header_filename = default_header_filename
-        header_path = pathlib.Path(header_dir) / header_filename
+        # user didn't provide a path
+        header_dir = default_header_dir.resolve()
+        header_filename = default_header_filename
     else:
-        if args.outfile.endswith('/') or args.outfile.endswith('/.'):
-            raise ValueError("OUTFILE is ‘{}’, but it should not be a"
-                             " directory".format(args.outfile))
-        header_path = pathlib.Path(args.outfile)
-        header_dir = header_path.parent
-        header_filename = header_path.name
+        # user did provide a path
+        outfile_path = pathlib.Path(args.outfile)
+        if outfile_path.is_dir():
+            header_dir = outfile_path.resolve()
+            header_filename = default_header_filename
+        else:
+            header_dir = outfile_path.parent.resolve()
+            header_filename = outfile_path.name
+    header_path = header_dir / header_filename
 
     ### Check if output file already exists
 
     if not args.force and header_path.exists():
         # if target file exists but is empty, silently override it
         if header_path.stat().st_size != 0:
+            try:
+                header_path = header_path.relative_to(pathlib.Path.cwd())
+            except ValueError: pass
             print("File ‘{}’ already exists: skipping download.".format(
                 header_path))
             sys.exit(0)
@@ -95,5 +101,8 @@ if __name__ == '__main__':
 
     ### End
 
+    try:
+        header_path = header_path.relative_to(pathlib.Path.cwd())
+    except ValueError: pass
     print("Successfully downloaded ATFA API header file ‘{}’".format(
         header_path))
