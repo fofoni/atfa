@@ -77,8 +77,8 @@ if __name__ == '__main__':
             try:
                 header_path = header_path.relative_to(pathlib.Path.cwd())
             except ValueError: pass
-            print("File ‘{}’ already exists: skipping download.".format(
-                header_path))
+            print(("Nonempty file ‘{}’ already exists: skipping download. Use"
+                   " ‘-f’ to download and override.").format(header_path))
             sys.exit(0)
 
     # ignore `--force' when it would override a directory
