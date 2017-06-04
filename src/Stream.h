@@ -122,13 +122,12 @@ public:
         static constexpr int DEFAULT_DELAY = 100; // miliseconds
         static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
         static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
+        static constexpr int DEFAULT_NOISE = -60; // -80 to -20 dB
         static constexpr RIR_filetype_t DEFAULT_FILETYPE = None;
         static constexpr RIR_source_t DEFAULT_SOURCE = NoRIR;
         static constexpr OOV DEFAULT_FLEARN = On;
-        static constexpr OOV DEFAULT_FOUTPUT = On;
 
         OOV filter_learning;
-        OOV filter_output;
 
         RIR_filetype_t rir_filetype;
         RIR_source_t rir_source;
@@ -141,6 +140,7 @@ public:
         int system_latency; // also in ms
 
         float volume; // 0 -- 1
+        int noise_vol; // -80 to -20 (dB)
 
         container_t imp_resp;
 
@@ -149,19 +149,20 @@ public:
         QString filename;
 
         Scenario(
-            OOV flearn = DEFAULT_FLEARN, OOV fout = DEFAULT_FOUTPUT,
+            OOV flearn = DEFAULT_FLEARN,
             int d = DEFAULT_DELAY, int sl = DEFAULT_SYSLATENCY,
             float vol = DEFAULT_VOLUME,
+            float noise = DEFAULT_NOISE,
             RIR_filetype_t filetype = DEFAULT_FILETYPE,
             RIR_source_t source = DEFAULT_SOURCE,
             QString rir_filename="",
             const container_t& ir = container_t(1,1),
             const AdaptiveFilter<sample_t>& adapf = AdaptiveFilter<sample_t>()
         )
-          : filter_learning(flearn), filter_output(fout),
+          : filter_learning(flearn),
             rir_filetype(filetype), rir_source(source), rir_file(rir_filename),
-            delay(d), system_latency(sl), volume(vol), imp_resp(ir),
-            adapf_file(adapf.get_path())
+            delay(d), system_latency(sl), volume(vol), noise_vol(noise),
+            imp_resp(ir), adapf_file(adapf.get_path())
         {}
 
         Scenario(const QString &fn, int delay_max)
@@ -289,6 +290,7 @@ public:
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
           vad_ptr(vad.begin()),
           h_freq_re(fft_size), h_freq_im(fft_size),
+          awgn(buf_size), awgn_ptr(awgn.begin()),
           led_widget(ledw)
     {
         auto stream_delay = scene.delay - scene.system_latency;
@@ -510,6 +512,9 @@ private:
 
     container_t h_freq_re;
     container_t h_freq_im;
+
+    container_t awgn;
+    container_t::const_iterator awgn_ptr;
 
     LEDIndicatorWidget *led_widget;
 

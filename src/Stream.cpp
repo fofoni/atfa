@@ -43,6 +43,9 @@ extern "C" {
 # include <mat.h>
 #endif
 
+#include <cmath>
+#include <random>
+
 #include "Stream.h"
 #include "Signal.h"
 #include "VAD.h"
@@ -168,10 +171,16 @@ PaStream *Stream::echo() {
     blk_offset = 0;
     std::fill(data_in.begin(),  data_in.end(),  0);
     std::fill(data_out.begin(), data_out.end(), 0);
+    {
+        std::mt19937 rng;
+        std::normal_distribution<> gauss{0, std::pow(10,scene.noise_vol/20)};
+        for (auto& x : awgn) x = gauss(rng);
+    }
     write_ptr = data_in.begin();
     read_ptr  = data_out.begin();
     rir_ptr   = data_in.begin();
-    unsigned stream_delay =
+    awgn_ptr  = awgn.begin();
+    auto stream_delay =
             static_cast<unsigned>(scene.delay - scene.system_latency);
     if (stream_delay < min_delay)
         throw std::out_of_range("[Stream::echo] Stream delay (delay minus"
@@ -501,19 +510,19 @@ void Stream::rir_fft() {
                 RCOUT("No overflow in this block.");
                 for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;
-                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
-                    *f_ptr = *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr, ++awgn_ptr)
+                    *f_ptr = *y_first + *awgn_ptr;
                 filter_ptr += blk_size;
             }
             else if (size_t(overflow) < blk_size) {
                 RCOUT("Only the last block of the RIR overflows");
                 for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;
-                for (; f_ptr != data_out.end(); ++y_first,  ++f_ptr)
-                    *f_ptr = *y_first;
+                for (; f_ptr != data_out.end(); ++y_first, ++f_ptr, ++awgn_ptr)
+                    *f_ptr = *y_first + *awgn_ptr;
                 f_ptr = data_out.begin();
-                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
-                    *f_ptr = *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr, ++awgn_ptr)
+                    *f_ptr = *y_first + *awgn_ptr;
                 filter_ptr += blk_size;
             }
             else if (size_t(overflow) < (blks_in_fft-1)*blk_size) {
@@ -523,8 +532,8 @@ void Stream::rir_fft() {
                 f_ptr = data_out.begin();
                 for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;
-                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
-                    *f_ptr = *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr, ++awgn_ptr)
+                    *f_ptr = *y_first + *awgn_ptr;
                 filter_ptr += blk_size;
             }
             else {
@@ -534,13 +543,15 @@ void Stream::rir_fft() {
                 f_ptr = data_out.begin();
                 for (; y_first != y_last;       ++y_first, ++f_ptr)
                     *f_ptr += *y_first;
-                for (; y_first != y_re.end();   ++y_first, ++f_ptr)
-                    *f_ptr = *y_first;
+                for (; y_first != y_re.end();   ++y_first, ++f_ptr, ++awgn_ptr)
+                    *f_ptr = *y_first + *awgn_ptr;
                 filter_ptr = data_out.begin() +
                              static_cast<long>(blk_size - remaining);
             }
-            if (rir_end_ptr == data_in.end())
+            if (rir_end_ptr == data_in.end()) {
                 rir_ptr = data_in.begin();
+                awgn_ptr = awgn.begin();
+            }
             else
                 rir_ptr = rir_end_ptr;
 #ifdef ATFA_DEBUG

@@ -74,24 +74,6 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
     else
         filter_learning = DEFAULT_FLEARN;
 
-    // filter_output
-    if (json.contains(QStringLiteral("filter_output"))) {
-        const QString &fout_str = json["filter_output"].toString();
-        if (fout_str == QStringLiteral("On"))
-            filter_output = On;
-        else if (fout_str == QStringLiteral("Off"))
-            filter_output = Off;
-        else if (fout_str == QStringLiteral("VAD"))
-            filter_output = VAD;
-        else
-            throw SceneJsonInvtokenException(
-                    "in filter_output",
-                    "one of {On,Off,VAD}",
-                    fout_str.toUtf8().constData());
-    }
-    else
-        filter_output = DEFAULT_FOUTPUT;
-
     // rir_source
     if (json.contains(QStringLiteral("rir_source"))) {
         const QString &rirsource_str = json["rir_source"].toString();
@@ -147,6 +129,16 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
     }
     else
         volume = DEFAULT_VOLUME;
+
+    // noise
+    if (json.contains(QStringLiteral("noise_vol"))) {
+        int json_noise = json["noise_vol"].toInt();
+        if (json_noise < -80 || json_noise > -20)
+            throw SceneJsonOOBException("noise_vol", json_noise, 0, 100);
+        noise_vol = json_noise;
+    }
+    else
+        noise_vol = DEFAULT_NOISE;
 
     // rir_filetype & imp_resp
     switch (rir_source) {
@@ -223,6 +215,9 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
     if (json.contains(QStringLiteral("adapf_file")))
         adapf_file = json["adapf_file"].toString().toUtf8().constData();
     else
+        // TODO: AdaptiveFilter<> deveria fornecer um static constexpr
+        //       especificando o path default; construir um filtro default
+        //       só pra pegar o path e jogar o filtro fora é overkill
         adapf_file = AdaptiveFilter<sample_t>().get_path();
 
 }
@@ -249,22 +244,6 @@ QJsonDocument Scene::to_json() const {
     default:
         throw std::runtime_error(
                     "Unknown error, bad value for filter_learning.");
-    }
-
-    // filter_output
-    switch (filter_output) {
-    case On:
-        json["filter_output"] = "On";
-        break;
-    case Off:
-        json["filter_output"] = "Off";
-        break;
-    case VAD:
-        json["filter_output"] = "VAD";
-        break;
-    default:
-        throw std::runtime_error(
-                    "Unknown error, bad value for filter_output.");
     }
 
     // rir_source
@@ -294,6 +273,9 @@ QJsonDocument Scene::to_json() const {
 
     // volume
     json["volume"] = static_cast<int>(std::round(100*volume));
+
+    // noise
+    json["noise_vol"] = noise_vol;
 
     // imp_resp
     if (rir_source == Literal) {
