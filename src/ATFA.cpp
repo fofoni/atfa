@@ -36,6 +36,13 @@
 
 // TODO: verificar que não tem nenhum qDebug solto por aí
 
+// TODO: no Stream::echo(), enche o data_out com ruído antes de começar,
+//       pq se não o ruído entra no meio da simulação
+
+// TODO: impedir de clicar no botão de mudar o ruído durante a simulação
+//       (o botão não tem efeito, por isso é bad deixar que o usuário clique
+//       nele, por uma questão de UX)
+
 extern "C" {
 # include <portaudio.h>
 }
@@ -216,24 +223,42 @@ ATFA::ATFA(QWidget *parent) :
 
     QVBoxLayout *right_layout = new QVBoxLayout;
 
-        vad_indicator_widget = new QWidget(main_widget);
-        QHBoxLayout *vad_indicator_layout = new QHBoxLayout;
+        first_row_widget = new QWidget(main_widget);
+        QHBoxLayout *first_row_layout = new QHBoxLayout;
 
             vad_indicator_label = new QLabel("Voice Activity:",
-                                             vad_indicator_widget);
-            vad_indicator_layout->addWidget(vad_indicator_label);
+                                             first_row_widget);
+            first_row_layout->addWidget(vad_indicator_label);
 
-            vad_indicator_led = new LEDIndicatorWidget(vad_indicator_widget);
-            vad_indicator_layout->addWidget(vad_indicator_led);
+            vad_indicator_led = new LEDIndicatorWidget(first_row_widget);
+            first_row_layout->addWidget(vad_indicator_led);
             stream.setLED(vad_indicator_led);
 
             vad_algorithm_combo = new QComboBox;
             vad_algorithm_combo->addItem("Hard");
             vad_algorithm_combo->addItem("Soft");
-            vad_indicator_layout->addWidget(vad_algorithm_combo);
+            first_row_layout->addWidget(vad_algorithm_combo);
 
-        vad_indicator_widget->setLayout(vad_indicator_layout);
-        right_layout->addWidget(vad_indicator_widget);
+            first_row_div = new QFrame(first_row_widget);
+            first_row_div->setFrameShape(QFrame::VLine);
+            first_row_div->setFrameShadow(QFrame::Sunken);
+            first_row_layout->addWidget(first_row_div);
+
+            noise_label = new QLabel("Noise level:", first_row_widget);
+            first_row_layout->addWidget(noise_label);
+
+            noise_spin = new QSpinBox(first_row_widget);
+            noise_spin->setMinimum(-80);
+            noise_spin->setMaximum(-20);
+            noise_spin->setFixedWidth(60);
+            noise_spin->setValue(Scene::DEFAULT_NOISE);
+            first_row_layout->addWidget(noise_spin);
+
+            noise_unit_label = new QLabel("dB", first_row_widget);
+            first_row_layout->addWidget(noise_unit_label);
+
+        first_row_widget->setLayout(first_row_layout);
+        right_layout->addWidget(first_row_widget);
 
         delay_widget = new QWidget(main_widget);
         QHBoxLayout *delay_layout = new QHBoxLayout;
@@ -358,6 +383,10 @@ ATFA::ATFA(QWidget *parent) :
             static_cast<void (QComboBox::*)(int)>(
                 &QComboBox::currentIndexChanged),
             [this](int idx){stream.setVADAlgorithm(idx);});
+
+    connect(noise_spin,
+            static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            [this](int db){stream.set_noise(db);});
 
     connect(play_button, SIGNAL(clicked()), this, SLOT(play_clicked()));
 

@@ -383,6 +383,12 @@ public:
         set_filter(container_t(first, last), substitute);
     }
 
+    void set_noise(int new_noise) {
+        if (new_noise < -80  ||  new_noise > -20)
+            throw std::runtime_error("Invalid noise level value.");
+        scene.noise_vol = new_noise;
+    }
+
     /// Used for debugging, together with `simulate`
     void dump_state(const container_t speaker_buf) const;
 

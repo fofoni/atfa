@@ -179,10 +179,14 @@ private:
         QRadioButton *fout_off_radio;
         QRadioButton *fout_vad_radio;
     // right layout
-    QWidget *vad_indicator_widget;
+    QWidget *first_row_widget;
         QLabel *vad_indicator_label;
         LEDIndicatorWidget *vad_indicator_led;
         QComboBox *vad_algorithm_combo;
+        QFrame *first_row_div;
+        QLabel *noise_label;
+        QSpinBox *noise_spin;
+        QLabel *noise_unit_label;
     QPushButton *play_button;
     QWidget *delay_widget;
         QLabel *delay_label;
