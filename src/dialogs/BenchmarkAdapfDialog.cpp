@@ -75,9 +75,15 @@ void BenchmarkAdapfDialog::run_and_show() {
     AdapfBenchmarker<Stream::sample_t> bm{
         *atfa->stream.adapf, input_signal, Signal{atfa->stream.scene.imp_resp},
         atfa->stream.scene.noise_vol};
-    double duration_us_0 = bm.benchmark<0>().count() * 1e6;
-    double duration_us_1 = bm.benchmark<1>().count() * 1e6;
-    double duration_us_2 = bm.benchmark<2>().count() * 1e6;
+    auto pair = bm.benchmark<0>();
+    double duration_us_0 = pair.first.count() * 1e6;
+    int nup_0 = pair.second;
+    pair = bm.benchmark<1>();
+    double duration_us_1 = pair.first.count() * 1e6;
+    int nup_1 = pair.second;
+    pair = bm.benchmark<2>();
+    double duration_us_2 = pair.first.count() * 1e6;
+    int nup_2 = pair.second;
 
     QString dso_filename = atfa->stream.adapf->get_path().c_str();
     if (dso_filename == "")
@@ -103,6 +109,10 @@ void BenchmarkAdapfDialog::run_and_show() {
                                 run at <b>" +
                                 QString::number(1e3/duration_us_0, 'f', 3) +
                                 " kHz</b><br /></li>\
+                            <li>The " + qt_html_tt("adapf_run") + " function\
+                                performed an update <b>" + QString::number(
+                                static_cast<double>(nup_0)/N*100, 'f', 1) +
+                                "%</b> of the time<br /></li>\
                         </ul></li>\
                     <li>When the DSO is asked to <b>update normally</b> the\
                         coefficient vector:<br />\
@@ -116,6 +126,10 @@ void BenchmarkAdapfDialog::run_and_show() {
                                 run at <b>" +
                                 QString::number(1e3/duration_us_1, 'f', 3) +
                                 " kHz</b><br /></li>\
+                            <li>The " + qt_html_tt("adapf_run") + " function\
+                                performed an update <b>" + QString::number(
+                                static_cast<double>(nup_1)/N*100, 'f', 1) +
+                                "%</b> of the time<br /></li>\
                         </ul></li>\
                     <li>When the DSO is asked to <b>always update</b> the\
                         coefficient vector:\
@@ -129,6 +143,10 @@ void BenchmarkAdapfDialog::run_and_show() {
                                 run at <b>" +
                                 QString::number(1e3/duration_us_2, 'f', 3) +
                                 " kHz</b></li>\
+                            <li>The " + qt_html_tt("adapf_run") + " function\
+                                performed an update <b>" + QString::number(
+                                static_cast<double>(nup_2)/N*100, 'f', 1) +
+                                "%</b> of the time<br /></li>\
                         </ul></li>\
                 </ul>");
     result_label->show();

@@ -30,7 +30,7 @@ SAMPLE_T AdaptiveFilter<SAMPLE_T>::placeholder = 0;
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter(std::string dso_path)
-  : path(dso_path), data(nullptr)
+  : path(dso_path), data(nullptr), num_of_updates{}
 {
 
     dummy = dso_path.length()==0;
@@ -115,16 +115,17 @@ void AdaptiveFilter<SAMPLE_T>::test() {
                 "Could not initialize adaptive filter data structures,"
                 " during testing",
                 path, dlerror());
-    (*run)(dat, SAMPLE_T(0.1), SAMPLE_T(0.2), 0);
-    (*run)(dat, SAMPLE_T(0.3), SAMPLE_T(0.4), 0);
-    (*run)(dat, SAMPLE_T(0.5), SAMPLE_T(0.6), 1);
+    int placeholder;
+    (*run)(dat, SAMPLE_T(0.1), SAMPLE_T(0.2), 0, &placeholder);
+    (*run)(dat, SAMPLE_T(0.3), SAMPLE_T(0.4), 0, &placeholder);
+    (*run)(dat, SAMPLE_T(0.5), SAMPLE_T(0.6), 1, &placeholder);
     dat = (*restart)(dat);
     if (!dat)
         throw AdapfException(
                 "Could not restart adaptive filter data structures"
                 " during testing",
                 path, dlerror());
-    (*run)(dat, SAMPLE_T(0.7), SAMPLE_T(0.8), 1);
+    (*run)(dat, SAMPLE_T(0.7), SAMPLE_T(0.8), 1, &placeholder);
     if (!(*close)(dat))
         throw AdapfException(
                 "Error while closing adaptive filter data structures"
@@ -139,10 +140,11 @@ AdapfData *dummy_init() { return nullptr; }
 int dummy_close(AdapfData *) { return 1; }
 AdapfData *dummy_restart(AdapfData *) { return nullptr; }
 template <typename SAMPLE_T>
-SAMPLE_T dummy_run(AdapfData *, SAMPLE_T, SAMPLE_T y, int) { return y; }
+SAMPLE_T dummy_run(AdapfData *, SAMPLE_T, SAMPLE_T y, int, int* updated)
+{ *updated = 0; return y; }
 #ifdef ATFA_LOG_MATLAB
 template <typename SAMPLE_T>
-void dummy_getw(AdapfData *, SAMPLE_T **begin, unsigned *n) {
+void dummy_getw(const AdapfData *, const SAMPLE_T **begin, unsigned *n) {
     // *begin will be used as source in a call to std::memcpy.
     // Apparently, memcpy invokes undefined behaviour when it gets
     // called with invalid pointer (e.g. nullptr) arguments, EVEN
@@ -168,7 +170,7 @@ void AdaptiveFilter<SAMPLE_T>::make_dummy() {
 
 template <typename SAMPLE_T>
 AdaptiveFilter<SAMPLE_T>::AdaptiveFilter()
-  : dummy(true), path(""), data(nullptr)
+  : dummy(true), path(""), data(nullptr), num_of_updates{}
 {
     make_dummy();
 }

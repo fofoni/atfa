@@ -45,7 +45,10 @@ public:
     void destroy_data_structures();
 
     SAMPLE_T get_sample(SAMPLE_T x, SAMPLE_T y, int learn) {
-        return (*run)(data, x, y, learn);
+        int updated;
+        SAMPLE_T err = (*run)(data, x, y, learn, &updated);
+        num_of_updates += (updated ? 1 : 0);
+        return err;
     }
 
 #ifdef ATFA_LOG_MATLAB
@@ -76,6 +79,10 @@ public:
         data = (*restart)(data);
     }
 
+    int number_of_updates() const { return num_of_updates; }
+
+    void reset_nup() { num_of_updates = 0; }
+
 private:
 
     bool dummy;
@@ -105,6 +112,8 @@ private:
     AdapfData *data;
 
     void make_dummy();
+
+    int num_of_updates;
 
 };
 

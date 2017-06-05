@@ -12,6 +12,7 @@
 
 #include <chrono>
 #include <random>
+#include <utility>
 
 #include "AdaptiveFilter.h"
 #include "Signal.h"
@@ -50,7 +51,7 @@ public:
     }
 
     template <int learn>
-    std::chrono::duration<double> benchmark();
+    std::pair<std::chrono::duration<double>, int> benchmark();
 
 private:
 
@@ -66,7 +67,8 @@ private:
 
 template <typename SAMPLE_T>
 template <int learn>
-std::chrono::duration<double> AdapfBenchmarker<SAMPLE_T>::benchmark() {
+std::pair<std::chrono::duration<double>, int>
+AdapfBenchmarker<SAMPLE_T>::benchmark() {
 
     adapf_.initialize_data_structures();
 
@@ -78,6 +80,7 @@ std::chrono::duration<double> AdapfBenchmarker<SAMPLE_T>::benchmark() {
 
     input_ptr = input_.array();
     output_ptr = output_.array();
+    adapf_.reset_nup();
 
     auto start_time = std::chrono::steady_clock::now();
     for (int i = 0; i < N; ++i)
@@ -94,7 +97,7 @@ std::chrono::duration<double> AdapfBenchmarker<SAMPLE_T>::benchmark() {
 
     std::chrono::duration<double> total_time = end_time - start_time;
 
-    return total_time / double(N);
+    return {total_time / double(N), adapf_.number_of_updates()};
 
 }
 
