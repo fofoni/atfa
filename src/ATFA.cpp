@@ -886,6 +886,11 @@ void ATFA::set_new_rir(Scene::RIR_source_t source, QString txt,
             /// TODO: a libsndfile aceita outros tipos, além de WAV.
             /// (olhar documentação do Signal::Signal(const std::string&)
             /// TODO: deixar as err_dialog's mais descritivas.
+            /// TODO: o código a seguir dever ser uma função separada
+            ///       (get_container_from_file(std::string) ou algo assim),
+            ///       e essa função deveria morar no utils (ou então, melhor
+            ///       ainda: essa função pode ser um método estático estilo
+            ///       factory da classe Signal)
             Scene::RIR_filetype_t filetype;
             QRegExp rx_m  ("*.m",   Qt::CaseInsensitive, QRegExp::Wildcard);
             QRegExp rx_wav("*.wav", Qt::CaseInsensitive, QRegExp::Wildcard);

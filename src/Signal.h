@@ -60,7 +60,7 @@ public:
     Signal() : counter(0), data(), srate(0) {}
 
     /// Constructs a signal from an audio file.
-    Signal(const std::string &filename);
+    explicit Signal(const std::string &filename);
 
     /// Copy-constructor. Constructs a signal as a copy of another.
     /**
@@ -69,8 +69,13 @@ public:
       *
       * \param[in] other    The signal to be copied from.
       */
-    Signal(const Signal &other)
-        : counter(0), data(other.data), srate(other.srate) {}
+    Signal(const Signal& other)
+        : counter(0), data(other.data), srate(other.srate)
+    {}
+
+    explicit Signal(const container_t& other)
+        : counter{}, data{other}, srate{}
+    {}
 
     /// Frees memory used
     /**
@@ -87,6 +92,7 @@ public:
       * that holds the samples.
       */
     const sample_t *array() const { return &data[0]; }
+    // TODO: esse array() deveria se chamar begin(), e deveria ter um end()
 
     /// Number of samples.
     /**
@@ -439,7 +445,8 @@ void Signal::filter(Signal imp_resp) {
             big = &data, small = &imp_resp.data;
         else
             big = &imp_resp.data, small = &data;
-        long N = DFT::tblsize - small->size() + 1;
+        long N = static_cast<long>(DFT::tblsize) -
+                static_cast<long>(small->size()) + 1l;
         container_t conv(final_size);
         if (N <= 0) {
             // fall back to time-domain filtering
@@ -467,12 +474,16 @@ void Signal::filter(Signal imp_resp) {
         // TODO: ao invés de incrementar o 'i' e calcular i1 e i2 a cada
         // iteração, a gente podia calcular diretamente o i1 e i2, e.g.:
         // for (i1=0, i2=N ; i1 < big->size() ; i1+=2*N, i2+=2*N)
-        for (i = 0; i != big->size()/(2*N); ++i) {
-            index_t i1 = i*2*N;
-            index_t i2 = i1 + N;
-            std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
+        for (i = 0; i != big->size()/(2*static_cast<unsigned long>(N)); ++i) {
+            index_t i1 = i*2*static_cast<unsigned long>(N);
+            index_t i2 = i1 + static_cast<unsigned long>(N);
+            std::copy(big->begin() + static_cast<long>(i1),
+                      big->begin() + static_cast<long>(i1) + N,
+                      x1.begin());
             std::fill(x1.begin() + N, x1.end(), 0);
-            std::copy(big->begin() + i2, big->begin() + i2 + N, x2.begin());
+            std::copy(big->begin() + static_cast<long>(i2),
+                      big->begin() + static_cast<long>(i2) + N,
+                      x2.begin());
             std::fill(x2.begin() + N, x2.end(), 0);
             dft(x1, x2);
             for (index_t j = 0; j != DFT::tblsize; ++j) {
@@ -486,13 +497,17 @@ void Signal::filter(Signal imp_resp) {
             }
         }
         {
-            index_t i1 = i*2*N;
-            index_t i2 = i1 + N;
-            long L = big->size() - i1;
+            index_t i1 = i*2*static_cast<unsigned long>(N);
+            index_t i2 = i1 + static_cast<unsigned long>(N);
+            long L = static_cast<long>(big->size() - i1);
             if (L > N) {
-                std::copy(big->begin() + i1, big->begin() + i1 + N, x1.begin());
+                std::copy(big->begin() + static_cast<long>(i1),
+                          big->begin() + static_cast<long>(i1) + N,
+                          x1.begin());
                 std::fill(x1.begin() + N, x1.end(), 0);
-                std::copy(big->begin() + i2, big->end(), x2.begin());
+                std::copy(big->begin() + static_cast<long>(i2),
+                          big->end(),
+                          x2.begin());
                 std::fill(x2.begin() + (L-N), x2.end(), 0);
                 dft(x1, x2);
                 for (index_t j = 0; j != DFT::tblsize; ++j) {
@@ -502,11 +517,16 @@ void Signal::filter(Signal imp_resp) {
                 dft(y1, y2, DFT::INVERSE);
                 for (index_t j = 0; j != DFT::tblsize; ++j)
                     conv[i1 + j] += y1[j];
-                for (index_t j = 0; j != L-N+small->size()-1; ++j)
+                for (index_t j = 0;
+                     static_cast<long>(j) !=
+                         L-N+static_cast<long>(small->size())-1;
+                     ++j)
                     conv[i2 + j] += y2[j];
             }
             else {
-                std::copy(big->begin() + i1, big->end(), x1.begin());
+                std::copy(big->begin() + static_cast<long>(i1),
+                          big->end(),
+                          x1.begin());
                 std::fill(x1.begin() + L, x1.end(), 0);
                 std::fill(x2.begin(), x2.end(), 0);
                 dft(x1, x2);
@@ -515,7 +535,10 @@ void Signal::filter(Signal imp_resp) {
                     y2[j] = x1[j]*h_im[j] + x2[j]*h_re[j];
                 }
                 dft(y1, y2, DFT::INVERSE);
-                for (index_t j = 0; j != L+small->size()-1; ++j)
+                for (index_t j = 0;
+                     static_cast<long>(j) !=
+                         L+static_cast<long>(small->size())-1;
+                     ++j)
                     conv[i1 + j] += y1[j];
             }
         }
@@ -542,7 +565,8 @@ void Signal::filter(Signal imp_resp) {
         }
         dft(y1, y2, DFT::INVERSE);
         set_size(final_size);
-        std::copy(y1.begin(), y1.begin() + final_size, data.begin());
+        std::copy(y1.begin(), y1.begin() + static_cast<long>(final_size),
+                  data.begin());
     }
 }
 

@@ -171,7 +171,8 @@ PaStream *Stream::echo() {
     blk_offset = 0;
     std::fill(data_in.begin(),  data_in.end(),  0);
     std::fill(data_out.begin(), data_out.end(), 0);
-    {
+    { // TODO: Deveria existir um método estático estilo factory da classe
+      // Signal que cria AWGN :)
         std::mt19937 rng;
         std::normal_distribution<> gauss{0, std::pow(10,scene.noise_vol/20)};
         for (auto& x : awgn) x = gauss(rng);

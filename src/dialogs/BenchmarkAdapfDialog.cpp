@@ -22,24 +22,23 @@ BenchmarkAdapfDialog::BenchmarkAdapfDialog(ATFA *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 
-    size_label = new QLabel("Set the size of Monte-Carlo loop, and hit Run:",
-                            this);
-    layout->addWidget(size_label);
+    choosefile_label = new QLabel("Choose an input WAV file, and hit Run:",
+                                  this);
+    layout->addWidget(choosefile_label);
 
     QHBoxLayout *run_layout = new QHBoxLayout();
 
-    size_spin = new QSpinBox(this);
-    size_spin->setMinimum(1);
-    size_spin->setMaximum(MCLOOP_MAXIMUM);
-    size_spin->setValue(MCLOOP_DEFAULT);
-    size_spin->setMaximumWidth(100);
-    run_layout->addWidget(size_spin);
+        file_select = new FileSelectWidget(
+                    "Open WAV file", QDir::currentPath(),
+                    "WAV files (*.wav)", this, this);
+        run_layout->addWidget(file_select);
 
-    run_button = new QPushButton("Run", this);
-    run_button->setMaximumWidth(100);
-    connect(run_button, &QPushButton::clicked,
-            this, &BenchmarkAdapfDialog::run_and_show);
-    run_layout->addWidget(run_button);
+        // TODO: impedir de clicar em "Run" se o file_select estiver vazio
+        run_button = new QPushButton("Run", this);
+        run_button->setMaximumWidth(100);
+        connect(run_button, &QPushButton::clicked,
+                this, &BenchmarkAdapfDialog::run_and_show);
+        run_layout->addWidget(run_button);
 
     layout->addLayout(run_layout);
 
@@ -64,17 +63,21 @@ void BenchmarkAdapfDialog::run_and_show() {
 
     result_label->setDisabled(true);
     run_button->setDisabled(true);
-    size_spin->setDisabled(true);
+    file_select->setDisabled(true);
 
     button_box->buttons()[0]->clearFocus();
 
     repaint();
 
-    int N = size_spin->value();
+    Signal input_signal{file_select->text().toUtf8().constData()};
+    int N = input_signal.samples();
 
-    AdapfBenchmarker<Stream::sample_t> bm(*atfa->stream.adapf);
-    double duration_us_true  = bm.benchmark<true >(N).count() * 1e6;
-    double duration_us_false = bm.benchmark<false>(N).count() * 1e6;
+    AdapfBenchmarker<Stream::sample_t> bm{
+        *atfa->stream.adapf, input_signal, Signal{atfa->stream.scene.imp_resp},
+        atfa->stream.scene.noise_vol};
+    double duration_us_0 = bm.benchmark<0>().count() * 1e6;
+    double duration_us_1 = bm.benchmark<1>().count() * 1e6;
+    double duration_us_2 = bm.benchmark<2>().count() * 1e6;
 
     QString dso_filename = atfa->stream.adapf->get_path().c_str();
     if (dso_filename == "")
@@ -88,30 +91,43 @@ void BenchmarkAdapfDialog::run_and_show() {
                 "<br /><ul>\
                     <li>DSO: <b>" + qt_html_tt(dso_filename) +"</b></li>\
                     <li>Algorithm: <b>" + dso_title + "</b><br /></li>\
-                    <li>When the DSO is asked to <b>update</b> the\
+                    <li>When the DSO is asked to <b>never update</b> the\
                         coefficient vector:<br />\
                         <ul>\
                             <li>" + qt_html_tt("adapf_run") + " function called\
                                 <b>" + QString::number(N) + "</b> times, with\
                                 mean call duration of <b>" +
-                                QString::number(duration_us_true, 'f', 3) +
+                                QString::number(duration_us_0, 'f', 3) +
                                 " " + QString(QChar(0x03BC)) + "s</b></li>\
                             <li>Disregarding any overhead, this algorithm could\
                                 run at <b>" +
-                                QString::number(1e3/duration_us_true, 'f', 3) +
+                                QString::number(1e3/duration_us_0, 'f', 3) +
                                 " kHz</b><br /></li>\
                         </ul></li>\
-                    <li>When the DSO is asked to <b>not update</b> the\
+                    <li>When the DSO is asked to <b>update normally</b> the\
+                        coefficient vector:<br />\
+                        <ul>\
+                            <li>" + qt_html_tt("adapf_run") + " function called\
+                                <b>" + QString::number(N) + "</b> times, with\
+                                mean call duration of <b>" +
+                                QString::number(duration_us_1, 'f', 3) +
+                                " " + QString(QChar(0x03BC)) + "s</b></li>\
+                            <li>Disregarding any overhead, this algorithm could\
+                                run at <b>" +
+                                QString::number(1e3/duration_us_1, 'f', 3) +
+                                " kHz</b><br /></li>\
+                        </ul></li>\
+                    <li>When the DSO is asked to <b>always update</b> the\
                         coefficient vector:\
                         <ul>\
                             <li>" + qt_html_tt("adapf_run") + " function called\
                                 <b>" + QString::number(N) + "</b> times, with\
                                 mean call duration of <b>" +
-                                QString::number(duration_us_false, 'f', 3) +
+                                QString::number(duration_us_2, 'f', 3) +
                                 " " + QString(QChar(0x03BC)) + "s</b></li>\
                             <li>Disregarding any overhead, this algorithm could\
                                 run at <b>" +
-                                QString::number(1e3/duration_us_false, 'f', 3) +
+                                QString::number(1e3/duration_us_2, 'f', 3) +
                                 " kHz</b></li>\
                         </ul></li>\
                 </ul>");
@@ -119,7 +135,7 @@ void BenchmarkAdapfDialog::run_and_show() {
 
     result_label->setDisabled(false);
     run_button->setDisabled(false);
-    size_spin->setDisabled(false);
+    file_select->setDisabled(false);
 
     run_button->setFocus();
 

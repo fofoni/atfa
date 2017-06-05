@@ -27,8 +27,8 @@ public:
 private:
     ATFA *atfa;
 
-    QLabel *size_label;
-    QSpinBox *size_spin;
+    QLabel *choosefile_label;
+    FileSelectWidget *file_select;
     QPushButton *run_button;
     QLabel *result_label;
 
