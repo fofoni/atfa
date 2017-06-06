@@ -72,6 +72,14 @@ void BenchmarkAdapfDialog::run_and_show() {
     Signal input_signal{file_select->text().toUtf8().constData()};
     int N = input_signal.samples();
 
+    // TODO: o benchmark deveria ser feito num thread separado, pra manter a
+    //       interface responsiva
+    //       Idéia: criar uma função AdapfBenchmarker::estimate_time que rode
+    //       o adapf poucas vezes (quantas? vai rodando e vendo quantas vezes
+    //       vale a pena rodar, à la python's timeit) e retorne uma estimação
+    //       do tempo total que vai levar o benchmark de verdade; usar o
+    //       resultado dessa estimação pra decidir se vale a pena botar o
+    //       bagulho num thread separado.
     AdapfBenchmarker<Stream::sample_t> bm{
         *atfa->stream.adapf, input_signal, Signal{atfa->stream.scene.imp_resp},
         atfa->stream.scene.noise_vol};

@@ -18,6 +18,7 @@ ShowTextDialog::ShowTextDialog(QString title, QString t, QWidget *parent) :
     text_widget = new QTextBrowser(this);
     text_widget->setMinimumWidth(700);
     text_widget->setMinimumHeight(100);
+    // TODO: espace HTML in `text' (e.g. "include <stdio>")
     text_widget->setHtml(text);
     text_widget->setTextInteractionFlags(
         Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard |
