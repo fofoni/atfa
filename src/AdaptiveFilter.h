@@ -52,7 +52,7 @@ public:
     }
 
 #ifdef ATFA_LOG_MATLAB
-    void get_impresp(SAMPLE_T **begin, unsigned *n) {
+    void get_impresp(const SAMPLE_T **begin, unsigned *n) {
         (*getw)(data, begin, n);
     }
 #endif

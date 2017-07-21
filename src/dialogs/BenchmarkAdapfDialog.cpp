@@ -31,6 +31,8 @@ BenchmarkAdapfDialog::BenchmarkAdapfDialog(ATFA *parent)
         file_select = new FileSelectWidget(
                     "Open WAV file", QDir::currentPath(),
                     "WAV files (*.wav)", this, this);
+//        connect(file_select, &FileSelectWidget::returnPressed,
+//                this, &BenchmarkAdapfDialog::run_and_show);
         run_layout->addWidget(file_select);
 
         // TODO: impedir de clicar em "Run" se o file_select estiver vazio

@@ -122,7 +122,7 @@ public:
         static constexpr int DEFAULT_DELAY = 100; // miliseconds
         static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
         static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
-        static constexpr int DEFAULT_NOISE = -60; // -80 to -20 dB
+        static constexpr int DEFAULT_NOISE = -60; // -180 to -20 dB
         static constexpr RIR_filetype_t DEFAULT_FILETYPE = None;
         static constexpr RIR_source_t DEFAULT_SOURCE = NoRIR;
         static constexpr OOV DEFAULT_FLEARN = On;
@@ -140,7 +140,7 @@ public:
         int system_latency; // also in ms
 
         float volume; // 0 -- 1
-        int noise_vol; // -80 to -20 (dB)
+        int noise_vol; // -180 to -20 (dB)
 
         container_t imp_resp;
 
@@ -206,6 +206,8 @@ public:
       */
     template<class InputIt, class OutputIt>
     void read_write(InputIt in_buf, OutputIt out_buf, pa_fperbuf_t pa_frames) {
+        if (sample_count < 1024)
+            sample_count += static_cast<int>(pa_frames);
         pa_fperbuf_t remaining =
                 static_cast<pa_fperbuf_t>(data_out.end() - read_ptr);
         long overflow = (long)pa_frames - (long)remaining;
@@ -230,16 +232,16 @@ public:
             *out_buf = scene.volume *
                        adapf->get_sample(
                            *adapf_ptr, *read_ptr,
-                           scene.filter_learning==Scenario::On || (
+                           (scene.filter_learning==Scenario::On || (
                                scene.filter_learning==Scenario::VAD &&
                                vad[vad_idx]
-                           )
+                           )) && (sample_count >= 1024)
                        );
 #ifdef ATFA_LOG_MATLAB
             // TODO: esse bloco todo tem que ser rodado somente se
             //       a gente ainda não estourou o buffer do wvec.
             {
-                sample_t *it; unsigned n;
+                const sample_t *it; unsigned n;
                 adapf->get_impresp(&it, &n);
                 std::memcpy(&(wvec[w_ptr][0]), it, n*sizeof(sample_t));
             }
@@ -284,7 +286,7 @@ public:
       */
     Stream(LEDIndicatorWidget *ledw = nullptr, const Scenario& s = Scenario())
         : ATFA_STREAM_INIT_WPTR
-          scene(s), adapf(new AdaptiveFilter<sample_t>()),
+          scene(s), sample_count{0}, adapf(new AdaptiveFilter<sample_t>()),
           is_running(false), data_in(buf_size), data_out(buf_size),
           vad(blks_in_buf),
           write_ptr(data_in.begin()), read_ptr(data_out.begin()),
@@ -384,7 +386,7 @@ public:
     }
 
     void set_noise(int new_noise) {
-        if (new_noise < -80  ||  new_noise > -20)
+        if (new_noise < -180  ||  new_noise > -20)
             throw std::runtime_error("Invalid noise level value.");
         scene.noise_vol = new_noise;
     }
@@ -435,6 +437,8 @@ public:
     }
 
 private:
+
+    int sample_count;
 
     AdaptiveFilter<sample_t> *adapf;
 

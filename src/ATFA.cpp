@@ -248,7 +248,7 @@ ATFA::ATFA(QWidget *parent) :
             first_row_layout->addWidget(noise_label);
 
             noise_spin = new QSpinBox(first_row_widget);
-            noise_spin->setMinimum(-80);
+            noise_spin->setMinimum(-180);
             noise_spin->setMaximum(-20);
             noise_spin->setFixedWidth(60);
             noise_spin->setValue(Scene::DEFAULT_NOISE);
@@ -461,6 +461,7 @@ void ATFA::update_widgets() {
     stream.set_delay(static_cast<unsigned>(stream_delay));}
 
     vol_slider->setValue(std::round(100*stream.scene.volume));
+    noise_spin->setValue(stream.scene.noise_vol);
 
     switch (stream.scene.rir_source) {
     case Scene::NoRIR:

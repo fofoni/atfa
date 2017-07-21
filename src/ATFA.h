@@ -86,6 +86,9 @@
         contrário (principalmente se tiverem um argumento só)
    (26) métodos inline com corpo grande devem ser definidos fora da definição
         da classe, de acordo com TC++PL4Ed Sec. 16.2.8 (p. 461)
+   (27) Para a funcionalidade de salvar cenários pré-definidos,
+        ao invés de usar json, pesquisa qual outro formato seria melhor.
+        Yaml?
 
 */
 
@@ -203,7 +206,7 @@ private:
         QLabel *rir_type_label;
         QPushButton *rir_show_button;
         QPushButton *rir_change_button;
-    QWidget *adapf_widget;
+    QWidget *adapf_widget; // TODO: botão de "reload", pra reloadar a mesma DSO
         QLabel *adapf_label;
         QLabel *adapf_file_label;
         QPushButton *adapf_show_button;

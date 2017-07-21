@@ -133,7 +133,7 @@ Scene::Scenario(const QJsonObject &json, int delay_max)
     // noise
     if (json.contains(QStringLiteral("noise_vol"))) {
         int json_noise = json["noise_vol"].toInt();
-        if (json_noise < -80 || json_noise > -20)
+        if (json_noise < -180 || json_noise > -20)
             throw SceneJsonOOBException("noise_vol", json_noise, 0, 100);
         noise_vol = json_noise;
     }
