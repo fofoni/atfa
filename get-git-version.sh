@@ -10,4 +10,4 @@
 #           um "echo versão" -> nao funciona, pq nao da pra saber o hash
 #           antes de commitar
 
-git describe || echo no-git
+git describe || printf "%s\n" "<unknown version>"

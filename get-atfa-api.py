@@ -22,7 +22,7 @@ default_url = 'https://github.com/fofoni/atfa-examples/raw/master/{}'.format(
 
 if __name__ == '__main__':
 
-    # Get URL input and filesystem output files from command line options
+    ### Get URL input and filesystem output files from command line options
 
     import argparse
 

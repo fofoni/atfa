@@ -60,6 +60,8 @@ endif(PortAudio_INCLUDE_DIRS)
 ###########
 ########### Setup MATLAB
 ###########
+# Para encontrar onde as bibliotecas do MATLAB estão instaladas no seu
+# sistema, veja:
 # http://www.mathworks.com/help/matlab/matlab_external/mat-file-library-and-include-files.html
 set( MATLAB_ROOT "/usr/local/MATLAB/MATLAB_Production_Server/R2015a" )
 set( MATLAB_ARCH "glnxa64" )
