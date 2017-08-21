@@ -240,6 +240,7 @@ public:
 #ifdef ATFA_LOG_MATLAB
             // TODO: esse bloco todo tem que ser rodado somente se
             //       a gente ainda não estourou o buffer do wvec.
+            //       (que tem tamanho ATFA_WVEC_SAMPLE_MAX)
             {
                 const sample_t *it; unsigned n;
                 adapf->get_impresp(&it, &n);
@@ -317,7 +318,26 @@ public:
     }
 
 #ifdef ATFA_LOG_MATLAB
-    static sample_t wvec[blks_in_buf*blk_size][128];
+    // TODO: não tem nenhum motivo pra essas constantes 'WVEC_MAX'
+    //       e 'WVEC_SAMPLE_MAX' serem macros ao invés de static constexpr!
+#define ATFA_WVEC_MAX (512)
+#define ATFA_WVEC_SAMPLE_MAX (blks_in_buf*blk_size / 2)
+    /* Esses maximos aí em cima são pra fazer com o que o vetor abaixo
+     * ocupe uns 200MB. Se não fosse esse máximo, o vetor
+     * estouria o fato de que o código inteiro precisa caber em um
+     * espaço endereçável por 32 bits (4GB). [referência: google "relocation
+     *                                        truncated to fit"]
+     * TODO: este problema deve ser consertado fazendo com que o wvec
+     * seja alocado no heap durante a construção da classe Stream.
+     * Por sinal, do jeito que está agora, ele só é 'static' pra não estourar
+     * a pilha (pq se fosse 'automatic storage' (i.e. stack), ao invés de
+     * 'static storage', esses 200MB iam parar na pilha). Quando
+     * colocar no heap, não precisa mais ser estático (até pq, semanticamente,
+     * não deveria ser estático, e só dá certo fazer como estático pq
+     * nunca tem mais de uma instância dessa classe existindo ao mesmo
+     * tempo).
+     */
+    static sample_t wvec[ATFA_WVEC_SAMPLE_MAX][ATFA_WVEC_MAX];
     int w_ptr;
 #endif
 

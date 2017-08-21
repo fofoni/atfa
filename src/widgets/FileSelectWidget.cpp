@@ -52,3 +52,7 @@ void FileSelectWidget::showDialog() {
     if (!filename.isEmpty())
         file_path_edit->setText(filename);
 }
+
+void FileSelectWidget::setPath(const QString& str) {
+    file_path_edit->setText(str);
+}

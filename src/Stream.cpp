@@ -53,7 +53,7 @@ extern "C" {
 #include "utils.h"
 
 #ifdef ATFA_LOG_MATLAB
-Stream::sample_t Stream::wvec[Stream::blks_in_buf*Stream::blk_size][128];
+Stream::sample_t Stream::wvec[ATFA_WVEC_SAMPLE_MAX][ATFA_WVEC_MAX];
 #endif
 
 /// Callback function for dealing with PortAudio
@@ -330,6 +330,12 @@ PaStream *Stream::echo() {
   * \see echo
   */
 void Stream::stop(PaStream *s) {
+    // TODO: no caso ATFA_LOG_MATLAB, essa função deveria receber como
+    //       argumento um pointer para um objeto através do qual ela pudesse
+    //       se comunicar com o ATFA. O objetivo dessa comunicação é dizer
+    //       a quantas anda a gravação das variáveis no MAT, de forma que
+    //       o ATFA possa mostrar mensagens de "please be patient" na
+    //       status bar.
 
 #ifndef ATFA_DEBUG
     PaError err;
@@ -401,7 +407,7 @@ void Stream::stop(PaStream *s) {
     if (pmat == NULL)
         std::cout << "Erro ao abrir .mat ." << std::endl;
     constexpr unsigned long SAMPLES_IN_PMAT = 192000;
-    static double buffer[128*SAMPLES_IN_PMAT];
+    static double buffer[ATFA_WVEC_MAX*SAMPLES_IN_PMAT];
     MKMXVAR(in, "data_in",
             1, std::min(SAMPLES_IN_PMAT, data_in.size()),
             data_in[j]);
@@ -412,14 +418,21 @@ void Stream::stop(PaStream *s) {
             1, std::min(SAMPLES_IN_PMAT, vad.size()),
             vad[j]);
     MKMXVAR(w, "wvec",
-            128, std::min(SAMPLES_IN_PMAT, blks_in_buf*blk_size),
+            ATFA_WVEC_MAX,
+            std::min(SAMPLES_IN_PMAT, ATFA_WVEC_SAMPLE_MAX),
             wvec[j][i]);
     MKMXVAR(Fs, "Fs",
             1, 1,
             samplerate);
+    MKMXVAR(blksize, "blksize",
+            1, 1,
+            blk_size);
     MKMXVAR(delay, "delay_samples",
             1, 1,
             delay_samples);
+    MKMXVAR(syslatency, "system_latency",
+            1, 1,
+            scene.system_latency);
     MKMXVAR(rir, "cpp_rir",
             1, std::min(SAMPLES_IN_PMAT, scene.imp_resp.size()),
             scene.imp_resp[j]);

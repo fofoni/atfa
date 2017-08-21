@@ -45,6 +45,9 @@ private:
 private slots:
     void showDialog();
 
+public slots:
+    void setPath(const QString& str);
+
 };
 
 #endif // FILESELECTWIDGET_H
