@@ -434,7 +434,7 @@ inline Signal operator +(Signal lhs, const Signal& rhs)
   *
   * \see DFTDriver::operator()
   */
-template<class DFT=Signal::DFTDriver<>>
+template<class DFT>
 void Signal::filter(Signal imp_resp) {
     imp_resp.set_samplerate(srate);
     index_t final_size = samples() + imp_resp.samples() - 1;
