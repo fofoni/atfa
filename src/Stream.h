@@ -122,7 +122,7 @@ public:
         static constexpr int DEFAULT_DELAY = 100; // miliseconds
         static constexpr int DEFAULT_SYSLATENCY = 50; // miliseconds
         static constexpr float DEFAULT_VOLUME = .5; // 0 to 1
-        static constexpr int DEFAULT_NOISE = -60; // -180 to -20 dB
+        static constexpr int DEFAULT_NOISE = -180; // -180 to -20 dB
         static constexpr RIR_filetype_t DEFAULT_FILETYPE = None;
         static constexpr RIR_source_t DEFAULT_SOURCE = NoRIR;
         static constexpr OOV DEFAULT_FLEARN = On;

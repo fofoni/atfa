@@ -175,7 +175,7 @@ PaStream *Stream::echo() {
       // Signal que cria AWGN :)
         std::mt19937 rng;
         std::normal_distribution<> gauss{0, std::pow(10,scene.noise_vol/20)};
-        for (auto& x : awgn) x = gauss(rng);
+        for (auto& x : awgn) x = gauss(rng)*0; // TODO: terminar de implementar
     }
     write_ptr = data_in.begin();
     read_ptr  = data_out.begin();
